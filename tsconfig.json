@@ -1,0 +1,41 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+        "target": "es5",
+        "newLine": "LF",
+        "rootDir": "./",
+        "locale": "en-us",
+        "outDir": "./dist",
+        "module": "amd",
+        "reactNamespace": "React",
+        "moduleResolution": "classic",
+        "noEmit": false,
+        "allowJs": false,
+        "sourceMap": true,
+        "noImplicitAny": true,
+        "noEmitOnError": false,
+        "noEmitHelpers": false,
+        "removeComments": true,
+        "noImplicitReturns": true,
+        "preserveConstEnums": true,
+        "skipDefaultLibCheck": false,
+        "noImplicitUseStrict": false,
+        "allowUnreachableCode": false,
+        "noFallthroughCasesInSwitch": false,
+        "allowSyntheticDefaultImports": false,
+        "suppressImplicitAnyIndexErrors": true,
+        "forceConsistentCasingInFileNames": true
+    },
+    "files": [
+        "typings/index.d.ts"
+    ],
+    "exclude": [
+        ".git",
+        ".idea",
+        ".vscode",
+        ".gitignore",
+        "README",
+        "README.md",
+        "node_modules"
+    ]
+}
