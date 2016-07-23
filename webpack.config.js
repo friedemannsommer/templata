@@ -8,7 +8,9 @@ module.exports = {
     output: {
         path: path.join(__dirname, 'dist'),
         filename: 'typescript-templata.js',
-        publicPath: '/assets/'
+        publicPath: '/assets/',
+        libraryTarget: 'var',
+        library: 'Templata',
     },
     devtool: 'source-map',
     resolve: {
@@ -24,6 +26,6 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.OccurrenceOrderPlugin(),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.optimize.DedupePlugin()
     ]
 }
