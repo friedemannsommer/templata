@@ -1,0 +1,40 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Templata</title>
+    <meta name="description" content="Templata yet another Template Compiler">
+    <link href="web-src/app/style.css" media="all" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Templata yet another Template Compiler</h1>
+    <div class="item-wrapper">
+        <h2>Playground</h2>
+        <div class="playground-container">
+            <div class="template">
+                <h3>Template</h3>
+                <textarea autocomplete="off" id="template"></textarea>
+            </div>
+            <div class="compiled">
+                <h3>Compiled Code</h3>
+                <textarea autocomplete="off" id="compiled" disabled="disabled"></textarea>
+            </div>
+            <div class="data">
+                <h3>Data</h3>
+                <textarea autocomplete="off" id="data"></textarea>
+            </div>
+            <div class="result">
+                <h3>Result</h3>
+                <textarea autocomplete="off" id="result" disabled="disabled"></textarea>
+            </div>
+        </div>
+    </div>
+    <!-- scripts -->
+    <script type="text/javascript" src="dist/typescript-templata.js" defer="defer"></script>
+    <script type="text/javascript" src="web-src/app/index.js" defer="defer"></script>
+</body>
+
+</html>
