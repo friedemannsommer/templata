@@ -47,11 +47,11 @@
                 <p>Conditional</p>
                 <pre>
                     <code>
-<!-- if -->
+// if
 {{? local.ifCondition ?}}
-<!-- else if -->
+// else if
 {{?? local.elseIfCondition ??}}
-<!-- else -->
+// else
 {{? ?}}
                     </code>
                 </pre>
@@ -60,11 +60,11 @@
                 <p>Iteration</p>
                 <pre>
                     <code>
-<!-- start loop -->
+// start loop
 {{~ local.arrayOrObject :value,key: ~}}
-    <!-- use block scoped variables -->
+    // use block scoped variables
     {{= key =}}: {{= value =}}
-<!-- end loop -->
+// end loop
 {{/~}}
                     </code>
                 </pre>
