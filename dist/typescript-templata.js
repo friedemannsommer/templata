@@ -47,20 +47,23 @@ var Templata =
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports, __webpack_require__(14), __webpack_require__(13), __webpack_require__(10), __webpack_require__(9), __webpack_require__(11), __webpack_require__(8), __webpack_require__(12), __webpack_require__(6), __webpack_require__(7), __webpack_require__(5)], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports, compiler_1, pure_javascript_1, encode_value_1, condition_1, iterate_1, comment_1, print_1, lowercase_1, uppercase_1, currency_1) {
 	    "use strict";
+	    var defaultHelper = {
+	        '??': condition_1.default,
+	        '-': pure_javascript_1.default,
+	        '!': encode_value_1.default,
+	        '?': condition_1.default,
+	        '~': iterate_1.default,
+	        '*': comment_1.default,
+	        '=': print_1.default
+	    };
+	    var defaultFilter = {
+	        'lowercase': lowercase_1.default,
+	        'uppercase': uppercase_1.default,
+	        'currency': currency_1.default
+	    };
 	    function template(template, imports) {
 	        if (imports === void 0) { imports = {}; }
-	        var Compiler = new compiler_1.default(imports);
-	        Compiler.registerHelper('??', condition_1.default);
-	        Compiler.registerHelper('-', pure_javascript_1.default);
-	        Compiler.registerHelper('!', encode_value_1.default);
-	        Compiler.registerHelper('?', condition_1.default);
-	        Compiler.registerHelper('~', iterate_1.default);
-	        Compiler.registerHelper('*', comment_1.default);
-	        Compiler.registerHelper('=', print_1.default);
-	        Compiler.registerFilter('lowercase', lowercase_1.default);
-	        Compiler.registerFilter('uppercase', uppercase_1.default);
-	        Compiler.registerFilter('currency', currency_1.default);
-	        return Compiler.compile(template);
+	        return new compiler_1.default(imports, defaultHelper, defaultFilter).compile(template);
 	    }
 	    Object.defineProperty(exports, "__esModule", { value: true });
 	    exports.default = template;
@@ -108,7 +111,8 @@ var Templata =
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
 	    "use strict";
 	    function objectKeys(object) {
-	        var output = [], forbiddenKeys = [
+	        var output = [];
+	        var forbiddenKeys = [
 	            'toString',
 	            'toLocalString',
 	            'valueOf',
@@ -582,7 +586,8 @@ var Templata =
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__, exports], __WEBPACK_AMD_DEFINE_RESULT__ = function (require, exports) {
 	    "use strict";
 	    function iterate(array, fn) {
-	        var index = -1, length = array.length >>> 0;
+	        var index = -1;
+	        var length = array.length >>> 0;
 	        while (++index < length) {
 	            if (fn(array[index], index, array) === false) {
 	                break;
