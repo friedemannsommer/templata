@@ -50,8 +50,9 @@
             case 'data':
                 try {
                     data = JSON.parse(e.target.value);
+                } catch (e) {
                     errorOccurred = true;
-                } catch (e) { }
+                }
 
                 if (!errorOccurred) {
                     renderTemplate();
