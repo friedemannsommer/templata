@@ -32,6 +32,61 @@
             </div>
         </div>
     </div>
+    <div class="item-wrapper">
+        <h2>Default Helper (optional)</h2>
+        <ul>
+            <li>
+                <p>Interpolation</p>
+                <pre>
+                    <code>
+{{= local.value =}}
+                    </code>
+                </pre>
+            </li>
+            <li>
+                <p>Conditional</p>
+                <pre>
+                    <code>
+<!-- if -->
+{{? local.ifCondition ?}}
+<!-- else if -->
+{{?? local.elseIfCondition ??}}
+<!-- else -->
+{{? ?}}
+                    </code>
+                </pre>
+            </li>
+            <li>
+                <p>Iteration</p>
+                <pre>
+                    <code>
+<!-- start loop -->
+{{~ local.arrayOrObject :value,key: ~}}
+    <!-- use block scoped variables -->
+    {{= key =}}: {{= value =}}
+<!-- end loop -->
+{{/~}}
+                    </code>
+                </pre>
+            </li>
+            <li>
+                <p>JavaScript</p>
+                <pre>
+                    <code>
+{{- var variable = 'example content'; -}}
+                    </code>
+                </pre>
+            </li>
+            <li>
+                <p>Comments</p>
+                <pre>
+                    <code>
+{{* comments are not visible after compilation *}}
+                    </code>
+                </pre>
+            </li>
+        </ul>
+    </div>
     <!-- scripts -->
     <script type="text/javascript" src="dist/typescript-templata.js" defer="defer"></script>
     <script type="text/javascript" src="web-src/app/index.js" defer="defer"></script>
