@@ -12,7 +12,6 @@ module.exports = {
         libraryTarget: 'var',
         library: 'Templata',
     },
-    devtool: 'source-map',
     resolve: {
         extensions: ['', '.ts']
     },
