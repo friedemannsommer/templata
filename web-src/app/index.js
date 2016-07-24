@@ -51,9 +51,7 @@
                 try {
                     data = JSON.parse(e.target.value);
                     errorOccurred = true;
-                } catch (e) {
-                    alert(e.message);
-                }
+                } catch (e) { }
 
                 if (!errorOccurred) {
                     renderTemplate();
