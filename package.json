@@ -1,6 +1,6 @@
 {
   "name": "templata",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Customizable Template Compiler written in TypeScript",
   "main": "./index.js",
   "scripts": {
