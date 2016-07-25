@@ -7,7 +7,7 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'typescript-templata.js',
+        filename: 'templata.js',
         publicPath: '/assets/',
         libraryTarget: 'var',
         library: 'Templata',
