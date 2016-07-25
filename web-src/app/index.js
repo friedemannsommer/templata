@@ -1,4 +1,4 @@
-(function (templateCompiler) {
+(function(templateCompiler) {
     // values
     var template = '<div>Hi {{= local.name =}}!</div>\n<span>\n{{? local.usingTemplata ?}}\nYou`re amazing!\n{{? ?}}\nGet on it!\n{{/?}}\n</span>';
     var data = { name: "John White", usingTemplata: false };
@@ -19,21 +19,21 @@
     // setup
     renderTemplate();
     // add listener
-    templateArea.addEventListener('keyup', function (e) {
+    templateArea.addEventListener('keyup', function(e) {
         if (!!timer) {
             clearTimeout(timer);
         }
 
-        timer = setTimeout(function () {
+        timer = setTimeout(function() {
             onUpdate('template', e);
         }, 500);
     }, false);
-    templateData.addEventListener('keyup', function (e) {
+    templateData.addEventListener('keyup', function(e) {
         if (!!timer) {
             clearTimeout(timer);
         }
 
-        timer = setTimeout(function () {
+        timer = setTimeout(function() {
             onUpdate('data', e);
         }, 500);
     }, false);
@@ -61,5 +61,10 @@
             default:
                 break;
         }
+    }
+
+    function renderTemplate() {
+        templateCompiled.value = compiler.toString();
+        templateResult.value = compiler(data);
     }
 })(window.Templata.default);
