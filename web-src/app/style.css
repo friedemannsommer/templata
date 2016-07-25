@@ -25,10 +25,10 @@ h3 {
 }
 
 div.item-wrapper div.playground-container > div {
-    width: 48%;
-    padding: 1%;
+    width: 45%;
     height: auto;
-    float: left;
+    display: inline-block;
+    margin-left: 3%;
 }
 
 div.item-wrapper div.playground-container > div textarea {
