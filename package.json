@@ -16,7 +16,9 @@
   "scripts": {
     "build": "npm run build-node && npm run build-browser",
     "build-node": "node_modules/.bin/tsc -p node-tsconfig.json",
-    "build-browser": "node_modules/.bin/webpack --config webpack.config.js"
+    "build-browser": "node_modules/.bin/webpack --config webpack.config.js",
+    "prepublish": "npm run build",
+    "preversion": "npm run build"
   },
   "license": "MIT",
   "homepage": "https://friedemannsommer.github.io/templata/",
