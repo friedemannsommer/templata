@@ -1,0 +1,10 @@
+# GIT
+.git/
+.gitattributes
+.gitignore
+# Project
+web-src/
+index.html
+tsconfig.json
+node-tsconfig.json
+webpack.config.js

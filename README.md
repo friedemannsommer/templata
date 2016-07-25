@@ -1,8 +1,19 @@
 # Templata (Template Compiler)
 ## Example
 ```typescript
-// import the templateCompiler
+/**
+ * TypeScript Browser / Client
+ **/
 import template from '/src/template';
+/**
+ * JavaScript Browser
+ **/
+template = Templata.default;
+/**
+ * NodeJS
+ **/
+const template = require('templata').template;
+
 // define template string
 let templateString:string = `<span class="name">{{= local.name}}</span>`;
 // pass template string to templateCompiler

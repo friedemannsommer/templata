@@ -1,10 +1,12 @@
 {
-    "name": "typescript-templata",
-    "version": "1.0.0",
+    "name": "templata",
+    "version": "1.0.1",
     "description": "Customizable Template Compiler written in TypeScript",
-    "main": "./dist/typescript-templata.js",
+    "main": "./index.js",
     "scripts": {
-        "build": "node_modules/.bin/webpack"
+        "build": "npm run build-node && npm run build-browser",
+        "build-node": "node_modules/.bin/tsc -p node-tsconfig.json",
+        "build-browser": "node_modules/.bin/webpack --config webpack.config.js"
     },
     "author": "Friedemann Sommer <friedemannsommer@yahoo.de>",
     "license": "MIT",
