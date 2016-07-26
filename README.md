@@ -70,7 +70,7 @@ console.log(output); // <span class="name">John White</span>
 ```html
 {{* comment which is not visible after compilation *}}
 ```
-## Use your own "helper"
+## Create your own "helper"
 ```typescript
 import Compiler from '/path/to/compiler/src'
 
@@ -111,7 +111,7 @@ function condition(
     return parameter
 }
 ```
-## Use your own "filter"
+## Create your own "filter"
 ```typescript
 import Compiler from '/path/to/compiler/src'
 
