@@ -1,3 +1,5 @@
+/// <reference path="../typings/index.d.ts" />
+
 import stringTrim from '../lib/string-trim'
 import unescape from '../lib/unescape'
 

@@ -1,3 +1,5 @@
+/// <reference path="../typings/index.d.ts" />
+
 import parseParameter from '../lib/parse-parameter'
 import stringTrim from '../lib/string-trim'
 import eachObject from '../lib/each-object'

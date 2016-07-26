@@ -1,3 +1,5 @@
+/// <reference path="../typings/index.d.ts" />
+
 import regexEscape from './regex-escape'
 import objectKeys from './object-keys'
 import stringTrim from './string-trim'
