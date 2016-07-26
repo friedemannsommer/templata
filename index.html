@@ -16,11 +16,27 @@
         <div class="playground-container">
             <div class="template">
                 <h3>Template</h3>
-                <textarea autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="template"></textarea>
+                <textarea autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="template">
+<span class="name">
+    Hi {{= local.name =}}!
+</span>
+<span class="using-templata">
+    {{? local.usingTemplata ?}}
+    You`re amazing!
+    {{? ?}}
+    Get on it!
+    {{/?}}
+</span>
+                </textarea>
             </div>
             <div class="data">
                 <h3>Data</h3>
-                <textarea autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="data"></textarea>
+                <textarea autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="data">
+{
+    "name": "John White",
+    "usingTemplata": false
+}
+                </textarea>
             </div>
             <div class="compiled">
                 <h3>Compiled Code</h3>
