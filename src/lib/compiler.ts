@@ -9,15 +9,9 @@ enum Match {
 }
 
 export default class Compiler implements Templata.Interface.Compiler {
-    protected static buffer: Templata.Object.Buffer = {
-        APPEND: '\'+(',
-        POST_APPEND: ')+\'',
-        START: '__print+=\'',
-        END: '\';\n'
-    }
-
-    protected static settings: Templata.Object.CompilerSettings = {
+    public static settings: Templata.Object.CompilerSettings = {
         VARIABLE_NAME: 'local',
+        VARIABLE_PRINT: '__print',
         DELIMITER: {
             FILTER_SEPERATOR: '|',
             OPENING_BLOCK: '{{',
@@ -27,15 +21,26 @@ export default class Compiler implements Templata.Interface.Compiler {
         }
     }
 
-    private static blockRegex: RegExp = new RegExp(
-        regexEscape(Compiler.settings.DELIMITER.OPENING_BLOCK)
-        + '.+?'
-        + regexEscape(Compiler.settings.DELIMITER.CLOSING_BLOCK),
-        'g'
-    )
+    protected replaceExpressions: Templata.Object.RegularExpressions = {
+        NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g,
+        AFTER_HTML_TAG: />\s+/g,
+        BEFORE_HTML_TAG: /\s+</g,
+        EMPTY_COMMENT_TAG: /<!--[\s\S]*?-->/g,
+        EMPTY_LINES: /^(?:\s*?)$/gm,
+        EMPTY_START_BUFFER: null,
+        EMPTY_APPEND_BUFFER: null
+    }
+
+    protected buffer: Templata.Object.Buffer = {
+        APPEND: '\'+(',
+        POST_APPEND: ')+\'',
+        START: null,
+        END: '\';\n'
+    }
 
     private importNames: string[]
     private importValues: any[]
+    private blockRegex: RegExp
     private helper: Object
     private filter: Object
 
@@ -43,6 +48,9 @@ export default class Compiler implements Templata.Interface.Compiler {
         this.setupImports(imports)
         this.helper = helper
         this.filter = filter
+
+        this.setupRegularExpressions()
+        this.setupBuffer()
     }
 
     public registerImport(name: string, imports: any): void {
@@ -107,22 +115,24 @@ export default class Compiler implements Templata.Interface.Compiler {
         template = parts.join('')
 
         // strip whitespace
-        template = template.replace(/\r|\n|\t|\/\*[\s\S]*?\*\//g, '')
-            .replace(/>\s+/g, '>')
-            .replace(/\s+</g, '<')
-            .replace(/<!--[\s\S]*?-->/g, '')
+        template = template
+            .replace(this.replaceExpressions.EMPTY_COMMENT_TAG, '')
+            .replace(this.replaceExpressions.BEFORE_HTML_TAG, '<')
+            .replace(this.replaceExpressions.AFTER_HTML_TAG, '>')
+            .replace(this.replaceExpressions.NEW_LINE, '')
 
         // add function source body
-        template = 'function (' + Compiler.settings.VARIABLE_NAME + '){\n'
+        template = 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){\n'
             + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});\n'
-            + 'var __print = \'\';\n'
-            + Compiler.buffer.START + template + Compiler.buffer.END
-            + 'return __print;\n}'
+            + 'var ' + Compiler.settings.VARIABLE_PRINT + ' = \'\';\n'
+            + this.buffer.START + template + this.buffer.END
+            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';\n}'
 
         // fix bad code
-        template = template.replace(/(\_\_[a-zA-Z0-9]+?\+\=[\'\"]{2}\;)|(\+[\'\"]{2})/g, '')
-            .replace(/(\_\_[a-zA-Z0-9]+?)\+\=[\'\"]{2}\+/g, '$1+=')
-            .replace(/^(?:\s*?)$/gm, '')
+        template = template
+            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$+=')
+            .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
+            .replace(this.replaceExpressions.EMPTY_LINES, '')
 
         return this.createTemplateFunction(template)
     }
@@ -143,9 +153,9 @@ export default class Compiler implements Templata.Interface.Compiler {
         let match: RegExpExecArray
         let matches: Object[] = []
 
-        Compiler.blockRegex.lastIndex = 0
+        this.blockRegex.lastIndex = 0
 
-        while ((match = Compiler.blockRegex.exec(input)) !== null) {
+        while ((match = this.blockRegex.exec(input)) !== null) {
             matches.push(
                 {
                     start: match.index,
@@ -268,7 +278,7 @@ export default class Compiler implements Templata.Interface.Compiler {
                 properties.PARAMETER,
                 properties.SELF_CLOSING,
                 properties.CLOSING,
-                Compiler.buffer,
+                this.buffer,
                 this
             )
         } catch (e) {
@@ -278,13 +288,13 @@ export default class Compiler implements Templata.Interface.Compiler {
 
     private callFilter(name: string, input: string): string {
         try {
-            return this.filter[name](name, input, Compiler.buffer, this)
+            return this.filter[name](name, input, this.buffer, this)
         } catch (e) {
             return input
         }
     }
 
-    private setupImports(imports: Object) {
+    private setupImports(imports: Object): void {
         let length: number = 0
         let index: number = -1
 
@@ -296,5 +306,32 @@ export default class Compiler implements Templata.Interface.Compiler {
         while (++index < length) {
             this.importValues[index] = imports[this.importNames[index]]
         }
+    }
+
+    private setupRegularExpressions(): void {
+        this.blockRegex = new RegExp(
+            regexEscape(Compiler.settings.DELIMITER.OPENING_BLOCK)
+            + '.+?'
+            + regexEscape(Compiler.settings.DELIMITER.CLOSING_BLOCK),
+            'g'
+        )
+
+        this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp(
+            '(' + Compiler.settings.VARIABLE_PRINT
+            + '\\+\\=[\\\'\\"]{2}\\;)' + '|(\\+[\\\'\\"]{2})',
+            'g'
+        )
+
+        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp(
+            '(' + Compiler.settings.VARIABLE_PRINT
+            + ')\\+\\=[\\\'\\"]{2}\\+',
+            'g'
+        )
+    }
+
+    private setupBuffer(): void {
+        let variableRegex: RegExp = /__variable__/g
+
+        this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\''
     }
 }

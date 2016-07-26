@@ -15,15 +15,15 @@ let template = Templata.default;
 const template = require('templata').template;
 
 // define template string
-let templateString:string = `<span class="name">{{= local.name}}</span>`;
+let templateString: string = `<span class="name">{{= local.name}}</span>`;
 // pass template string to templateCompiler
-let compiledTemplate:CompiledTemplateFunction = template(templateString);
+let compiledTemplate: CompiledTemplateFunction = template(templateString);
 // run the compiled template with data
-let output:string = compiledTemplate({name: 'John White'});
+let output: string = compiledTemplate({name: 'John White'});
 // use the template
 console.log(output); // <span class="name">John White</span>
 ```
-## Interpolation
+### Interpolation
 ```html
 <!-- render name -->
 <span class="name">{{= local.name =}}</span>
@@ -34,7 +34,7 @@ console.log(output); // <span class="name">John White</span>
 <span class="name">{{= local.name | uppercase =}}</span>
 <span class="price">{{= local.price | currency =}}</span>
 ```
-## Conditional
+### Conditional
 ```html
 <!-- if(condition) -->
 {{? true ?}}
@@ -45,7 +45,7 @@ console.log(output); // <span class="name">John White</span>
 <!-- close if -->
 {{/?}}
 ```
-## Iteration
+### Iteration
 ```html
 <!-- start loop -->
 {{~ local.arrayOrObject :value,key: ~}}
@@ -54,7 +54,7 @@ console.log(output); // <span class="name">John White</span>
 <!-- end loop -->
 {{/~}}
 ```
-## JavaScript
+### JavaScript
 ```html
 <!-- define custom variable -->
 {{- var variable = 'example content'; -}}
@@ -66,7 +66,69 @@ console.log(output); // <span class="name">John White</span>
 <!-- prints "5 is bigger then 2" -->
 {{? localFn(5,2) ?}}{{= '5 is bigger then 2' =}}{{/?}}
 ```
-## Comments
+### Comments
 ```html
 {{* comment which is not visible after compilation *}}
+```
+## Use your own "helper"
+```typescript
+import Compiler from '/path/to/compiler/src'
+
+Compiler.registerHelper('?', condition)
+Compiler.registerHelper('??', condition)
+
+function condition(
+    operator: string,
+    parameter: string,
+    selfClosingTag: boolean,
+    closingTag: boolean,
+    buffer: Templata.Object.Buffer,
+    compiler: Templata.Interface.Compiler
+) {
+    if (closingTag) {
+        return buffer.END + '}' + buffer.START
+    }
+
+    switch (operator) {
+        case '?':
+            if (parameter && parameter !== '') {
+                // if
+                return buffer.END + 'if(' + parameter.trim() + '){' + buffer.START
+            } else {
+                // else
+                return buffer.END + '}else{' + buffer.START
+            }
+        case '??':
+            if (parameter && parameter !== '') {
+                // elseif
+                return buffer.END + '}else if(' + parameter.trim() + '){' + buffer.START
+            } else {
+                // else
+                return buffer.END + '}else{' + buffer.START
+            }
+    }
+
+    return parameter
+}
+```
+## Use your own "filter"
+```typescript
+import Compiler from '/path/to/compiler/src'
+
+Compiler.registerFilter('lowercase', lowercaseFilter)
+
+function lowercase(input: string): string {
+    return input.toLocaleLowerCase()
+}
+
+function lowercaseFilter(
+    name: string,
+    input: string,
+    buffer: Templata.Object.Buffer,
+    compiler: Templata.Interface.Compiler
+) {
+    compiler.registerImport('__f_lc', lowercase)
+
+    return buffer.APPEND + '__f_lc(' + removePreviousBuffer(input, buffer) + ')' + buffer.POST_APPEND
+}
 ```

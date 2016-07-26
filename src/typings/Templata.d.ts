@@ -42,6 +42,7 @@ declare module Templata {
 
         export interface CompilerSettings extends Object {
             VARIABLE_NAME: string
+            VARIABLE_PRINT: string
             DELIMITER: Delimiter
         }
 
@@ -51,6 +52,16 @@ declare module Templata {
             CLOSING_BLOCK: string
             CLOSING: string
             SPACE: string
+        }
+
+        export interface RegularExpressions extends Object {
+            NEW_LINE: RegExp
+            AFTER_HTML_TAG: RegExp
+            BEFORE_HTML_TAG: RegExp
+            EMPTY_COMMENT_TAG: RegExp
+            EMPTY_LINES: RegExp
+            EMPTY_START_BUFFER: RegExp
+            EMPTY_APPEND_BUFFER: RegExp
         }
     }
 }
