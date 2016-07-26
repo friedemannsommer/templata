@@ -13,9 +13,26 @@ var Compiler = (function () {
         if (imports === void 0) { imports = {}; }
         if (helper === void 0) { helper = {}; }
         if (filter === void 0) { filter = {}; }
+        this.replaceExpressions = {
+            NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g,
+            AFTER_HTML_TAG: />\s+/g,
+            BEFORE_HTML_TAG: /\s+</g,
+            EMPTY_COMMENT_TAG: /<!--[\s\S]*?-->/g,
+            EMPTY_LINES: /^(?:\s*?)$/gm,
+            EMPTY_START_BUFFER: null,
+            EMPTY_APPEND_BUFFER: null
+        };
+        this.buffer = {
+            APPEND: '\'+(',
+            POST_APPEND: ')+\'',
+            START: null,
+            END: '\';\n'
+        };
         this.setupImports(imports);
         this.helper = helper;
         this.filter = filter;
+        this.setupRegularExpressions();
+        this.setupBuffer();
     }
     Compiler.prototype.registerImport = function (name, imports) {
         if (this.importNames.indexOf(name) < 0) {
@@ -65,18 +82,20 @@ var Compiler = (function () {
         }
         parts.push(template.slice(previous['end']));
         template = parts.join('');
-        template = template.replace(/\r|\n|\t|\/\*[\s\S]*?\*\//g, '')
-            .replace(/>\s+/g, '>')
-            .replace(/\s+</g, '<')
-            .replace(/<!--[\s\S]*?-->/g, '');
-        template = 'function (' + Compiler.settings.VARIABLE_NAME + '){\n'
+        template = template
+            .replace(this.replaceExpressions.EMPTY_COMMENT_TAG, '')
+            .replace(this.replaceExpressions.BEFORE_HTML_TAG, '<')
+            .replace(this.replaceExpressions.AFTER_HTML_TAG, '>')
+            .replace(this.replaceExpressions.NEW_LINE, '');
+        template = 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){\n'
             + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});\n'
-            + 'var __print = \'\';\n'
-            + Compiler.buffer.START + template + Compiler.buffer.END
-            + 'return __print;\n}';
-        template = template.replace(/(\_\_[a-zA-Z0-9]+?\+\=[\'\"]{2}\;)|(\+[\'\"]{2})/g, '')
-            .replace(/(\_\_[a-zA-Z0-9]+?)\+\=[\'\"]{2}\+/g, '$1+=')
-            .replace(/^(?:\s*?)$/gm, '');
+            + 'var ' + Compiler.settings.VARIABLE_PRINT + ' = \'\';\n'
+            + this.buffer.START + template + this.buffer.END
+            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';\n}';
+        template = template
+            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$+=')
+            .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
+            .replace(this.replaceExpressions.EMPTY_LINES, '');
         return this.createTemplateFunction(template);
     };
     Compiler.prototype.createTemplateFunction = function (source) {
@@ -90,8 +109,8 @@ var Compiler = (function () {
     Compiler.prototype.matchBlocks = function (input) {
         var match;
         var matches = [];
-        Compiler.blockRegex.lastIndex = 0;
-        while ((match = Compiler.blockRegex.exec(input)) !== null) {
+        this.blockRegex.lastIndex = 0;
+        while ((match = this.blockRegex.exec(input)) !== null) {
             matches.push({
                 start: match.index,
                 content: this.parseBlock(match),
@@ -183,7 +202,7 @@ var Compiler = (function () {
     };
     Compiler.prototype.callHelper = function (properties) {
         try {
-            return this.helper[properties.OPERATOR](properties.OPERATOR, properties.PARAMETER, properties.SELF_CLOSING, properties.CLOSING, Compiler.buffer, this);
+            return this.helper[properties.OPERATOR](properties.OPERATOR, properties.PARAMETER, properties.SELF_CLOSING, properties.CLOSING, this.buffer, this);
         }
         catch (e) {
             return '';
@@ -191,7 +210,7 @@ var Compiler = (function () {
     };
     Compiler.prototype.callFilter = function (name, input) {
         try {
-            return this.filter[name](name, input, Compiler.buffer, this);
+            return this.filter[name](name, input, this.buffer, this);
         }
         catch (e) {
             return input;
@@ -207,14 +226,22 @@ var Compiler = (function () {
             this.importValues[index] = imports[this.importNames[index]];
         }
     };
-    Compiler.buffer = {
-        APPEND: '\'+(',
-        POST_APPEND: ')+\'',
-        START: '__print+=\'',
-        END: '\';\n'
+    Compiler.prototype.setupRegularExpressions = function () {
+        this.blockRegex = new RegExp(regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK)
+            + '.+?'
+            + regex_escape_1.default(Compiler.settings.DELIMITER.CLOSING_BLOCK), 'g');
+        this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp('(' + Compiler.settings.VARIABLE_PRINT
+            + '\\+\\=[\\\'\\"]{2}\\;)' + '|(\\+[\\\'\\"]{2})', 'g');
+        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp('(' + Compiler.settings.VARIABLE_PRINT
+            + ')\\+\\=[\\\'\\"]{2}\\+', 'g');
+    };
+    Compiler.prototype.setupBuffer = function () {
+        var variableRegex = /__variable__/g;
+        this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\'';
     };
     Compiler.settings = {
         VARIABLE_NAME: 'local',
+        VARIABLE_PRINT: '__print',
         DELIMITER: {
             FILTER_SEPERATOR: '|',
             OPENING_BLOCK: '{{',
@@ -223,9 +250,6 @@ var Compiler = (function () {
             SPACE: ' '
         }
     };
-    Compiler.blockRegex = new RegExp(regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK)
-        + '.+?'
-        + regex_escape_1.default(Compiler.settings.DELIMITER.CLOSING_BLOCK), 'g');
     return Compiler;
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
