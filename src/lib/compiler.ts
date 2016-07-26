@@ -288,7 +288,12 @@ export default class Compiler implements Templata.Interface.Compiler {
 
     private callFilter(name: string, input: string): string {
         try {
-            return this.filter[name](name, input, this.buffer, this)
+            return this.filter[name](
+                name,
+                input,
+                this.buffer,
+                this
+            )
         } catch (e) {
             return input
         }
