@@ -3,9 +3,9 @@
         "jsx": "react",
         "target": "es5",
         "newLine": "LF",
-        "rootDir": "./",
+        "rootDir": "./src",
         "locale": "en-us",
-        "outDir": "./node",
+        "outDir": "./dist/node",
         "module": "commonjs",
         "reactNamespace": "React",
         "moduleResolution": "classic",
@@ -27,7 +27,7 @@
         "forceConsistentCasingInFileNames": true
     },
     "files": [
-        "typings/index.d.ts",
+        "src/typings/index.d.ts",
         "src/template.ts"
     ],
     "exclude": [

@@ -6,9 +6,8 @@ module.exports = {
         client: path.join(__dirname, 'src', 'template.ts')
     },
     output: {
-        path: path.join(__dirname, 'dist'),
+        path: path.join(__dirname, 'dist', 'browser'),
         filename: 'templata.js',
-        publicPath: '/assets/',
         libraryTarget: 'var',
         library: 'Templata',
     },
