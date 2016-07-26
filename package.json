@@ -1,15 +1,48 @@
 {
   "name": "templata",
-  "version": "1.0.2",
+  "version": "1.0.4",
+  "author": {
+    "name": "Friedemann Sommer",
+    "email": "friedemannsommer@yahoo.de"
+  },
+  "maintainers": [
+    {
+      "name": "Friedemann Sommer",
+      "email": "friedemannsommer@yahoo.de"
+    }
+  ],
   "description": "Customizable Template Compiler written in TypeScript",
-  "main": "./index.js",
+  "main": "index.js",
   "scripts": {
     "build": "npm run build-node && npm run build-browser",
     "build-node": "node_modules/.bin/tsc -p ./node-tsconfig.json",
-    "build-browser": "node_modules/.bin/webpack --config webpack.config.js"
+    "build-browser": "node_modules/.bin/webpack --config ./webpack.config.js",
+    "prepublish": "npm run build",
+    "preversion": "npm run build"
   },
-  "author": "Friedemann Sommer <friedemannsommer@yahoo.de>",
   "license": "MIT",
+  "homepage": "https://friedemannsommer.github.io/templata/",
+  "bugs": {
+    "url": "https://github.com/friedemannsommer/templata/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/friedemannsommer/templata.git"
+  },
+  "keywords": [
+    "customizable",
+    "typescript",
+    "javascript",
+    "templata",
+    "template",
+    "compiler",
+    "browser",
+    "nodejs",
+    "engine",
+    "node",
+    "ts",
+    "js"
+  ],
   "devDependencies": {
     "source-map-loader": "^0.1.5",
     "ts-loader": "^0.8.2",
@@ -17,5 +50,6 @@
     "typings": "^1.3.2",
     "webpack": "^1.13.1"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "preferGlobal": false
 }

@@ -4,11 +4,11 @@
 /**
  * TypeScript Browser / Client
  **/
-import template from '/src/template';
+import template from '/path/to/src/template';
 /**
  * JavaScript Browser
  **/
-template = Templata.default;
+let template = Templata.default;
 /**
  * NodeJS
  **/
@@ -26,20 +26,20 @@ console.log(output); // <span class="name">John White</span>
 ## Interpolation
 ```html
 <!-- render name -->
-<span class="name">{{= local.name}}</span>
+<span class="name">{{= local.name =}}</span>
 <!-- render HTML-Encoded adCode -->
-<input type="text" value="{{! local.adCode}}">
+<input type="text" value="{{! local.adCode !}}">
 <!-- use filter -->
-<span class="name">{{= local.name | lowercase}}</span>
-<span class="name">{{= local.name | uppercase}}</span>
-<span class="price">{{= local.price | currency}}</span>
+<span class="name">{{= local.name | lowercase =}}</span>
+<span class="name">{{= local.name | uppercase =}}</span>
+<span class="price">{{= local.price | currency =}}</span>
 ```
 ## Conditional
 ```html
 <!-- if(condition) -->
-{{? true}}
+{{? true ?}}
 <!-- else if(condition) -->
-{{?? false}}
+{{?? false ??}}
 <!-- else -->
 {{? ?}}
 <!-- close if -->
@@ -48,23 +48,23 @@ console.log(output); // <span class="name">John White</span>
 ## Iteration
 ```html
 <!-- start loop -->
-{{~ local.arrayOrObject :value,key:}}
+{{~ local.arrayOrObject :value,key: ~}}
 <!-- use value or key in here -->
-{{= key}}: {{= value}}
+{{= key =}}: {{= value =}}
 <!-- end loop -->
 {{/~}}
 ```
 ## JavaScript
 ```html
 <!-- define custom variable -->
-{{- var variable = 'example content';}}
+{{- var variable = 'example content'; -}}
 <!-- do whate ever you want -->
-{{- function localFn(x, y){return x > y;} }}
+{{- function localFn(x, y){return x > y;} -}}
 <!-- use your custom code -->
 <!-- prints "EXAMPLE CONTENT" -->
-{{= variable | uppercase }}
+{{= variable | uppercase =}}
 <!-- prints "5 is bigger then 2" -->
-{{? localFn(5,2)}}{{= '5 is bigger then 2'}}{{/?}}
+{{? localFn(5,2) ?}}{{= '5 is bigger then 2' =}}{{/?}}
 ```
 ## Comments
 ```html
