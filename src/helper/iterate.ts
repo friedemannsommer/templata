@@ -8,9 +8,9 @@ import isObject from '../lib/is-object'
 import isArray from '../lib/is-array'
 import iterator from '../lib/iterator'
 
-const iteratorIndexer = iterator(0)
+let iteratorIndexer: () => number
 
-export default function (operator: string, parameter: string, selfClosing: boolean, closingTag: boolean, buffer: Templata.Object.Buffer, compiler: Templata.Interface.Compiler): string {
+function iterate(operator: string, parameter: string, selfClosing: boolean, closingTag: boolean, buffer: Templata.Object.Buffer, compiler: Templata.Interface.Compiler): string {
     compiler.registerImport('__isArray', isArray)
     compiler.registerImport('__isObject', isObject)
     compiler.registerImport('__eachArray', eachArray)
@@ -39,3 +39,11 @@ export default function (operator: string, parameter: string, selfClosing: boole
 
     return parameter
 }
+
+iterate['bootUp'] = (name: string, compiler: Templata.Interface.Compiler) => {
+    compiler.on('COMPILE_START', () => {
+        iteratorIndexer = iterator(0)
+    })
+}
+
+export default iterate

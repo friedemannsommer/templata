@@ -9,10 +9,11 @@ var Match;
     Match[Match["FULL_MATCH"] = 0] = "FULL_MATCH";
 })(Match || (Match = {}));
 var Compiler = (function () {
-    function Compiler(imports, helper, filter) {
+    function Compiler(imports, helper, filter, provider) {
         if (imports === void 0) { imports = {}; }
         if (helper === void 0) { helper = {}; }
         if (filter === void 0) { filter = {}; }
+        if (provider === void 0) { provider = {}; }
         this.replaceExpressions = {
             NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g,
             AFTER_HTML_TAG: />\s+/g,
@@ -28,110 +29,164 @@ var Compiler = (function () {
             START: null,
             END: '\';\n'
         };
-        this.setupImports(imports);
-        this.helper = helper;
-        this.filter = filter;
-        this.setupRegularExpressions();
-        this.setupBuffer();
+        this._setupImports(imports);
+        this._provider = provider;
+        this._helper = helper;
+        this._filter = filter;
+        this._listener = {};
+        this._setupRegularExpressions();
+        this._setupBuffer();
+        this._bootUp();
     }
     Compiler.prototype.registerImport = function (name, imports) {
-        if (this.importNames.indexOf(name) < 0) {
-            this.importNames.push(name);
-            this.importValues.push(imports);
+        if (this._importNames.indexOf(name) < 0) {
+            this._importNames.push(name);
+            this._importValues.push(imports);
         }
     };
     Compiler.prototype.removeImport = function (name) {
-        var index = this.importNames.indexOf(name);
+        var index = this._importNames.indexOf(name);
         if (index > -1) {
-            this.importNames.splice(index, 1);
-            this.importValues.splice(index, 1);
+            this._importNames.splice(index, 1);
+            this._importValues.splice(index, 1);
         }
     };
     Compiler.prototype.registerHelper = function (operator, callback) {
         if (operator.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING) {
             throw Error("Helper cannot start with \"" + Compiler.settings.DELIMITER.CLOSING + "\"!");
         }
-        this.helper[operator] = callback;
+        this._helper[operator] = callback;
     };
     Compiler.prototype.removeHelper = function (operator) {
-        delete this.helper[operator];
+        delete this._helper[operator];
     };
     Compiler.prototype.registerFilter = function (name, callback) {
-        this.filter[name] = callback;
+        this._filter[name] = callback;
     };
     Compiler.prototype.removeFilter = function (name) {
-        delete this.filter[name];
+        delete this._filter[name];
     };
-    Compiler.prototype.compile = function (template) {
-        template = escape_1.default(template);
-        return this.createTemplateFunction(this.optimizeTemplate(this.concatTemplateParts(this.matchBlocks(template), template)));
+    Compiler.prototype.registerProvider = function (name, callback) {
+        this._provider[name] = callback;
     };
-    Compiler.prototype.createTemplateFunction = function (source) {
+    Compiler.prototype.removeProvider = function (name) {
+        delete this._provider[name];
+    };
+    Compiler.prototype.on = function (name, callback) {
+        if (this._listener.hasOwnProperty(name)) {
+            this._listener[name].push(callback);
+        }
+        else {
+            this._listener[name] = [callback];
+        }
+    };
+    Compiler.prototype.off = function (name, callback) {
+        if (!this._listener.hasOwnProperty(name)) {
+            return void 0;
+        }
+        var index = -1;
+        var length = this._listener[name].length;
+        while (++index < length) {
+            if (this._listener[name][index] === callback) {
+                this._listener[name].splice(index, 1);
+                length = this._listener[name].length;
+            }
+        }
+    };
+    Compiler.prototype.dispatch = function (name, data) {
+        if (!this._listener.hasOwnProperty(name)) {
+            return void 0;
+        }
+        var index = -1;
+        var length = this._listener[name].length;
+        while (++index < length) {
+            this._listener[name][index](name, this, data);
+        }
+    };
+    Compiler.prototype.callProvider = function (name) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
         try {
-            return new Function(this.importNames.join(','), 'return ' + source).apply(undefined, this.importValues);
+            return this._provider[name].apply(undefined, [name].concat(args));
         }
         catch (e) {
             throw e;
         }
     };
-    Compiler.prototype.matchBlocks = function (input) {
+    Compiler.prototype.compile = function (template) {
+        this.dispatch('COMPILE_START');
+        template = escape_1.default(template);
+        return this._createTemplateFunction(this._optimizeTemplate(this._concatTemplateParts(this._matchBlocks(template), template)));
+    };
+    Compiler.prototype._createTemplateFunction = function (source) {
+        this.dispatch('COMPILE_END');
+        try {
+            return new Function(this._importNames.join(','), 'return ' + source).apply(undefined, this._importValues);
+        }
+        catch (e) {
+            throw e;
+        }
+    };
+    Compiler.prototype._matchBlocks = function (input) {
         var match;
         var matches = [];
-        this.blockRegex.lastIndex = 0;
-        while ((match = this.blockRegex.exec(input)) !== null) {
+        this._blockRegex.lastIndex = 0;
+        while ((match = this._blockRegex.exec(input)) !== null) {
             matches.push({
                 start: match.index,
-                content: this.parseBlock(match),
+                content: this._parseBlock(match),
                 end: match.index + match[Match.FULL_MATCH].length
             });
         }
         return matches;
     };
-    Compiler.prototype.parseBlock = function (match) {
+    Compiler.prototype._parseBlock = function (match) {
         var input = unescape_1.default(match[Match.FULL_MATCH].slice(Compiler.settings.DELIMITER.OPENING_BLOCK.length, match[Match.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length));
-        var properties = this.getBlockProperties(input);
-        if (this.helper[properties.OPERATOR]) {
+        var properties = this._getBlockProperties(input);
+        if (this._helper[properties.OPERATOR]) {
             if (properties.FILTER.length > 0) {
-                return this.callFilterList(properties.FILTER, this.callHelper(properties));
+                return this._callFilterList(properties.FILTER, this._callHelper(properties));
             }
             else {
-                return this.callHelper(properties);
+                return this._callHelper(properties);
             }
         }
         return input;
     };
-    Compiler.prototype.getBlockProperties = function (blockString) {
-        var operator = this.getBlockOperator(blockString);
+    Compiler.prototype._getBlockProperties = function (blockString) {
+        var operator = this._getBlockOperator(blockString);
         var closing = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING;
         var selfClosing = (!closing)
             ? (blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length))
                 === Compiler.settings.DELIMITER.SPACE + operator
             : false;
-        var parameter = this.getBlockParameter(blockString, operator, selfClosing);
-        var filter = this.getBlockFilter(parameter);
+        var parameter = this._getBlockParameter(blockString, operator, selfClosing);
+        var filter = this._getBlockFilter(parameter);
         return {
             OPERATOR: operator,
             FILTER: filter,
-            PARAMETER: this.removeBlockFilter(parameter),
+            PARAMETER: this._removeBlockFilter(parameter),
             CLOSING: closing,
             SELF_CLOSING: selfClosing
         };
     };
-    Compiler.prototype.getBlockOperator = function (blockString) {
+    Compiler.prototype._getBlockOperator = function (blockString) {
         var index = blockString.indexOf(Compiler.settings.DELIMITER.SPACE, 0);
         var closing = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING;
         return blockString.slice((closing) ? 1 : 0, (index > 0) ? index : blockString.length);
     };
-    Compiler.prototype.getBlockParameter = function (blockString, operator, selfClosing) {
+    Compiler.prototype._getBlockParameter = function (blockString, operator, selfClosing) {
         var start = operator.length + Compiler.settings.DELIMITER.SPACE.length;
         var end = (selfClosing)
             ? blockString.length - (operator.length + Compiler.settings.DELIMITER.SPACE.length)
             : blockString.length;
         return blockString.slice(start, end);
     };
-    Compiler.prototype.getBlockFilter = function (parameter) {
+    Compiler.prototype._getBlockFilter = function (parameter) {
         var filter = [];
         var filterSeperator = Compiler.settings.DELIMITER.SPACE
             + Compiler.settings.DELIMITER.FILTER_SEPERATOR
@@ -150,7 +205,7 @@ var Compiler = (function () {
         }
         return filter;
     };
-    Compiler.prototype.concatTemplateParts = function (matches, template) {
+    Compiler.prototype._concatTemplateParts = function (matches, template) {
         var previous;
         var index = -1;
         var parts = [];
@@ -172,14 +227,14 @@ var Compiler = (function () {
         }
         return template;
     };
-    Compiler.prototype.addFnBody = function (template) {
+    Compiler.prototype._addFnBody = function (template) {
         return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){\n'
             + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});\n'
             + 'var ' + Compiler.settings.VARIABLE_PRINT + ' = \'\';\n'
             + this.buffer.START + template + this.buffer.END
             + 'return ' + Compiler.settings.VARIABLE_PRINT + ';\n}';
     };
-    Compiler.prototype.removeBlockFilter = function (parameter) {
+    Compiler.prototype._removeBlockFilter = function (parameter) {
         var filterSeperator = Compiler.settings.DELIMITER.SPACE
             + Compiler.settings.DELIMITER.FILTER_SEPERATOR
             + Compiler.settings.DELIMITER.SPACE;
@@ -189,55 +244,65 @@ var Compiler = (function () {
         }
         return parameter;
     };
-    Compiler.prototype.optimizeTemplate = function (template) {
-        return this.optimizeFnSource(this.addFnBody(template
+    Compiler.prototype._optimizeTemplate = function (template) {
+        return this._optimizeFnSource(this._addFnBody(template
             .replace(this.replaceExpressions.EMPTY_COMMENT_TAG, '')
             .replace(this.replaceExpressions.BEFORE_HTML_TAG, '<')
             .replace(this.replaceExpressions.AFTER_HTML_TAG, '>')
             .replace(this.replaceExpressions.NEW_LINE, '')));
     };
-    Compiler.prototype.optimizeFnSource = function (template) {
+    Compiler.prototype._optimizeFnSource = function (template) {
         return template
             .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$1+=')
             .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
             .replace(this.replaceExpressions.EMPTY_LINES, '');
     };
-    Compiler.prototype.callFilterList = function (filterList, input) {
+    Compiler.prototype._callFilterList = function (filterList, input) {
         var filterLength = filterList.length;
         var index = -1;
         while (++index < filterLength) {
-            input = this.callFilter(filterList[index], input);
+            input = this._callFilter(filterList[index], input);
         }
         return input;
     };
-    Compiler.prototype.callHelper = function (properties) {
+    Compiler.prototype._callHelper = function (properties) {
         try {
-            return this.helper[properties.OPERATOR](properties.OPERATOR, properties.PARAMETER, properties.SELF_CLOSING, properties.CLOSING, this.buffer, this);
+            return this._helper[properties.OPERATOR](properties.OPERATOR, properties.PARAMETER, properties.SELF_CLOSING, properties.CLOSING, this.buffer, this);
         }
         catch (e) {
             return '';
         }
     };
-    Compiler.prototype.callFilter = function (name, input) {
+    Compiler.prototype._callFilter = function (name, input) {
         try {
-            return this.filter[name](name, input, this.buffer, this);
+            return this._filter[name](name, input, this.buffer, this);
         }
         catch (e) {
             return input;
         }
     };
-    Compiler.prototype.setupImports = function (imports) {
-        var length = 0;
+    Compiler.prototype._bootUp = function () {
+        var keys = object_keys_1.default(this._helper);
         var index = -1;
-        this.importNames = object_keys_1.default(imports);
-        this.importValues = Array(this.importNames.length);
-        length = this.importNames.length;
+        var length = keys.length;
         while (++index < length) {
-            this.importValues[index] = imports[this.importNames[index]];
+            if (typeof this._helper[keys[index]]['bootUp'] === 'function') {
+                this._helper[keys[index]]['bootUp'](keys[index], this);
+            }
         }
     };
-    Compiler.prototype.setupRegularExpressions = function () {
-        this.blockRegex = new RegExp(regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK)
+    Compiler.prototype._setupImports = function (imports) {
+        var length = 0;
+        var index = -1;
+        this._importNames = object_keys_1.default(imports);
+        this._importValues = Array(this._importNames.length);
+        length = this._importNames.length;
+        while (++index < length) {
+            this._importValues[index] = imports[this._importNames[index]];
+        }
+    };
+    Compiler.prototype._setupRegularExpressions = function () {
+        this._blockRegex = new RegExp(regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK)
             + '.+?'
             + regex_escape_1.default(Compiler.settings.DELIMITER.CLOSING_BLOCK), 'g');
         this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp('(' + Compiler.settings.VARIABLE_PRINT
@@ -245,7 +310,7 @@ var Compiler = (function () {
         this.replaceExpressions.EMPTY_START_BUFFER = new RegExp('(' + Compiler.settings.VARIABLE_PRINT
             + ')\\+\\=[\\\'\\"]{2}\\+', 'g');
     };
-    Compiler.prototype.setupBuffer = function () {
+    Compiler.prototype._setupBuffer = function () {
         this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\'';
     };
     Compiler.settings = {
