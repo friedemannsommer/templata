@@ -92,11 +92,13 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     public compile(template: string): Templata.Interface.CompileFunction {
+        template = escape(template)
+
         return this.createTemplateFunction(
             this.optimizeTemplate(
                 this.concatTemplateParts(
                     this.matchBlocks(template),
-                    escape(template)
+                    template
                 )
             )
         )
