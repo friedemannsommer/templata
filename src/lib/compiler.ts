@@ -132,7 +132,7 @@ export default class Compiler implements Templata.Interface.Compiler {
 
         // fix bad code
         template = template
-            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$+=')
+            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$1+=')
             .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
             .replace(this.replaceExpressions.EMPTY_LINES, '')
 
