@@ -93,7 +93,7 @@ var Compiler = (function () {
             + this.buffer.START + template + this.buffer.END
             + 'return ' + Compiler.settings.VARIABLE_PRINT + ';\n}';
         template = template
-            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$+=')
+            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$1+=')
             .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
             .replace(this.replaceExpressions.EMPTY_LINES, '');
         return this.createTemplateFunction(template);
