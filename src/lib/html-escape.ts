@@ -175,4 +175,4 @@ function htmlEscape(input: string): string {
         .replace(/\u00D8/g, '&#216;')
 }
 
-export default htmlEscape;
+export default htmlEscape

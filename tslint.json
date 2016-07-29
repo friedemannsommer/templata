@@ -1,0 +1,57 @@
+{
+    "rulesDirectory": [
+        "src/typings/"
+    ],
+    "rules": {
+        "curly": true,
+        "no-arg": true,
+        "no-console": [
+            true,
+            "log",
+            "error"
+        ],
+        "no-debugger": true,
+        "no-duplicate-key": true,
+        "no-duplicate-variable": true,
+        "no-empty": true,
+        "no-eval": true,
+        "no-invalid-this": true,
+        "no-unreachable": true,
+        "radix": true,
+        "no-var-keyword": true,
+        "no-unused-variable": [
+            true,
+            {
+                "ignore-pattern": "^_"
+            }
+        ],
+        "no-unused-expression": true,
+        "eofline": true,
+        "indent": [
+            true,
+            "spaces"
+        ],
+        "linebreak-style": [
+            true,
+            "LF"
+        ],
+        "trailing-comma": [
+            true,
+            {
+                "multiline": "never",
+                "singleline": "never"
+            }
+        ],
+        "quotemark": [
+            true,
+            "single",
+            "avoid-escape"
+        ],
+        "semicolon": [
+            true,
+            "never"
+        ],
+        "no-reference": true,
+        "no-var-requires": true
+    }
+}

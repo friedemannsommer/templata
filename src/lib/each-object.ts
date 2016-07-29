@@ -12,7 +12,7 @@ function preCompileIterator(properties: Array<string>): (object: Object, callbac
     }
 
     fnString += '\n});'
-
+    // tslint:disable-next-line no-eval
     return eval(fnString)
 }
 
