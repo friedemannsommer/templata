@@ -40,10 +40,15 @@ function iterate(operator: string, parameter: string, selfClosing: boolean, clos
     return parameter
 }
 
-iterate['bootUp'] = (name: string, compiler: Templata.Interface.Compiler) => {
+function initialize(compiler: Templata.Interface.Compiler) {
     compiler.on('COMPILE_START', () => {
         iteratorIndexer = iterator(0)
     })
 }
 
 export default iterate
+
+export {
+    iterate,
+    initialize
+}

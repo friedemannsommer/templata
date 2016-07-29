@@ -54,65 +54,82 @@ export default class Compiler implements Templata.Interface.Compiler {
         this._helper = helper
         this._filter = filter
         this._listener = {}
-        
+
         this._setupRegularExpressions()
         this._setupBuffer()
-        this._bootUp()
     }
 
-    public registerImport(name: string, imports: any): void {
+    public registerImport(name: string, imports: any): Compiler {
         if (this._importNames.indexOf(name) < 0) {
             this._importNames.push(name)
             this._importValues.push(imports)
         }
+
+        return this
     }
 
-    public removeImport(name: string): void {
+    public removeImport(name: string): Compiler {
         let index: number = this._importNames.indexOf(name)
 
         if (index > -1) {
             this._importNames.splice(index, 1)
             this._importValues.splice(index, 1)
         }
+
+        return this
     }
 
-    public registerHelper(operator: string, callback: Templata.Interface.Helper): void {
+    public registerHelper(operator: string, callback: Templata.Interface.Helper): Compiler {
         if (operator.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING) {
             throw Error(`Helper cannot start with "${Compiler.settings.DELIMITER.CLOSING}"!`)
         }
 
         this._helper[operator] = callback
+
+        return this
     }
 
-    public removeHelper(operator: string): void {
+    public removeHelper(operator: string): Compiler {
         delete this._helper[operator]
+
+        return this
     }
 
-    public registerFilter(name: string, callback: Templata.Interface.Filter): void {
+    public registerFilter(name: string, callback: Templata.Interface.Filter): Compiler {
         this._filter[name] = callback
+
+        return this
     }
 
-    public removeFilter(name: string): void {
+    public removeFilter(name: string): Compiler {
         delete this._filter[name]
+
+        return this
     }
 
-    public registerProvider(name: string, callback: Templata.Interface.Provider): void {
+    public registerProvider(name: string, callback: Templata.Interface.Provider): Compiler {
         this._provider[name] = callback
+
+        return this
     }
 
-    public removeProvider(name: string): void {
+    public removeProvider(name: string): Compiler {
         delete this._provider[name]
+
+        return this
     }
 
-    public on(name: string, callback: Templata.Interface.Listener): void {
+    public on(name: string, callback: Templata.Interface.Listener): Compiler {
         if (this._listener.hasOwnProperty(name)) {
             this._listener[name].push(callback)
         } else {
             this._listener[name] = [callback]
         }
+
+        return this
     }
 
-    public off(name: string, callback: Templata.Interface.Listener): void {
+    public off(name: string, callback: Templata.Interface.Listener): Compiler {
         if (!this._listener.hasOwnProperty(name)) {
             return void 0
         }
@@ -126,6 +143,8 @@ export default class Compiler implements Templata.Interface.Compiler {
                 length = this._listener[name].length
             }
         }
+
+        return this
     }
 
     public dispatch(name: string, data?: any): void {
@@ -148,6 +167,12 @@ export default class Compiler implements Templata.Interface.Compiler {
             // bubble the error to caller
             throw e
         }
+    }
+
+    public initialize(helper: Templata.Interface.InitializeFunction): Compiler {
+        helper(this)
+
+        return this
     }
 
     public compile(template: string): Templata.Interface.CompileFunction {
@@ -379,18 +404,6 @@ export default class Compiler implements Templata.Interface.Compiler {
             )
         } catch (e) {
             return input
-        }
-    }
-
-    private _bootUp(): void {
-        let keys: string[] = objectKeys(this._helper)
-        let index: number = -1
-        let length: number = keys.length
-
-        while (++index < length) {
-            if (typeof this._helper[keys[index]]['bootUp'] === 'function') {
-                this._helper[keys[index]]['bootUp'](keys[index], this)
-            }
         }
     }
 

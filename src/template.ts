@@ -3,10 +3,10 @@ import './typings/index.d.ts'
 import TemplateCompiler from './lib/compiler'
 
 // helper
+import {iterate as helperIterate, initialize as initializeIterate} from './helper/iterate'
 import helperJavascript from './helper/pure-javascript'
 import helperHTMLEscape from './helper/encode-value'
 import helperCondition from './helper/condition'
-import helperIterate from './helper/iterate'
 import helperComment from './helper/comment'
 import helperPrint from './helper/print'
 
@@ -32,7 +32,7 @@ const defaultFilter: Object = {
 }
 
 function template(template: string, imports: Object = {}): Templata.Interface.CompileFunction {
-    return new TemplateCompiler(imports, defaultHelper, defaultFilter).compile(template)
+    return new TemplateCompiler(imports, defaultHelper, defaultFilter).initialize(initializeIterate).compile(template)
 }
 
 export default template
