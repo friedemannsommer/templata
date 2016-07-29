@@ -5,7 +5,11 @@ module.exports = {
     target: 'web',
     devtool: 'source-map',
     entry: {
-        templata: path.join(__dirname, 'src', 'template.ts')
+        templata: [
+            'webpack-dev-server/client?http://localhost:8080',
+            'webpack/hot/only-dev-server',
+            path.join(__dirname, 'src', 'template.ts')
+        ]
     },
     output: {
         path: path.join(__dirname, 'dist', 'browser'),
@@ -15,6 +19,11 @@ module.exports = {
         publicPath: '/dist/browser/',
         libraryTarget: 'umd',
         library: 'Templata'
+    },
+    devServer: {
+        contentBase: path.join(__dirname),
+        historyApiFallback: true,
+        hot: true
     },
     resolve: {
         root: path.join(__dirname, 'client', 'src'),
@@ -38,6 +47,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new webpack.HotModuleReplacementPlugin(),
         new webpack.optimize.DedupePlugin()
     ]
 }
