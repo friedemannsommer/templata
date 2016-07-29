@@ -5,6 +5,7 @@ module.exports = {
     target: 'web',
     devtool: 'source-map',
     entry: {
+        'templata-compiler': path.join(__dirname, 'src', 'lib', 'compiler.ts'),
         templata: path.join(__dirname, 'src', 'template.ts')
     },
     output: {
