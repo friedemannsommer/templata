@@ -1,4 +1,4 @@
-import '../typings/index.d.ts'
+/// <reference path="../typings/index.d.ts" />
 
 import parseParameter from '../lib/parse-parameter'
 import stringTrim from '../lib/string-trim'

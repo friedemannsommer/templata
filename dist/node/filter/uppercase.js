@@ -3,9 +3,9 @@ var remove_previous_buffer_1 = require('../lib/remove-previous-buffer');
 function uppercase(input) {
     return input.toLocaleUpperCase();
 }
-function default_1(name, input, buffer, compiler) {
+function filterUppercase(name, input, buffer, compiler) {
     compiler.registerImport('__f_uc', uppercase);
     return buffer.APPEND + '__f_uc(' + remove_previous_buffer_1.default(input, buffer) + ')' + buffer.POST_APPEND;
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = default_1;
+exports.default = filterUppercase;

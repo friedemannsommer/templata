@@ -1,4 +1,4 @@
-import './typings/index.d.ts'
+/// <reference path="./typings/index.d.ts" />
 
 import TemplateCompiler from './lib/compiler'
 

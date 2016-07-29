@@ -51,7 +51,7 @@
             true,
             "never"
         ],
-        "no-reference": true,
+        "no-reference": false,
         "no-var-requires": true
     }
 }

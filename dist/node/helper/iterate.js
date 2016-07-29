@@ -31,10 +31,12 @@ function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler)
     }
     return parameter;
 }
-iterate['bootUp'] = function (name, compiler) {
+exports.iterate = iterate;
+function initialize(compiler) {
     compiler.on('COMPILE_START', function () {
         iteratorIndexer = iterator_1.default(0);
     });
-};
+}
+exports.initialize = initialize;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = iterate;

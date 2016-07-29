@@ -21,9 +21,9 @@ function currency(input) {
         }
     });
 }
-function default_1(name, input, buffer, compiler) {
+function filterCurrency(name, input, buffer, compiler) {
     compiler.registerImport('__f_currency', currency);
     return buffer.APPEND + '__f_currency(' + string_trim_1.default(remove_previous_buffer_1.default(input, buffer)) + ')' + buffer.POST_APPEND;
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = default_1;
+exports.default = filterCurrency;

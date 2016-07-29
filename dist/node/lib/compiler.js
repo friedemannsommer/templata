@@ -36,13 +36,13 @@ var Compiler = (function () {
         this._listener = {};
         this._setupRegularExpressions();
         this._setupBuffer();
-        this._bootUp();
     }
     Compiler.prototype.registerImport = function (name, imports) {
         if (this._importNames.indexOf(name) < 0) {
             this._importNames.push(name);
             this._importValues.push(imports);
         }
+        return this;
     };
     Compiler.prototype.removeImport = function (name) {
         var index = this._importNames.indexOf(name);
@@ -50,27 +50,34 @@ var Compiler = (function () {
             this._importNames.splice(index, 1);
             this._importValues.splice(index, 1);
         }
+        return this;
     };
     Compiler.prototype.registerHelper = function (operator, callback) {
         if (operator.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING) {
             throw Error("Helper cannot start with \"" + Compiler.settings.DELIMITER.CLOSING + "\"!");
         }
         this._helper[operator] = callback;
+        return this;
     };
     Compiler.prototype.removeHelper = function (operator) {
         delete this._helper[operator];
+        return this;
     };
     Compiler.prototype.registerFilter = function (name, callback) {
         this._filter[name] = callback;
+        return this;
     };
     Compiler.prototype.removeFilter = function (name) {
         delete this._filter[name];
+        return this;
     };
     Compiler.prototype.registerProvider = function (name, callback) {
         this._provider[name] = callback;
+        return this;
     };
     Compiler.prototype.removeProvider = function (name) {
         delete this._provider[name];
+        return this;
     };
     Compiler.prototype.on = function (name, callback) {
         if (this._listener.hasOwnProperty(name)) {
@@ -79,6 +86,7 @@ var Compiler = (function () {
         else {
             this._listener[name] = [callback];
         }
+        return this;
     };
     Compiler.prototype.off = function (name, callback) {
         if (!this._listener.hasOwnProperty(name)) {
@@ -92,6 +100,7 @@ var Compiler = (function () {
                 length = this._listener[name].length;
             }
         }
+        return this;
     };
     Compiler.prototype.dispatch = function (name, data) {
         if (!this._listener.hasOwnProperty(name)) {
@@ -114,6 +123,10 @@ var Compiler = (function () {
         catch (e) {
             throw e;
         }
+    };
+    Compiler.prototype.initialize = function (helper) {
+        helper(this);
+        return this;
     };
     Compiler.prototype.compile = function (template) {
         this.dispatch('COMPILE_START');
@@ -279,16 +292,6 @@ var Compiler = (function () {
         }
         catch (e) {
             return input;
-        }
-    };
-    Compiler.prototype._bootUp = function () {
-        var keys = object_keys_1.default(this._helper);
-        var index = -1;
-        var length = keys.length;
-        while (++index < length) {
-            if (typeof this._helper[keys[index]]['bootUp'] === 'function') {
-                this._helper[keys[index]]['bootUp'](keys[index], this);
-            }
         }
     };
     Compiler.prototype._setupImports = function (imports) {

@@ -1,6 +1,6 @@
-import '../typings/index.d.ts'
+/// <reference path="../typings/index.d.ts" />
 
-import removePreviousBuffer from '../lib/remove-previous-buffer';
+import removePreviousBuffer from '../lib/remove-previous-buffer'
 
 function lowercase(input: string): string {
     return input.toLocaleLowerCase()

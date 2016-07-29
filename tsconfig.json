@@ -6,7 +6,7 @@
         "rootDir": "./src",
         "locale": "en-us",
         "outDir": "./dist/browser",
-        "module": "amd",
+        "module": "commonjs",
         "reactNamespace": "React",
         "moduleResolution": "classic",
         "noEmit": false,

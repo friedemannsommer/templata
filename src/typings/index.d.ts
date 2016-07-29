@@ -1,1 +1,1 @@
-/// <reference path="Templata.d.ts" />
+/// <reference path="./Templata.d.ts" />
