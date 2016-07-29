@@ -1,13 +1,19 @@
 declare module Templata {
     export module Interface {
         export class Compiler {
-            constructor(imports: Object, helper: Object, filter: Object)
+            constructor(imports?: Object, helper?: Object, filter?: Object, provider?: Object)
             registerImport(name: string, imports: any): void
             removeImport(name: string): void
             registerHelper(operator: string, callback: Helper): void
             removeHelper(operator: string): void
             registerFilter(name: string, callback: Filter): void
             removeFilter(name: string): void
+            registerProvider(name: string, callback: Provider): void
+            removeProvider(name: string): void
+            callProvider(name: string, ...args: any[]): any
+            on(name: string, callback: Listener): void
+            off(name: string, callback: Listener): void
+            dispatch(name: string, data: any): void
             compile(template: string): (data: Object) => string
         }
 
@@ -17,6 +23,14 @@ declare module Templata {
 
         export interface Helper extends Function {
             (operator: string, parameter: string, selfClosing: boolean, closingTag: boolean, buffer: Templata.Object.Buffer, compiler: Compiler): string
+        }
+
+        export interface Provider extends Function {
+            (name: string, ...args: any[]): void
+        }
+
+        export interface Listener extends Function {
+            (name: string, compiler: Compiler, data?: any): void
         }
 
         export interface CompileFunction extends Function {

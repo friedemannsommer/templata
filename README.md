@@ -132,3 +132,22 @@ function lowercaseFilter(
     return buffer.APPEND + '__f_lc(' + removePreviousBuffer(input, buffer) + ')' + buffer.POST_APPEND
 }
 ```
+## Compiler API
+```typescript
+class Compiler {
+    constructor(imports?: Object, helper?: Object, filter?: Object, provider?: Object)
+    registerImport(name: string, imports: any): void
+    removeImport(name: string): void
+    registerHelper(operator: string, callback: Templata.Interface.Helper): void
+    removeHelper(operator: string): void
+    registerFilter(name: string, callback: Templata.Interface.Filter): void
+    removeFilter(name: string): void
+    registerProvider(name: string, callback: Templata.Interface.Provider): void
+    removeProvider(name: string): void
+    callProvider(name: string, ...args: any[]): any
+    on(name: string, callback: Templata.Interface.Listener): void
+    off(name: string, callback: Templata.Interface.Listener): void
+    dispatch(name: string, data: any): void
+    compile(template: string): (data: Object) => string
+}
+```

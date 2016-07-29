@@ -6,8 +6,8 @@ var each_array_1 = require('../lib/each-array');
 var is_object_1 = require('../lib/is-object');
 var is_array_1 = require('../lib/is-array');
 var iterator_1 = require('../lib/iterator');
-var iteratorIndexer = iterator_1.default(0);
-function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+var iteratorIndexer;
+function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler) {
     compiler.registerImport('__isArray', is_array_1.default);
     compiler.registerImport('__isObject', is_object_1.default);
     compiler.registerImport('__eachArray', each_array_1.default);
@@ -31,5 +31,10 @@ function default_1(operator, parameter, selfClosing, closingTag, buffer, compile
     }
     return parameter;
 }
+iterate['bootUp'] = function (name, compiler) {
+    compiler.on('COMPILE_START', function () {
+        iteratorIndexer = iterator_1.default(0);
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = default_1;
+exports.default = iterate;

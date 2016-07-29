@@ -40,34 +40,39 @@ export default class Compiler implements Templata.Interface.Compiler {
         END: '\';\n'
     }
 
-    private importNames: string[]
-    private importValues: any[]
-    private blockRegex: RegExp
-    private helper: Object
-    private filter: Object
+    private _importNames: string[]
+    private _importValues: any[]
+    private _blockRegex: RegExp
+    private _listener: Object
+    private _provider: Object
+    private _helper: Object
+    private _filter: Object
 
-    constructor(imports: Object = {}, helper: Object = {}, filter: Object = {}) {
-        this.setupImports(imports)
-        this.helper = helper
-        this.filter = filter
-
-        this.setupRegularExpressions()
-        this.setupBuffer()
+    constructor(imports: Object = {}, helper: Object = {}, filter: Object = {}, provider: Object = {}) {
+        this._setupImports(imports)
+        this._provider = provider
+        this._helper = helper
+        this._filter = filter
+        this._listener = {}
+        
+        this._setupRegularExpressions()
+        this._setupBuffer()
+        this._bootUp()
     }
 
     public registerImport(name: string, imports: any): void {
-        if (this.importNames.indexOf(name) < 0) {
-            this.importNames.push(name)
-            this.importValues.push(imports)
+        if (this._importNames.indexOf(name) < 0) {
+            this._importNames.push(name)
+            this._importValues.push(imports)
         }
     }
 
     public removeImport(name: string): void {
-        let index: number = this.importNames.indexOf(name)
+        let index: number = this._importNames.indexOf(name)
 
         if (index > -1) {
-            this.importNames.splice(index, 1)
-            this.importValues.splice(index, 1)
+            this._importNames.splice(index, 1)
+            this._importValues.splice(index, 1)
         }
     }
 
@@ -76,57 +81,115 @@ export default class Compiler implements Templata.Interface.Compiler {
             throw Error(`Helper cannot start with "${Compiler.settings.DELIMITER.CLOSING}"!`)
         }
 
-        this.helper[operator] = callback
+        this._helper[operator] = callback
     }
 
     public removeHelper(operator: string): void {
-        delete this.helper[operator]
+        delete this._helper[operator]
     }
 
     public registerFilter(name: string, callback: Templata.Interface.Filter): void {
-        this.filter[name] = callback
+        this._filter[name] = callback
     }
 
     public removeFilter(name: string): void {
-        delete this.filter[name]
+        delete this._filter[name]
+    }
+
+    public registerProvider(name: string, callback: Templata.Interface.Provider): void {
+        this._provider[name] = callback
+    }
+
+    public removeProvider(name: string): void {
+        delete this._provider[name]
+    }
+
+    public on(name: string, callback: Templata.Interface.Listener): void {
+        if (this._listener.hasOwnProperty(name)) {
+            this._listener[name].push(callback)
+        } else {
+            this._listener[name] = [callback]
+        }
+    }
+
+    public off(name: string, callback: Templata.Interface.Listener): void {
+        if (!this._listener.hasOwnProperty(name)) {
+            return void 0
+        }
+
+        let index: number = -1
+        let length: number = (<Function[]>this._listener[name]).length
+
+        while (++index < length) {
+            if (this._listener[name][index] === callback) {
+                (<Function[]>this._listener[name]).splice(index, 1)
+                length = this._listener[name].length
+            }
+        }
+    }
+
+    public dispatch(name: string, data?: any): void {
+        if (!this._listener.hasOwnProperty(name)) {
+            return void 0
+        }
+
+        let index: number = -1
+        let length: number = (<Function[]>this._listener[name]).length
+
+        while (++index < length) {
+            (<Templata.Interface.Listener>this._listener[name][index])(name, this, data)
+        }
+    }
+
+    public callProvider(name: string, ...args: any[]): any {
+        try {
+            return this._provider[name].apply(undefined, [name, ...args])
+        } catch (e) {
+            // bubble the error to caller
+            throw e
+        }
     }
 
     public compile(template: string): Templata.Interface.CompileFunction {
+        this.dispatch('COMPILE_START')
+
         template = escape(template)
 
-        return this.createTemplateFunction(
-            this.optimizeTemplate(
-                this.concatTemplateParts(
-                    this.matchBlocks(template),
+        return this._createTemplateFunction(
+            this._optimizeTemplate(
+                this._concatTemplateParts(
+                    this._matchBlocks(template),
                     template
                 )
             )
         )
     }
 
-    private createTemplateFunction(source: string): Templata.Interface.CompileFunction {
+    private _createTemplateFunction(source: string): Templata.Interface.CompileFunction {
+        this.dispatch('COMPILE_END')
+
         try {
             return new Function(
-                this.importNames.join(','),
+                this._importNames.join(','),
                 'return ' + source
-            ).apply(undefined, this.importValues)
+            ).apply(undefined, this._importValues)
         } catch (e) {
-            // let the error bubble to caller
+            // bubble the error to caller
             throw e
         }
     }
 
-    private matchBlocks(input: string): Object[] {
+    private _matchBlocks(input: string): Object[] {
         let match: RegExpExecArray
         let matches: Object[] = []
 
-        this.blockRegex.lastIndex = 0
+        this._blockRegex.lastIndex = 0
 
-        while ((match = this.blockRegex.exec(input)) !== null) {
+        while ((match = this._blockRegex.exec(input)) !== null) {
             matches.push(
                 {
                     start: match.index,
-                    content: this.parseBlock(match),
+                    content: this._parseBlock(match),
                     end: match.index + match[Match.FULL_MATCH].length
                 }
             )
@@ -135,53 +198,53 @@ export default class Compiler implements Templata.Interface.Compiler {
         return matches
     }
 
-    private parseBlock(match: RegExpExecArray): string {
+    private _parseBlock(match: RegExpExecArray): string {
         let input: string = unescape(match[Match.FULL_MATCH].slice(
             Compiler.settings.DELIMITER.OPENING_BLOCK.length,
             match[Match.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length
         ))
 
-        let properties: Templata.Object.BlockProperties = this.getBlockProperties(input)
+        let properties: Templata.Object.BlockProperties = this._getBlockProperties(input)
 
-        if (this.helper[properties.OPERATOR]) {
+        if (this._helper[properties.OPERATOR]) {
             if (properties.FILTER.length > 0) {
-                return this.callFilterList(properties.FILTER, this.callHelper(properties))
+                return this._callFilterList(properties.FILTER, this._callHelper(properties))
             } else {
-                return this.callHelper(properties)
+                return this._callHelper(properties)
             }
         }
 
         return input
     }
 
-    private getBlockProperties(blockString: string): Templata.Object.BlockProperties {
-        let operator: string = this.getBlockOperator(blockString)
+    private _getBlockProperties(blockString: string): Templata.Object.BlockProperties {
+        let operator: string = this._getBlockOperator(blockString)
         let closing: boolean = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING
         let selfClosing: boolean = (!closing)
             ? (blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length))
             === Compiler.settings.DELIMITER.SPACE + operator
             : false
-        let parameter: string = this.getBlockParameter(blockString, operator, selfClosing)
-        let filter: string[] = this.getBlockFilter(parameter)
+        let parameter: string = this._getBlockParameter(blockString, operator, selfClosing)
+        let filter: string[] = this._getBlockFilter(parameter)
 
         return {
             OPERATOR: operator,
             FILTER: filter,
-            PARAMETER: this.removeBlockFilter(parameter),
+            PARAMETER: this._removeBlockFilter(parameter),
             CLOSING: closing,
             SELF_CLOSING: selfClosing
         }
     }
 
-    private getBlockOperator(blockString: string): string {
+    private _getBlockOperator(blockString: string): string {
         let index: number = blockString.indexOf(Compiler.settings.DELIMITER.SPACE, 0)
         let closing: boolean = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING
         return blockString.slice((closing) ? 1 : 0, (index > 0) ? index : blockString.length)
     }
 
-    private getBlockParameter(blockString: string, operator: string, selfClosing: boolean): string {
+    private _getBlockParameter(blockString: string, operator: string, selfClosing: boolean): string {
         let start: number = operator.length + Compiler.settings.DELIMITER.SPACE.length
         let end: number = (selfClosing)
             ? blockString.length - (operator.length + Compiler.settings.DELIMITER.SPACE.length)
@@ -190,7 +253,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return blockString.slice(start, end)
     }
 
-    private getBlockFilter(parameter: string): string[] {
+    private _getBlockFilter(parameter: string): string[] {
         let filter: string[] = []
         let filterSeperator: string = Compiler.settings.DELIMITER.SPACE
             + Compiler.settings.DELIMITER.FILTER_SEPERATOR
@@ -214,7 +277,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return filter
     }
 
-    private concatTemplateParts(matches: Object[], template: string): string {
+    private _concatTemplateParts(matches: Object[], template: string): string {
         let previous: Object
         let index: number = -1
         let parts: string[] = []
@@ -240,7 +303,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return template
     }
 
-    private addFnBody(template: string): string {
+    private _addFnBody(template: string): string {
         return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){\n'
             + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});\n'
             + 'var ' + Compiler.settings.VARIABLE_PRINT + ' = \'\';\n'
@@ -248,7 +311,7 @@ export default class Compiler implements Templata.Interface.Compiler {
             + 'return ' + Compiler.settings.VARIABLE_PRINT + ';\n}'
     }
 
-    private removeBlockFilter(parameter: string): string {
+    private _removeBlockFilter(parameter: string): string {
         let filterSeperator: string = Compiler.settings.DELIMITER.SPACE
             + Compiler.settings.DELIMITER.FILTER_SEPERATOR
             + Compiler.settings.DELIMITER.SPACE
@@ -261,9 +324,9 @@ export default class Compiler implements Templata.Interface.Compiler {
         return parameter
     }
 
-    private optimizeTemplate(template: string): string {
-        return this.optimizeFnSource(
-            this.addFnBody(
+    private _optimizeTemplate(template: string): string {
+        return this._optimizeFnSource(
+            this._addFnBody(
                 template
                     .replace(this.replaceExpressions.EMPTY_COMMENT_TAG, '')
                     .replace(this.replaceExpressions.BEFORE_HTML_TAG, '<')
@@ -273,27 +336,27 @@ export default class Compiler implements Templata.Interface.Compiler {
         )
     }
 
-    private optimizeFnSource(template: string): string {
+    private _optimizeFnSource(template: string): string {
         return template
             .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$1+=')
             .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
             .replace(this.replaceExpressions.EMPTY_LINES, '')
     }
 
-    private callFilterList(filterList: string[], input: string): string {
+    private _callFilterList(filterList: string[], input: string): string {
         let filterLength: number = filterList.length
         let index: number = -1
 
         while (++index < filterLength) {
-            input = this.callFilter(filterList[index], input)
+            input = this._callFilter(filterList[index], input)
         }
 
         return input
     }
 
-    private callHelper(properties: Templata.Object.BlockProperties): string {
+    private _callHelper(properties: Templata.Object.BlockProperties): string {
         try {
-            return this.helper[properties.OPERATOR](
+            return this._helper[properties.OPERATOR](
                 properties.OPERATOR,
                 properties.PARAMETER,
                 properties.SELF_CLOSING,
@@ -306,9 +369,9 @@ export default class Compiler implements Templata.Interface.Compiler {
         }
     }
 
-    private callFilter(name: string, input: string): string {
+    private _callFilter(name: string, input: string): string {
         try {
-            return this.filter[name](
+            return this._filter[name](
                 name,
                 input,
                 this.buffer,
@@ -319,22 +382,34 @@ export default class Compiler implements Templata.Interface.Compiler {
         }
     }
 
-    private setupImports(imports: Object): void {
-        let length: number = 0
+    private _bootUp(): void {
+        let keys: string[] = objectKeys(this._helper)
         let index: number = -1
-
-        this.importNames = objectKeys(imports)
-        this.importValues = Array(this.importNames.length)
-
-        length = this.importNames.length
+        let length: number = keys.length
 
         while (++index < length) {
-            this.importValues[index] = imports[this.importNames[index]]
+            if (typeof this._helper[keys[index]]['bootUp'] === 'function') {
+                this._helper[keys[index]]['bootUp'](keys[index], this)
+            }
         }
     }
 
-    private setupRegularExpressions(): void {
-        this.blockRegex = new RegExp(
+    private _setupImports(imports: Object): void {
+        let length: number = 0
+        let index: number = -1
+
+        this._importNames = objectKeys(imports)
+        this._importValues = Array(this._importNames.length)
+
+        length = this._importNames.length
+
+        while (++index < length) {
+            this._importValues[index] = imports[this._importNames[index]]
+        }
+    }
+
+    private _setupRegularExpressions(): void {
+        this._blockRegex = new RegExp(
             regexEscape(Compiler.settings.DELIMITER.OPENING_BLOCK)
             + '.+?'
             + regexEscape(Compiler.settings.DELIMITER.CLOSING_BLOCK),
@@ -354,7 +429,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         )
     }
 
-    private setupBuffer(): void {
+    private _setupBuffer(): void {
         this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\''
     }
 }
