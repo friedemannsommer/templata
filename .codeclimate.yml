@@ -18,10 +18,10 @@ engines:
         - javascript
 ratings:
   paths:
-    - dist/**
     - src/**
 exclude_paths:
+  - dist/**
   - spec/**/*
   - web-src/**/*
-  - node_modules/**/*
   - coverage/**/*
+  - node_modules/**/*
