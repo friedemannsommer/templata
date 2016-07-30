@@ -22,8 +22,8 @@
     "build-browser-compiler": "node_modules/.bin/webpack --config ./webpack.templata-compiler.config.js",
     "test": "node_modules/.bin/mocha spec/index.js",
     "lint": "node_modules/.bin/tslint --config ./tslint.json './src/**/*.ts'",
-    "prepublish": "npm run build",
-    "preversion": "npm run build"
+    "prepublish": "npm run build && npm run test",
+    "preversion": "npm run build && npm run test"
   },
   "license": "MIT",
   "homepage": "https://friedemannsommer.github.io/templata/",
