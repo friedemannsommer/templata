@@ -9,6 +9,13 @@ engines:
     enabled: false
   fixme:
     enabled: true
+    config:
+      strings:
+        - CUSTOM
+        - FIXME
+        - HACK
+        - TODO
+        - BUG
   tslint:
     enabled: true
   duplication:
@@ -20,6 +27,7 @@ ratings:
   paths:
     - src/**
 exclude_paths:
+  - "./*.js"
   - dist/**
   - spec/**/*
   - web-src/**/*
