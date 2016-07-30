@@ -14,7 +14,7 @@
   "description": "Customizable Template Compiler written in TypeScript",
   "main": "index.js",
   "scripts": {
-    "start": "node_modules/.bin/webpack-dev-server --progress --colors --hot --config ./webpack.config-development.js",
+    "start": "node_modules/.bin/webpack-dev-server --progress --colors --hot --config ./webpack.development.config.js",
     "build": "npm run build-node && npm run build-browser",
     "build-node": "node_modules/.bin/tsc --p ./tsconfig-node.json && npm run lint",
     "build-browser": "npm run build-browser-templata && npm run build-browser-compiler",
