@@ -15,10 +15,12 @@
   "main": "index.js",
   "scripts": {
     "start": "node_modules/.bin/webpack-dev-server --progress --colors --hot --config ./webpack.config-development.js",
-    "build-node": "node_modules/.bin/tsc --p ./tsconfig-node.json && npm run lint",
-    "build-browser": "node_modules/.bin/webpack --config ./webpack.config.js",
-    "lint": "node_modules/.bin/tslint --config ./tslint.json './src/**/*.ts'",
     "build": "npm run build-node && npm run build-browser",
+    "build-node": "node_modules/.bin/tsc --p ./tsconfig-node.json && npm run lint",
+    "build-browser": "npm run build-browser-templata && npm run build-browser-compiler",
+    "build-browser-templata": "node_modules/.bin/webpack --config ./webpack.templata.config.js",
+    "build-browser-compiler": "node_modules/.bin/webpack --config ./webpack.templata-compiler.config.js",
+    "lint": "node_modules/.bin/tslint --config ./tslint.json './src/**/*.ts'",
     "prepublish": "npm run build",
     "preversion": "npm run build"
   },
