@@ -1,0 +1,27 @@
+engines:
+  rubocop:
+    enabled: false
+  brakeman:
+    enabled: false
+  eslint:
+    enabled: false
+  csslint:
+    enabled: false
+  fixme:
+    enabled: true
+  tslint:
+    enabled: true
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - javascript
+ratings:
+  paths:
+    - dist/**
+    - src/**
+exclude_paths:
+  - spec/**/*
+  - web-src/**/*
+  - node_modules/**/*
+  - coverage/**/*

@@ -1,4 +1,8 @@
 # Templata (Template Compiler)
+[![Build Status](https://api.travis-ci.org/friedemannsommer/templata.svg)](https://travis-ci.org/friedemannsommer/templata)
+[![Code Climate](https://codeclimate.com/github/friedemannsommer/templata/badges/gpa.svg)](https://codeclimate.com/github/friedemannsommer/templata)
+[![Test Coverage](https://codeclimate.com/github/friedemannsommer/templata/badges/coverage.svg)](https://codeclimate.com/github/friedemannsommer/templata/coverage)
+[![Issue Count](https://codeclimate.com/github/friedemannsommer/templata/badges/issue_count.svg)](https://codeclimate.com/github/friedemannsommer/templata)
 ## Example
 ```typescript
 /**
