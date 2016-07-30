@@ -28,6 +28,9 @@ ratings:
     - src/**
 exclude_paths:
   - "./*.js"
+  - "./*.md"
+  - "./*.yml"
+  - "./*.json"
   - dist/**
   - spec/**/*
   - web-src/**/*

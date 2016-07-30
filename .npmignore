@@ -3,8 +3,17 @@
 .gitattributes
 .gitignore
 # Project
+.git
+.gitignore
+.travis.yml
+.codeclimate.yml
 web-src/
+coverage/
 index.html
+tslint.json
+jsconfig.json
 tsconfig.json
-node-tsconfig.json
-webpack.config.js
+tsconfig-node.json
+webpack.templata.config.js
+webpack.development.config.js
+webpack.templata-compiler.config.js
