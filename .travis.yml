@@ -3,6 +3,7 @@ node_js:
   - "6"
 install:
   - npm install
+  - npm install -g codeclimate-test-reporter
 before_script:
   - npm run build
 script:
