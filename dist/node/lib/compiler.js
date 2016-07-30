@@ -38,11 +38,14 @@ var Compiler = (function () {
         this._setupBuffer();
     }
     Compiler.prototype.registerImport = function (name, imports) {
-        if (this._importNames.indexOf(name) < 0) {
+        if (!this.hasImport(name)) {
             this._importNames.push(name);
             this._importValues.push(imports);
         }
         return this;
+    };
+    Compiler.prototype.hasImport = function (name) {
+        return this._importNames.indexOf(name) >= 0;
     };
     Compiler.prototype.removeImport = function (name) {
         var index = this._importNames.indexOf(name);
@@ -59,6 +62,9 @@ var Compiler = (function () {
         this._helper[operator] = callback;
         return this;
     };
+    Compiler.prototype.hasHelper = function (operator) {
+        return typeof this._helper[operator] === 'function';
+    };
     Compiler.prototype.removeHelper = function (operator) {
         delete this._helper[operator];
         return this;
@@ -67,6 +73,9 @@ var Compiler = (function () {
         this._filter[name] = callback;
         return this;
     };
+    Compiler.prototype.hasFilter = function (name) {
+        return typeof this._filter[name] === 'function';
+    };
     Compiler.prototype.removeFilter = function (name) {
         delete this._filter[name];
         return this;
@@ -74,6 +83,9 @@ var Compiler = (function () {
     Compiler.prototype.registerProvider = function (name, callback) {
         this._provider[name] = callback;
         return this;
+    };
+    Compiler.prototype.hasProvider = function (name) {
+        return typeof this._provider[name] === 'function';
     };
     Compiler.prototype.removeProvider = function (name) {
         delete this._provider[name];
@@ -90,7 +102,7 @@ var Compiler = (function () {
     };
     Compiler.prototype.off = function (name, callback) {
         if (!this._listener.hasOwnProperty(name)) {
-            return void 0;
+            return this;
         }
         var index = -1;
         var length = this._listener[name].length;
@@ -102,14 +114,18 @@ var Compiler = (function () {
         }
         return this;
     };
-    Compiler.prototype.dispatch = function (name, data) {
+    Compiler.prototype.dispatch = function (name) {
+        var data = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            data[_i - 1] = arguments[_i];
+        }
         if (!this._listener.hasOwnProperty(name)) {
             return void 0;
         }
         var index = -1;
         var length = this._listener[name].length;
         while (++index < length) {
-            this._listener[name][index](name, this, data);
+            this._listener[name][index].apply(undefined, [name, this].concat(data));
         }
     };
     Compiler.prototype.callProvider = function (name) {
@@ -129,6 +145,9 @@ var Compiler = (function () {
         return this;
     };
     Compiler.prototype.compile = function (template) {
+        if (typeof template !== 'string') {
+            throw new Error('Expected parameter "template" tobe typeof "string" but instead got "' + typeof template + '"');
+        }
         this.dispatch('COMPILE_START');
         template = escape_1.default(template);
         return this._createTemplateFunction(this._optimizeTemplate(this._concatTemplateParts(this._matchBlocks(template), template)));

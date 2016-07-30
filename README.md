@@ -136,18 +136,23 @@ function lowercaseFilter(
 ```typescript
 class Compiler {
     constructor(imports?: Object, helper?: Object, filter?: Object, provider?: Object)
+    static settings: Templata.Object.CompilerSettings
     registerImport(name: string, imports: any): Compiler
+    hasImport(name: string): boolean
     removeImport(name: string): Compiler
     registerHelper(operator: string, callback: Helper): Compiler
+    hasHelper(operator: string): boolean
     removeHelper(operator: string): Compiler
     registerFilter(name: string, callback: Filter): Compiler
+    hasFilter(name: string): boolean
     removeFilter(name: string): Compiler
     registerProvider(name: string, callback: Provider): Compiler
+    hasProvider(name: string): boolean
     removeProvider(name: string): Compiler
     callProvider(name: string, ...args: any[]): any
     on(name: string, callback: Listener): Compiler
     off(name: string, callback: Listener): Compiler
-    dispatch(name: string, data: any): void
+    dispatch(name: string, ...data: any[]): void
     initialize(fn: InitializeFunction): Compiler
     compile(template: string): (data: Object) => string
 }

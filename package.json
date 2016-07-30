@@ -20,6 +20,7 @@
     "build-browser": "npm run build-browser-templata && npm run build-browser-compiler",
     "build-browser-templata": "node_modules/.bin/webpack --config ./webpack.templata.config.js",
     "build-browser-compiler": "node_modules/.bin/webpack --config ./webpack.templata-compiler.config.js",
+    "test": "node_modules/.bin/mocha spec/index.js",
     "lint": "node_modules/.bin/tslint --config ./tslint.json './src/**/*.ts'",
     "prepublish": "npm run build",
     "preversion": "npm run build"
@@ -48,6 +49,8 @@
     "js"
   ],
   "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3",
     "source-map-loader": "^0.1.5",
     "ts-loader": "^0.8.2",
     "tslint": "^3.14.0",

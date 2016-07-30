@@ -60,12 +60,16 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     public registerImport(name: string, imports: any): Compiler {
-        if (this._importNames.indexOf(name) < 0) {
+        if (!this.hasImport(name)) {
             this._importNames.push(name)
             this._importValues.push(imports)
         }
 
         return this
+    }
+
+    public hasImport(name: string): boolean {
+        return this._importNames.indexOf(name) >= 0
     }
 
     public removeImport(name: string): Compiler {
@@ -89,6 +93,10 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this
     }
 
+    public hasHelper(operator: string): boolean {
+        return typeof this._helper[operator] === 'function'
+    }
+
     public removeHelper(operator: string): Compiler {
         delete this._helper[operator]
 
@@ -101,6 +109,10 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this
     }
 
+    public hasFilter(name: string): boolean {
+        return typeof this._filter[name] === 'function'
+    }
+
     public removeFilter(name: string): Compiler {
         delete this._filter[name]
 
@@ -111,6 +123,10 @@ export default class Compiler implements Templata.Interface.Compiler {
         this._provider[name] = callback
 
         return this
+    }
+
+    public hasProvider(name: string): boolean {
+        return typeof this._provider[name] === 'function'
     }
 
     public removeProvider(name: string): Compiler {
@@ -131,7 +147,7 @@ export default class Compiler implements Templata.Interface.Compiler {
 
     public off(name: string, callback: Templata.Interface.Listener): Compiler {
         if (!this._listener.hasOwnProperty(name)) {
-            return void 0
+            return this
         }
 
         let index: number = -1
@@ -147,7 +163,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this
     }
 
-    public dispatch(name: string, data?: any): void {
+    public dispatch(name: string, ...data: any[]): void {
         if (!this._listener.hasOwnProperty(name)) {
             return void 0
         }
@@ -156,7 +172,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         let length: number = (<Function[]>this._listener[name]).length
 
         while (++index < length) {
-            (<Templata.Interface.Listener>this._listener[name][index])(name, this, data)
+            (<Templata.Interface.Listener>this._listener[name][index]).apply(undefined, [name, this, ...data])
         }
     }
 
@@ -176,6 +192,10 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     public compile(template: string): Templata.Interface.CompileFunction {
+        if (typeof template !== 'string') {
+            throw new Error('Expected parameter "template" tobe typeof "string" but instead got "' + typeof template + '"')
+        }
+
         this.dispatch('COMPILE_START')
 
         template = escape(template)
