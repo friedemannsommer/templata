@@ -1,6 +1,5 @@
 # Templata (Template Compiler)
 [![Build Status](https://api.travis-ci.org/friedemannsommer/templata.svg)](https://travis-ci.org/friedemannsommer/templata)
-[![Test Coverage](https://codeclimate.com/github/friedemannsommer/templata/badges/coverage.svg)](https://codeclimate.com/github/friedemannsommer/templata/coverage)
 [![Coverage Status](https://coveralls.io/repos/github/friedemannsommer/templata/badge.svg)](https://coveralls.io/github/friedemannsommer/templata)
 [![Code Climate](https://codeclimate.com/github/friedemannsommer/templata/badges/gpa.svg)](https://codeclimate.com/github/friedemannsommer/templata)
 [![Issue Count](https://codeclimate.com/github/friedemannsommer/templata/badges/issue_count.svg)](https://codeclimate.com/github/friedemannsommer/templata)
