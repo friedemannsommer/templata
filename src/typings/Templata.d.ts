@@ -87,5 +87,9 @@ declare module Templata {
             EMPTY_START_BUFFER: RegExp
             EMPTY_APPEND_BUFFER: RegExp
         }
+
+        export interface MatchExpressions extends Object {
+            BLOCK_LIST: RegExp
+        }
     }
 }

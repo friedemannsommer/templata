@@ -1,4 +1,10 @@
+# Editors
+.idea/
+.vscode/
+# Node + NPM
+*.log
 node_modules/
+# App
 src/**/*.js
 *.map
 coverage/

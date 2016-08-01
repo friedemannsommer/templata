@@ -2,12 +2,11 @@
 var regex_escape_1 = require('./regex-escape');
 var object_keys_1 = require('./object-keys');
 var string_trim_1 = require('./string-trim');
-var unescape_1 = require('./unescape');
 var escape_1 = require('./escape');
-var Match;
-(function (Match) {
-    Match[Match["FULL_MATCH"] = 0] = "FULL_MATCH";
-})(Match || (Match = {}));
+var RegEx;
+(function (RegEx) {
+    RegEx[RegEx["FULL_MATCH"] = 0] = "FULL_MATCH";
+})(RegEx || (RegEx = {}));
 var Compiler = (function () {
     function Compiler(imports, helper, filter, provider) {
         if (imports === void 0) { imports = {}; }
@@ -22,6 +21,9 @@ var Compiler = (function () {
             EMPTY_LINES: /^(?:\s*?)$/gm,
             EMPTY_START_BUFFER: null,
             EMPTY_APPEND_BUFFER: null
+        };
+        this.matchExpressions = {
+            BLOCK_LIST: null
         };
         this.buffer = {
             APPEND: '\'+(',
@@ -146,7 +148,7 @@ var Compiler = (function () {
     };
     Compiler.prototype.compile = function (template) {
         if (typeof template !== 'string') {
-            throw new Error('Expected parameter "template" tobe typeof "string" but instead got "' + typeof template + '"');
+            throw new Error("Expected parameter \"template\" tobe typeof \"string\" but instead got \"" + typeof template + "\"");
         }
         this.dispatch('COMPILE_START');
         template = escape_1.default(template);
@@ -164,18 +166,18 @@ var Compiler = (function () {
     Compiler.prototype._matchBlocks = function (input) {
         var match;
         var matches = [];
-        this._blockRegex.lastIndex = 0;
-        while ((match = this._blockRegex.exec(input)) !== null) {
+        this.matchExpressions.BLOCK_LIST.lastIndex = 0;
+        while ((match = this.matchExpressions.BLOCK_LIST.exec(input)) !== null) {
             matches.push({
                 start: match.index,
                 content: this._parseBlock(match),
-                end: match.index + match[Match.FULL_MATCH].length
+                end: match.index + match[RegEx.FULL_MATCH].length
             });
         }
         return matches;
     };
     Compiler.prototype._parseBlock = function (match) {
-        var input = unescape_1.default(match[Match.FULL_MATCH].slice(Compiler.settings.DELIMITER.OPENING_BLOCK.length, match[Match.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length));
+        var input = match[RegEx.FULL_MATCH].slice(Compiler.settings.DELIMITER.OPENING_BLOCK.length, match[RegEx.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length);
         var properties = this._getBlockProperties(input);
         if (this._helper[properties.OPERATOR]) {
             if (properties.FILTER.length > 0) {
@@ -189,12 +191,8 @@ var Compiler = (function () {
     };
     Compiler.prototype._getBlockProperties = function (blockString) {
         var operator = this._getBlockOperator(blockString);
-        var closing = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
-            === Compiler.settings.DELIMITER.CLOSING;
-        var selfClosing = (!closing)
-            ? (blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length))
-                === Compiler.settings.DELIMITER.SPACE + operator
-            : false;
+        var closing = this._isClosingBlock(blockString);
+        var selfClosing = this._isSelfClosingBlock(blockString, operator, closing);
         var parameter = this._getBlockParameter(blockString, operator, selfClosing);
         var filter = this._getBlockFilter(parameter);
         return {
@@ -210,6 +208,15 @@ var Compiler = (function () {
         var closing = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING;
         return blockString.slice((closing) ? 1 : 0, (index > 0) ? index : blockString.length);
+    };
+    Compiler.prototype._isClosingBlock = function (blockString) {
+        return blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING;
+    };
+    Compiler.prototype._isSelfClosingBlock = function (blockString, operator, closing) {
+        if (!closing) {
+            return (blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length)) === Compiler.settings.DELIMITER.SPACE + operator;
+        }
+        return false;
     };
     Compiler.prototype._getBlockParameter = function (blockString, operator, selfClosing) {
         var start = operator.length + Compiler.settings.DELIMITER.SPACE.length;
@@ -260,11 +267,11 @@ var Compiler = (function () {
         return template;
     };
     Compiler.prototype._addFnBody = function (template) {
-        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){\n'
-            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});\n'
-            + 'var ' + Compiler.settings.VARIABLE_PRINT + ' = \'\';\n'
+        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){'
+            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});'
+            + 'var ' + Compiler.settings.VARIABLE_PRINT + '=\'\';'
             + this.buffer.START + template + this.buffer.END
-            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';\n}';
+            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';}';
     };
     Compiler.prototype._removeBlockFilter = function (parameter) {
         var filterSeperator = Compiler.settings.DELIMITER.SPACE
@@ -324,13 +331,13 @@ var Compiler = (function () {
         }
     };
     Compiler.prototype._setupRegularExpressions = function () {
-        this._blockRegex = new RegExp(regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK)
-            + '.+?'
-            + regex_escape_1.default(Compiler.settings.DELIMITER.CLOSING_BLOCK), 'g');
-        this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp('(' + Compiler.settings.VARIABLE_PRINT
-            + '\\+\\=[\\\'\\"]{2}\\;)' + '|(\\+[\\\'\\"]{2})', 'g');
-        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp('(' + Compiler.settings.VARIABLE_PRINT
-            + ')\\+\\=[\\\'\\"]{2}\\+', 'g');
+        this.matchExpressions.BLOCK_LIST = new RegExp('__OPENING_BLOCK__.+?__CLOSING_BLOCK__'
+            .replace('__OPENING_BLOCK__', regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK))
+            .replace('__CLOSING_BLOCK__', regex_escape_1.default(Compiler.settings.DELIMITER.CLOSING_BLOCK)), 'g');
+        this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp('(__VARIABLE_PRINT__\\+\\=[\\\'\\"]{2}\\;)|(\\+[\\\'\\"]{2})'
+            .replace('__VARIABLE_PRINT__', regex_escape_1.default(Compiler.settings.VARIABLE_PRINT)), 'g');
+        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp('(__VARIABLE_PRINT__)\\+\\=[\\\'\\"]{2}\\+'
+            .replace('__VARIABLE_PRINT__', regex_escape_1.default(Compiler.settings.VARIABLE_PRINT)), 'g');
     };
     Compiler.prototype._setupBuffer = function () {
         this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\'';

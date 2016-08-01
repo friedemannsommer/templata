@@ -56,10 +56,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 	var compiler_1 = __webpack_require__(1);
-	var iterate_1 = __webpack_require__(7);
-	var pure_javascript_1 = __webpack_require__(16);
-	var encode_value_1 = __webpack_require__(17);
-	var condition_1 = __webpack_require__(19);
+	var iterate_1 = __webpack_require__(6);
+	var pure_javascript_1 = __webpack_require__(15);
+	var encode_value_1 = __webpack_require__(16);
+	var condition_1 = __webpack_require__(18);
 	var comment_1 = __webpack_require__(20);
 	var print_1 = __webpack_require__(21);
 	var lowercase_1 = __webpack_require__(22);
@@ -95,12 +95,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	var regex_escape_1 = __webpack_require__(2);
 	var object_keys_1 = __webpack_require__(3);
 	var string_trim_1 = __webpack_require__(4);
-	var unescape_1 = __webpack_require__(5);
-	var escape_1 = __webpack_require__(6);
-	var Match;
-	(function (Match) {
-	    Match[Match["FULL_MATCH"] = 0] = "FULL_MATCH";
-	})(Match || (Match = {}));
+	var escape_1 = __webpack_require__(5);
+	var RegEx;
+	(function (RegEx) {
+	    RegEx[RegEx["FULL_MATCH"] = 0] = "FULL_MATCH";
+	})(RegEx || (RegEx = {}));
 	var Compiler = (function () {
 	    function Compiler(imports, helper, filter, provider) {
 	        if (imports === void 0) { imports = {}; }
@@ -115,6 +114,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            EMPTY_LINES: /^(?:\s*?)$/gm,
 	            EMPTY_START_BUFFER: null,
 	            EMPTY_APPEND_BUFFER: null
+	        };
+	        this.matchExpressions = {
+	            BLOCK_LIST: null
 	        };
 	        this.buffer = {
 	            APPEND: '\'+(',
@@ -239,7 +241,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    Compiler.prototype.compile = function (template) {
 	        if (typeof template !== 'string') {
-	            throw new Error('Expected parameter "template" tobe typeof "string" but instead got "' + typeof template + '"');
+	            throw new Error("Expected parameter \"template\" tobe typeof \"string\" but instead got \"" + typeof template + "\"");
 	        }
 	        this.dispatch('COMPILE_START');
 	        template = escape_1.default(template);
@@ -257,18 +259,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Compiler.prototype._matchBlocks = function (input) {
 	        var match;
 	        var matches = [];
-	        this._blockRegex.lastIndex = 0;
-	        while ((match = this._blockRegex.exec(input)) !== null) {
+	        this.matchExpressions.BLOCK_LIST.lastIndex = 0;
+	        while ((match = this.matchExpressions.BLOCK_LIST.exec(input)) !== null) {
 	            matches.push({
 	                start: match.index,
 	                content: this._parseBlock(match),
-	                end: match.index + match[Match.FULL_MATCH].length
+	                end: match.index + match[RegEx.FULL_MATCH].length
 	            });
 	        }
 	        return matches;
 	    };
 	    Compiler.prototype._parseBlock = function (match) {
-	        var input = unescape_1.default(match[Match.FULL_MATCH].slice(Compiler.settings.DELIMITER.OPENING_BLOCK.length, match[Match.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length));
+	        var input = match[RegEx.FULL_MATCH].slice(Compiler.settings.DELIMITER.OPENING_BLOCK.length, match[RegEx.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length);
 	        var properties = this._getBlockProperties(input);
 	        if (this._helper[properties.OPERATOR]) {
 	            if (properties.FILTER.length > 0) {
@@ -282,12 +284,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    Compiler.prototype._getBlockProperties = function (blockString) {
 	        var operator = this._getBlockOperator(blockString);
-	        var closing = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
-	            === Compiler.settings.DELIMITER.CLOSING;
-	        var selfClosing = (!closing)
-	            ? (blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length))
-	                === Compiler.settings.DELIMITER.SPACE + operator
-	            : false;
+	        var closing = this._isClosingBlock(blockString);
+	        var selfClosing = this._isSelfClosingBlock(blockString, operator, closing);
 	        var parameter = this._getBlockParameter(blockString, operator, selfClosing);
 	        var filter = this._getBlockFilter(parameter);
 	        return {
@@ -303,6 +301,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var closing = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
 	            === Compiler.settings.DELIMITER.CLOSING;
 	        return blockString.slice((closing) ? 1 : 0, (index > 0) ? index : blockString.length);
+	    };
+	    Compiler.prototype._isClosingBlock = function (blockString) {
+	        return blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING;
+	    };
+	    Compiler.prototype._isSelfClosingBlock = function (blockString, operator, closing) {
+	        if (!closing) {
+	            return (blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length)) === Compiler.settings.DELIMITER.SPACE + operator;
+	        }
+	        return false;
 	    };
 	    Compiler.prototype._getBlockParameter = function (blockString, operator, selfClosing) {
 	        var start = operator.length + Compiler.settings.DELIMITER.SPACE.length;
@@ -353,11 +360,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return template;
 	    };
 	    Compiler.prototype._addFnBody = function (template) {
-	        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){\n'
-	            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});\n'
-	            + 'var ' + Compiler.settings.VARIABLE_PRINT + ' = \'\';\n'
+	        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){'
+	            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});'
+	            + 'var ' + Compiler.settings.VARIABLE_PRINT + '=\'\';'
 	            + this.buffer.START + template + this.buffer.END
-	            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';\n}';
+	            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';}';
 	    };
 	    Compiler.prototype._removeBlockFilter = function (parameter) {
 	        var filterSeperator = Compiler.settings.DELIMITER.SPACE
@@ -417,13 +424,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	    };
 	    Compiler.prototype._setupRegularExpressions = function () {
-	        this._blockRegex = new RegExp(regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK)
-	            + '.+?'
-	            + regex_escape_1.default(Compiler.settings.DELIMITER.CLOSING_BLOCK), 'g');
-	        this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp('(' + Compiler.settings.VARIABLE_PRINT
-	            + '\\+\\=[\\\'\\"]{2}\\;)' + '|(\\+[\\\'\\"]{2})', 'g');
-	        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp('(' + Compiler.settings.VARIABLE_PRINT
-	            + ')\\+\\=[\\\'\\"]{2}\\+', 'g');
+	        this.matchExpressions.BLOCK_LIST = new RegExp('__OPENING_BLOCK__.+?__CLOSING_BLOCK__'
+	            .replace('__OPENING_BLOCK__', regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK))
+	            .replace('__CLOSING_BLOCK__', regex_escape_1.default(Compiler.settings.DELIMITER.CLOSING_BLOCK)), 'g');
+	        this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp('(__VARIABLE_PRINT__\\+\\=[\\\'\\"]{2}\\;)|(\\+[\\\'\\"]{2})'
+	            .replace('__VARIABLE_PRINT__', regex_escape_1.default(Compiler.settings.VARIABLE_PRINT)), 'g');
+	        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp('(__VARIABLE_PRINT__)\\+\\=[\\\'\\"]{2}\\+'
+	            .replace('__VARIABLE_PRINT__', regex_escape_1.default(Compiler.settings.VARIABLE_PRINT)), 'g');
 	    };
 	    Compiler.prototype._setupBuffer = function () {
 	        this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\'';
@@ -525,18 +532,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	"use strict";
-	function unescape(string) {
-	    return string.replace(/\\('|\\)/g, '$1').replace(/[\r\t\n]/g, ' ');
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = unescape;
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports) {
-
-	"use strict";
 	function escape(input) {
 	    return input.replace(/'|\\/g, '\\$&');
 	}
@@ -545,17 +540,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var parse_parameter_1 = __webpack_require__(8);
+	var parse_parameter_1 = __webpack_require__(7);
 	var string_trim_1 = __webpack_require__(4);
-	var each_object_1 = __webpack_require__(9);
-	var each_array_1 = __webpack_require__(10);
-	var is_object_1 = __webpack_require__(11);
-	var is_array_1 = __webpack_require__(12);
-	var iterator_1 = __webpack_require__(15);
+	var each_object_1 = __webpack_require__(8);
+	var each_array_1 = __webpack_require__(9);
+	var is_object_1 = __webpack_require__(10);
+	var is_array_1 = __webpack_require__(11);
+	var iterator_1 = __webpack_require__(14);
 	var iteratorIndexer;
 	function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler) {
 	    compiler.registerImport('__isArray', is_array_1.default);
@@ -593,7 +588,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -616,7 +611,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -650,7 +645,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -669,7 +664,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 11 */
+/* 10 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -681,11 +676,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 12 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var get_type_1 = __webpack_require__(13);
+	var get_type_1 = __webpack_require__(12);
 	function isArray(value) {
 	    return (typeof Array.isArray === 'function')
 	        ? Array.isArray(value)
@@ -696,11 +691,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 13 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var substr_1 = __webpack_require__(14);
+	var substr_1 = __webpack_require__(13);
 	function default_1(object) {
 	    var output = substr_1.default(Object.prototype.toString.call(object), 0, 8);
 	    return substr_1.default(output, output.length - 1, 1).toLowerCase();
@@ -710,7 +705,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 14 */
+/* 13 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -726,7 +721,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 14 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -740,7 +735,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 16 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -753,12 +748,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var string_trim_1 = __webpack_require__(4);
-	var html_escape_1 = __webpack_require__(18);
+	var html_escape_1 = __webpack_require__(17);
 	function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
 	    compiler.registerImport('__htmlEscape', html_escape_1.default);
 	    return buffer.APPEND + '__htmlEscape(' + string_trim_1.default(parameter) + ')' + buffer.POST_APPEND;
@@ -768,7 +763,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 17 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -866,12 +861,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 19 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var string_trim_1 = __webpack_require__(4);
-	var unescape_1 = __webpack_require__(5);
+	var unescape_1 = __webpack_require__(19);
 	function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
 	    if (closingTag) {
 	        return buffer.END + '}' + buffer.START;
@@ -896,6 +891,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = default_1;
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports) {
+
+	"use strict";
+	function unescape(string) {
+	    return string.replace(/\\('|\\)/g, '$1').replace(/[\r\t\n]/g, ' ');
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = unescape;
 
 
 /***/ },

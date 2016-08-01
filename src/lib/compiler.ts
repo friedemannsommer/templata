@@ -3,10 +3,9 @@
 import regexEscape from './regex-escape'
 import objectKeys from './object-keys'
 import stringTrim from './string-trim'
-import unescape from './unescape'
 import escape from './escape'
 
-enum Match {
+enum RegEx {
     FULL_MATCH = 0
 }
 
@@ -33,6 +32,10 @@ export default class Compiler implements Templata.Interface.Compiler {
         EMPTY_APPEND_BUFFER: null
     }
 
+    protected matchExpressions: Templata.Object.MatchExpressions = {
+        BLOCK_LIST: null
+    }
+
     protected buffer: Templata.Object.Buffer = {
         APPEND: '\'+(',
         POST_APPEND: ')+\'',
@@ -42,7 +45,6 @@ export default class Compiler implements Templata.Interface.Compiler {
 
     private _importNames: string[]
     private _importValues: any[]
-    private _blockRegex: RegExp
     private _listener: Object
     private _provider: Object
     private _helper: Object
@@ -193,7 +195,7 @@ export default class Compiler implements Templata.Interface.Compiler {
 
     public compile(template: string): Templata.Interface.CompileFunction {
         if (typeof template !== 'string') {
-            throw new Error('Expected parameter "template" tobe typeof "string" but instead got "' + typeof template + '"')
+            throw new Error(`Expected parameter "template" tobe typeof "string" but instead got "${typeof template}"`)
         }
 
         this.dispatch('COMPILE_START')
@@ -228,14 +230,14 @@ export default class Compiler implements Templata.Interface.Compiler {
         let match: RegExpExecArray
         let matches: Object[] = []
 
-        this._blockRegex.lastIndex = 0
+        this.matchExpressions.BLOCK_LIST.lastIndex = 0
 
-        while ((match = this._blockRegex.exec(input)) !== null) {
+        while ((match = this.matchExpressions.BLOCK_LIST.exec(input)) !== null) {
             matches.push(
                 {
                     start: match.index,
                     content: this._parseBlock(match),
-                    end: match.index + match[Match.FULL_MATCH].length
+                    end: match.index + match[RegEx.FULL_MATCH].length
                 }
             )
         }
@@ -244,11 +246,10 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _parseBlock(match: RegExpExecArray): string {
-        let input: string = unescape(match[Match.FULL_MATCH].slice(
+        let input: string = match[RegEx.FULL_MATCH].slice(
             Compiler.settings.DELIMITER.OPENING_BLOCK.length,
-            match[Match.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length
-        ))
-
+            match[RegEx.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length
+        )
         let properties: Templata.Object.BlockProperties = this._getBlockProperties(input)
 
         if (this._helper[properties.OPERATOR]) {
@@ -264,12 +265,8 @@ export default class Compiler implements Templata.Interface.Compiler {
 
     private _getBlockProperties(blockString: string): Templata.Object.BlockProperties {
         let operator: string = this._getBlockOperator(blockString)
-        let closing: boolean = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
-            === Compiler.settings.DELIMITER.CLOSING
-        let selfClosing: boolean = (!closing)
-            ? (blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length))
-            === Compiler.settings.DELIMITER.SPACE + operator
-            : false
+        let closing: boolean = this._isClosingBlock(blockString)
+        let selfClosing: boolean = this._isSelfClosingBlock(blockString, operator, closing)
         let parameter: string = this._getBlockParameter(blockString, operator, selfClosing)
         let filter: string[] = this._getBlockFilter(parameter)
 
@@ -287,6 +284,20 @@ export default class Compiler implements Templata.Interface.Compiler {
         let closing: boolean = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING
         return blockString.slice((closing) ? 1 : 0, (index > 0) ? index : blockString.length)
+    }
+
+    private _isClosingBlock(blockString: string): boolean {
+        return blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING
+    }
+
+    private _isSelfClosingBlock(blockString: string, operator: string, closing: boolean): boolean {
+        if (!closing) {
+            return (
+                blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length)
+            ) === Compiler.settings.DELIMITER.SPACE + operator
+        }
+
+        return false
     }
 
     private _getBlockParameter(blockString: string, operator: string, selfClosing: boolean): string {
@@ -349,11 +360,11 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _addFnBody(template: string): string {
-        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){\n'
-            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});\n'
-            + 'var ' + Compiler.settings.VARIABLE_PRINT + ' = \'\';\n'
+        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){'
+            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});'
+            + 'var ' + Compiler.settings.VARIABLE_PRINT + '=\'\';'
             + this.buffer.START + template + this.buffer.END
-            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';\n}'
+            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';}'
     }
 
     private _removeBlockFilter(parameter: string): string {
@@ -442,22 +453,22 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _setupRegularExpressions(): void {
-        this._blockRegex = new RegExp(
-            regexEscape(Compiler.settings.DELIMITER.OPENING_BLOCK)
-            + '.+?'
-            + regexEscape(Compiler.settings.DELIMITER.CLOSING_BLOCK),
+        this.matchExpressions.BLOCK_LIST = new RegExp(
+            '__OPENING_BLOCK__.+?__CLOSING_BLOCK__'
+                .replace('__OPENING_BLOCK__', regexEscape(Compiler.settings.DELIMITER.OPENING_BLOCK))
+                .replace('__CLOSING_BLOCK__', regexEscape(Compiler.settings.DELIMITER.CLOSING_BLOCK)),
             'g'
         )
 
         this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp(
-            '(' + Compiler.settings.VARIABLE_PRINT
-            + '\\+\\=[\\\'\\"]{2}\\;)' + '|(\\+[\\\'\\"]{2})',
+            '(__VARIABLE_PRINT__\\+\\=[\\\'\\"]{2}\\;)|(\\+[\\\'\\"]{2})'
+                .replace('__VARIABLE_PRINT__', regexEscape(Compiler.settings.VARIABLE_PRINT)),
             'g'
         )
 
         this.replaceExpressions.EMPTY_START_BUFFER = new RegExp(
-            '(' + Compiler.settings.VARIABLE_PRINT
-            + ')\\+\\=[\\\'\\"]{2}\\+',
+            '(__VARIABLE_PRINT__)\\+\\=[\\\'\\"]{2}\\+'
+                .replace('__VARIABLE_PRINT__', regexEscape(Compiler.settings.VARIABLE_PRINT)),
             'g'
         )
     }
