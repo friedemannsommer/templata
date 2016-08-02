@@ -28,8 +28,9 @@ export default class Compiler implements Templata.Interface.Compiler {
         BEFORE_HTML_TAG: /\s+</g,
         EMPTY_COMMENT_TAG: /<!--[\s\S]*?-->/g,
         EMPTY_LINES: /^(?:\s*?)$/gm,
-        EMPTY_START_BUFFER: null,
-        EMPTY_APPEND_BUFFER: null
+        EMPTY_APPEND_BUFFER: /\s+\+\s([\'\"]{1})(?=\1)/g,
+        EMPTY_START_APPEND_BUFFER: null,
+        EMPTY_START_BUFFER: null
     }
 
     protected matchExpressions: Templata.Object.MatchExpressions = {
@@ -394,8 +395,9 @@ export default class Compiler implements Templata.Interface.Compiler {
 
     private _optimizeFnSource(template: string): string {
         return template
-            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$1+=')
+            .replace(this.replaceExpressions.EMPTY_START_APPEND_BUFFER, '$1+=')
             .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
+            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '')
             .replace(this.replaceExpressions.EMPTY_LINES, '')
     }
 
@@ -460,14 +462,14 @@ export default class Compiler implements Templata.Interface.Compiler {
             'g'
         )
 
-        this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp(
-            '(__VARIABLE_PRINT__\\+\\=[\\\'\\"]{2}\\;)|(\\+[\\\'\\"]{2})'
+        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp(
+            '__VARIABLE_PRINT__\\s*?\\+=\\s*?([\\\'\\"]{1})\\\u0031\\;'
                 .replace('__VARIABLE_PRINT__', regexEscape(Compiler.settings.VARIABLE_PRINT)),
             'g'
         )
 
-        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp(
-            '(__VARIABLE_PRINT__)\\+\\=[\\\'\\"]{2}\\+'
+        this.replaceExpressions.EMPTY_START_APPEND_BUFFER = new RegExp(
+            '(__VARIABLE_PRINT__)\\s*?\\+\\=\\s*?([\\\'\\"]{1})\\\u0032\\s*?\\+'
                 .replace('__VARIABLE_PRINT__', regexEscape(Compiler.settings.VARIABLE_PRINT)),
             'g'
         )

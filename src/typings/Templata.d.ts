@@ -84,8 +84,9 @@ declare module Templata {
             BEFORE_HTML_TAG: RegExp
             EMPTY_COMMENT_TAG: RegExp
             EMPTY_LINES: RegExp
-            EMPTY_START_BUFFER: RegExp
             EMPTY_APPEND_BUFFER: RegExp
+            EMPTY_START_APPEND_BUFFER: RegExp
+            EMPTY_START_BUFFER: RegExp
         }
 
         export interface MatchExpressions extends Object {
