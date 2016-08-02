@@ -75,8 +75,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	            BEFORE_HTML_TAG: /\s+</g,
 	            EMPTY_COMMENT_TAG: /<!--[\s\S]*?-->/g,
 	            EMPTY_LINES: /^(?:\s*?)$/gm,
-	            EMPTY_START_BUFFER: null,
-	            EMPTY_APPEND_BUFFER: null
+	            EMPTY_APPEND_BUFFER: /\s+\+\s([\'\"]{1})(?=\1)/g,
+	            EMPTY_START_APPEND_BUFFER: null,
+	            EMPTY_START_BUFFER: null
 	        };
 	        this.matchExpressions = {
 	            BLOCK_LIST: null
@@ -348,8 +349,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    Compiler.prototype._optimizeFnSource = function (template) {
 	        return template
-	            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '$1+=')
+	            .replace(this.replaceExpressions.EMPTY_START_APPEND_BUFFER, '$1+=')
 	            .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
+	            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '')
 	            .replace(this.replaceExpressions.EMPTY_LINES, '');
 	    };
 	    Compiler.prototype._callFilterList = function (filterList, input) {
@@ -390,9 +392,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        this.matchExpressions.BLOCK_LIST = new RegExp('__OPENING_BLOCK__.+?__CLOSING_BLOCK__'
 	            .replace('__OPENING_BLOCK__', regex_escape_1.default(Compiler.settings.DELIMITER.OPENING_BLOCK))
 	            .replace('__CLOSING_BLOCK__', regex_escape_1.default(Compiler.settings.DELIMITER.CLOSING_BLOCK)), 'g');
-	        this.replaceExpressions.EMPTY_APPEND_BUFFER = new RegExp('(__VARIABLE_PRINT__\\+\\=[\\\'\\"]{2}\\;)|(\\+[\\\'\\"]{2})'
+	        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp('__VARIABLE_PRINT__\\s*?\\+=\\s*?([\\\'\\"]{1})\\\u0031\\;'
 	            .replace('__VARIABLE_PRINT__', regex_escape_1.default(Compiler.settings.VARIABLE_PRINT)), 'g');
-	        this.replaceExpressions.EMPTY_START_BUFFER = new RegExp('(__VARIABLE_PRINT__)\\+\\=[\\\'\\"]{2}\\+'
+	        this.replaceExpressions.EMPTY_START_APPEND_BUFFER = new RegExp('(__VARIABLE_PRINT__)\\s*?\\+\\=\\s*?([\\\'\\"]{1})\\\u0032\\s*?\\+'
 	            .replace('__VARIABLE_PRINT__', regex_escape_1.default(Compiler.settings.VARIABLE_PRINT)), 'g');
 	    };
 	    Compiler.prototype._setupBuffer = function () {
