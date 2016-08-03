@@ -3,21 +3,11 @@ var remove_previous_buffer_1 = require('../lib/remove-previous-buffer');
 var string_trim_1 = require('../lib/string-trim');
 function currency(input) {
     return input.replace(/(?:([0-9]+?[\.\,]+?[0-9]+?)|([0-9]+?))(?:\s|[^0-9]|$)/g, function (match, floatString) {
-        if (navigator.language.toLowerCase().indexOf('de') > -1) {
-            if (floatString.indexOf(',') > -1) {
-                return parseFloat(floatString.replace(',', '.')).toFixed(2).replace('.', ',');
-            }
-            else {
-                return parseFloat(floatString).toFixed(2).replace('.', ',');
-            }
+        if (floatString.indexOf(',') > -1) {
+            return parseFloat(floatString.replace(',', '.')).toFixed(2);
         }
         else {
-            if (floatString.indexOf(',') > -1) {
-                return parseFloat(floatString.replace(',', '.')).toFixed(2);
-            }
-            else {
-                return parseFloat(floatString).toFixed(2);
-            }
+            return parseFloat(floatString).toFixed(2);
         }
     });
 }

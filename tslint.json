@@ -1,6 +1,6 @@
 {
     "rulesDirectory": [
-        "src/typings/"
+        "src/typings"
     ],
     "rules": {
         "curly": true,

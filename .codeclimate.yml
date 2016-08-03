@@ -27,12 +27,14 @@ ratings:
   paths:
     - src/**
 exclude_paths:
-  - "./*.js"
-  - "./*.md"
-  - "./*.yml"
-  - "./*.json"
-  - dist/**
-  - spec/**/*
-  - web-src/**/*
-  - coverage/**/*
-  - node_modules/**/*
+  - "*.js"
+  - "*.md"
+  - ".codeclimate.yml"
+  - ".travis.yml"
+  - "index.html"
+  - "*.json"
+  - "dist/**"
+  - "spec/**/*"
+  - "web-src/**/*"
+  - "coverage/**/*"
+  - "node_modules/**/*"

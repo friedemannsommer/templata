@@ -5,18 +5,10 @@ import stringTrim from '../lib/string-trim'
 
 function currency(input: string): string {
     return input.replace(/(?:([0-9]+?[\.\,]+?[0-9]+?)|([0-9]+?))(?:\s|[^0-9]|$)/g, (match: string, floatString: string): string => {
-        if (navigator.language.toLowerCase().indexOf('de') > -1) {
-            if (floatString.indexOf(',') > -1) {
-                return parseFloat(floatString.replace(',', '.')).toFixed(2).replace('.', ',')
-            } else {
-                return parseFloat(floatString).toFixed(2).replace('.', ',')
-            }
+        if (floatString.indexOf(',') > -1) {
+            return parseFloat(floatString.replace(',', '.')).toFixed(2)
         } else {
-            if (floatString.indexOf(',') > -1) {
-                return parseFloat(floatString.replace(',', '.')).toFixed(2)
-            } else {
-                return parseFloat(floatString).toFixed(2)
-            }
+            return parseFloat(floatString).toFixed(2)
         }
     })
 }
