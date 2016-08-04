@@ -301,7 +301,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var index = blockString.indexOf(Compiler.settings.DELIMITER.SPACE, 0);
 	        var closing = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
 	            === Compiler.settings.DELIMITER.CLOSING;
-	        return blockString.slice((closing) ? 1 : 0, (index > 0) ? index : blockString.length);
+	        return blockString.slice((closing)
+	            ? Compiler.settings.DELIMITER.CLOSING.length
+	            : 0, (index > 0)
+	            ? index
+	            : blockString.length);
 	    };
 	    Compiler.prototype._isClosingBlock = function (blockString) {
 	        return blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING;
