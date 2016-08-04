@@ -284,7 +284,15 @@ export default class Compiler implements Templata.Interface.Compiler {
         let index: number = blockString.indexOf(Compiler.settings.DELIMITER.SPACE, 0)
         let closing: boolean = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING
-        return blockString.slice((closing) ? 1 : 0, (index > 0) ? index : blockString.length)
+
+        return blockString.slice(
+            (closing)
+                ? Compiler.settings.DELIMITER.CLOSING.length
+                : 0,
+            (index > 0)
+                ? index
+                : blockString.length
+        )
     }
 
     private _isClosingBlock(blockString: string): boolean {
@@ -294,7 +302,9 @@ export default class Compiler implements Templata.Interface.Compiler {
     private _isSelfClosingBlock(blockString: string, operator: string, closing: boolean): boolean {
         if (!closing) {
             return (
-                blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length)
+                blockString.slice(
+                    (operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length
+                )
             ) === Compiler.settings.DELIMITER.SPACE + operator
         }
 
