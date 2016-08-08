@@ -19,7 +19,7 @@ var Compiler = (function () {
             BEFORE_HTML_TAG: /\s+</g,
             EMPTY_COMMENT_TAG: /<!--[\s\S]*?-->/g,
             EMPTY_LINES: /^(?:\s*?)$/gm,
-            EMPTY_APPEND_BUFFER: /\s+\+\s([\'\"]{1})(?=\1)/g,
+            EMPTY_APPEND_BUFFER: /\s*\+\s*([\'\"]{1})\1/g,
             EMPTY_START_APPEND_BUFFER: null,
             EMPTY_START_BUFFER: null
         };
