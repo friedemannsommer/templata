@@ -74,73 +74,11 @@ console.log(output); // <span class="name">John White</span>
 ```html
 {{* comment which is not visible after compilation *}}
 ```
-## Create your own "helper"
-```typescript
-import Compiler from '/path/to/compiler/src'
-
-Compiler.registerHelper('?', condition)
-Compiler.registerHelper('??', condition)
-
-function condition(
-    operator: string,
-    parameter: string,
-    selfClosingTag: boolean,
-    closingTag: boolean,
-    buffer: Templata.Object.Buffer,
-    compiler: Templata.Interface.Compiler
-) {
-    if (closingTag) {
-        return buffer.END + '}' + buffer.START
-    }
-
-    switch (operator) {
-        case '?':
-            if (parameter && parameter !== '') {
-                // if
-                return buffer.END + 'if(' + parameter.trim() + '){' + buffer.START
-            } else {
-                // else
-                return buffer.END + '}else{' + buffer.START
-            }
-        case '??':
-            if (parameter && parameter !== '') {
-                // elseif
-                return buffer.END + '}else if(' + parameter.trim() + '){' + buffer.START
-            } else {
-                // else
-                return buffer.END + '}else{' + buffer.START
-            }
-    }
-
-    return parameter
-}
-```
-## Create your own "filter"
-```typescript
-import Compiler from '/path/to/compiler/src'
-
-Compiler.registerFilter('lowercase', lowercaseFilter)
-
-function lowercase(input: string): string {
-    return input.toLocaleLowerCase()
-}
-
-function lowercaseFilter(
-    name: string,
-    input: string,
-    buffer: Templata.Object.Buffer,
-    compiler: Templata.Interface.Compiler
-) {
-    compiler.registerImport('__f_lc', lowercase)
-
-    return buffer.APPEND + '__f_lc(' + removePreviousBuffer(input, buffer) + ')' + buffer.POST_APPEND
-}
-```
 ## Compiler API
 ```typescript
 class Compiler {
+    static settings: CompilerSettings
     constructor(imports?: Object, helper?: Object, filter?: Object, provider?: Object)
-    static settings: Templata.Object.CompilerSettings
     registerImport(name: string, imports: any): Compiler
     hasImport(name: string): boolean
     removeImport(name: string): Compiler
@@ -160,4 +98,59 @@ class Compiler {
     initialize(fn: InitializeFunction): Compiler
     compile(template: string): (data: Object) => string
 }
+
+interface Buffer extends Object {
+    POST_APPEND: string
+    APPEND: string
+    START: string
+    END: string
+}
+
+interface CompilerSettings extends Object {
+    VARIABLE_NAME: string
+    VARIABLE_PRINT: string
+    DELIMITER: {
+        FILTER_SEPERATOR: string
+        OPENING_BLOCK: string
+        CLOSING_BLOCK: string
+        CLOSING: string
+        SPACE: string
+    }
+}
+
+interface Filter extends Function {
+    (name: string, input: string, buffer: Templata.Object.Buffer, compiler: Compiler): string
+}
+
+interface Helper extends Function {
+    (operator: string, parameter: string, selfClosing: boolean, closingTag: boolean, buffer: Templata.Object.Buffer, compiler: Compiler): string
+}
+
+interface Provider extends Function {
+    (name: string, ...args: any[]): void
+}
+
+interface Listener extends Function {
+    (name: string, compiler: Compiler, ...data: any[]): void
+}
+
+interface CompileFunction extends Function {
+    (data: Object): string
+}
+
+interface InitializeFunction extends Function {
+    (compiler: Compiler): void
+}
 ```
+## FAQ
+> Q: How can I create my own Helper?  
+> A: You should take a look at "src/helper" there are several example implementations.
+
+> Q: How can I create my own Filter?  
+> A: You should take a look at "src/filter" there are several example implementations.
+
+> Q: Why a Template Compiler with out any Logic itself?  
+> A: I needed a simple modifieable Parser which allows me to create my own Logic.
+
+> Q: Why should I "import" Functions into the Template?  
+> A: You don't need to. But I recommend to just pass a reference to your Function.

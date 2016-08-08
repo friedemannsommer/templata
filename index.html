@@ -17,24 +17,319 @@
             <div class="template">
                 <h3>Template</h3>
                 <textarea autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="template">
-<span class="name">
-    Hi {{= local.name =}}!
-</span>
-<span class="using-templata">
-    {{? local.usingTemplata ?}}
-    You`re amazing!
-    {{? ?}}
-    Get on it!
-    {{/?}}
-</span>
+<div class="user-list">
+    {{~ local.user :user: ~}}
+    <div class="user" id="{{= user.guid =}}">
+        <h4>{{= user.name.first =}}{{= user.name.last =}}</h4>
+        <span class="mail">{{= user.email =}}</span>
+        <ul class="friends">
+            {{~ user.friends :friend: ~}}
+            <li class="friend">{{= friend.name =}}</li>
+            {{/~}}
+        </ul>
+    </div>
+    {{/~}}
+</div>
                 </textarea>
             </div>
             <div class="data">
                 <h3>Data</h3>
                 <textarea autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" id="data">
 {
-    "name": "John White",
-    "usingTemplata": false
+  "user": [{
+    "index": 0,
+    "guid": "ff880b72-a2de-4bd1-95ab-3e51ff724abf",
+    "isActive": true,
+    "picture": "http://placehold.it/32x32",
+    "age": 20,
+    "name": {
+      "first": "Albert",
+      "last": "Gentry"
+    },
+    "company": "MANUFACT",
+    "email": "albert.gentry@manufact.biz",
+    "registered": "2014-07-01T22:57:33+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Wheeler Guzman"
+    }, {
+      "id": 1,
+      "name": "Delia Edwards"
+    }, {
+      "id": 2,
+      "name": "Jillian Burnett"
+    }]
+  }, {
+    "index": 1,
+    "guid": "e868077a-bf87-4062-8ee0-704f7db00078",
+    "isActive": true,
+    "picture": "http://placehold.it/32x32",
+    "age": 26,
+    "name": {
+      "first": "Lancaster",
+      "last": "Stevens"
+    },
+    "company": "ISOTERNIA",
+    "email": "lancaster.stevens@isoternia.name",
+    "registered": "2015-04-08T08:58:42+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Duke Pate"
+    }, {
+      "id": 1,
+      "name": "Ila Manning"
+    }, {
+      "id": 2,
+      "name": "Dana Morales"
+    }, {
+      "id": 3,
+      "name": "Hayden Clements"
+    }, {
+      "id": 4,
+      "name": "Isabelle Pacheco"
+    }]
+  }, {
+    "index": 2,
+    "guid": "e604ac79-52e0-487a-b3d5-ed940a8e5270",
+    "isActive": false,
+    "picture": "http://placehold.it/32x32",
+    "age": 40,
+    "name": {
+      "first": "Edwina",
+      "last": "Fitzpatrick"
+    },
+    "company": "GEEKNET",
+    "email": "edwina.fitzpatrick@geeknet.us",
+    "registered": "2014-09-22T05:42:47+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Grimes Jacobson"
+    }, {
+      "id": 1,
+      "name": "Jean Terrell"
+    }, {
+      "id": 2,
+      "name": "Stuart Gonzalez"
+    }, {
+      "id": 3,
+      "name": "Hollie Steele"
+    }]
+  }, {
+    "index": 3,
+    "guid": "6a13b36a-fda6-430b-9884-0653ac002ae9",
+    "isActive": true,
+    "picture": "http://placehold.it/32x32",
+    "age": 26,
+    "name": {
+      "first": "Powers",
+      "last": "Mitchell"
+    },
+    "company": "QUARX",
+    "email": "powers.mitchell@quarx.com",
+    "registered": "2014-09-27T20:18:12+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Ashley Santana"
+    }, {
+      "id": 1,
+      "name": "Desiree Ray"
+    }, {
+      "id": 2,
+      "name": "Mueller Dunlap"
+    }, {
+      "id": 3,
+      "name": "Glass Parsons"
+    }, {
+      "id": 4,
+      "name": "Joanne Shannon"
+    }, {
+      "id": 5,
+      "name": "Foreman Dean"
+    }]
+  }, {
+    "index": 4,
+    "guid": "f089d8a8-8a9a-4176-bd5a-23c132097f69",
+    "isActive": true,
+    "picture": "http://placehold.it/32x32",
+    "age": 23,
+    "name": {
+      "first": "Dotson",
+      "last": "Stone"
+    },
+    "company": "ROCKABYE",
+    "email": "dotson.stone@rockabye.io",
+    "registered": "2015-07-23T20:56:03+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Vickie Oneal"
+    }, {
+      "id": 1,
+      "name": "Wolf Gallagher"
+    }, {
+      "id": 2,
+      "name": "Marks Mcleod"
+    }, {
+      "id": 3,
+      "name": "Dixon Pennington"
+    }, {
+      "id": 4,
+      "name": "Lopez Owen"
+    }, {
+      "id": 5,
+      "name": "Porter Nielsen"
+    }, {
+      "id": 6,
+      "name": "Kelsey Riggs"
+    }, {
+      "id": 7,
+      "name": "Deborah Crane"
+    }]
+  }, {
+    "index": 5,
+    "guid": "1b014de7-ebe8-4042-867e-339272bdb249",
+    "isActive": false,
+    "picture": "http://placehold.it/32x32",
+    "age": 38,
+    "name": {
+      "first": "Elnora",
+      "last": "Saunders"
+    },
+    "company": "WATERBABY",
+    "email": "elnora.saunders@waterbaby.net",
+    "registered": "2015-04-14T12:06:10+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Catalina Gregory"
+    }, {
+      "id": 1,
+      "name": "Stefanie Peters"
+    }, {
+      "id": 2,
+      "name": "Shannon Adkins"
+    }, {
+      "id": 3,
+      "name": "Keith Wilson"
+    }, {
+      "id": 4,
+      "name": "Nadia Howell"
+    }, {
+      "id": 5,
+      "name": "Eunice Head"
+    }]
+  }, {
+    "index": 6,
+    "guid": "4b684116-f5bb-41fa-96a1-c47d73b2e03e",
+    "isActive": true,
+    "picture": "http://placehold.it/32x32",
+    "age": 26,
+    "name": {
+      "first": "Burke",
+      "last": "Mcfarland"
+    },
+    "company": "EXOPLODE",
+    "email": "burke.mcfarland@exoplode.info",
+    "registered": "2016-08-04T06:10:11+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Ayers Carroll"
+    }, {
+      "id": 1,
+      "name": "Miriam Padilla"
+    }, {
+      "id": 2,
+      "name": "Fisher Williamson"
+    }]
+  }, {
+    "index": 7,
+    "guid": "fad7aa8d-ad69-4bad-be0c-7eddd964e365",
+    "isActive": false,
+    "picture": "http://placehold.it/32x32",
+    "age": 30,
+    "name": {
+      "first": "Yang",
+      "last": "Herrera"
+    },
+    "company": "FILODYNE",
+    "email": "yang.herrera@filodyne.co.uk",
+    "registered": "2014-06-11T13:18:12+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Small Lindsey"
+    }, {
+      "id": 1,
+      "name": "Tami Barrera"
+    }, {
+      "id": 2,
+      "name": "Coleen Johnston"
+    }]
+  }, {
+    "index": 8,
+    "guid": "32897884-3b6c-4fe2-b46a-9881a25d64ba",
+    "isActive": false,
+    "picture": "http://placehold.it/32x32",
+    "age": 33,
+    "name": {
+      "first": "Carter",
+      "last": "Blanchard"
+    },
+    "company": "VIDTO",
+    "email": "carter.blanchard@vidto.biz",
+    "registered": "2014-06-13T20:19:01+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Irma Sweeney"
+    }, {
+      "id": 1,
+      "name": "Norris Kerr"
+    }, {
+      "id": 2,
+      "name": "Rivas Vaughan"
+    }, {
+      "id": 3,
+      "name": "Frazier Waters"
+    }, {
+      "id": 4,
+      "name": "Mcgowan Peck"
+    }, {
+      "id": 5,
+      "name": "Best Ross"
+    }, {
+      "id": 6,
+      "name": "Patrica Acosta"
+    }, {
+      "id": 7,
+      "name": "Gilda Swanson"
+    }]
+  }, {
+    "index": 9,
+    "guid": "66d5bec2-5915-415a-815f-5d8efb5e8e23",
+    "isActive": true,
+    "picture": "http://placehold.it/32x32",
+    "age": 40,
+    "name": {
+      "first": "Melendez",
+      "last": "Beck"
+    },
+    "company": "SULTRAXIN",
+    "email": "melendez.beck@sultraxin.tv",
+    "registered": "2015-01-21T17:39:47+00:00",
+    "friends": [{
+      "id": 0,
+      "name": "Enid Fitzgerald"
+    }, {
+      "id": 1,
+      "name": "Clements Lynch"
+    }, {
+      "id": 2,
+      "name": "Aurora Petty"
+    }, {
+      "id": 3,
+      "name": "Kinney Haynes"
+    }, {
+      "id": 4,
+      "name": "Vera Mcdaniel"
+    }]
+  }]
 }
                 </textarea>
             </div>

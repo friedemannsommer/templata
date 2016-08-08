@@ -929,8 +929,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 	var string_trim_1 = __webpack_require__(4);
+	var unescape_1 = __webpack_require__(19);
 	function print(operator, parameter, selfClosing, closingTag, buffer, compiler) {
-	    return buffer.APPEND + string_trim_1.default(parameter) + buffer.POST_APPEND;
+	    return buffer.APPEND + string_trim_1.default(unescape_1.default(parameter)) + buffer.POST_APPEND;
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = print;
