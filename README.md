@@ -3,6 +3,8 @@
 [![Coverage Status](https://coveralls.io/repos/github/friedemannsommer/templata/badge.svg)](https://coveralls.io/github/friedemannsommer/templata)
 [![Code Climate](https://codeclimate.com/github/friedemannsommer/templata/badges/gpa.svg)](https://codeclimate.com/github/friedemannsommer/templata)
 [![Issue Count](https://codeclimate.com/github/friedemannsommer/templata/badges/issue_count.svg)](https://codeclimate.com/github/friedemannsommer/templata)
+[![Dependencies](https://david-dm.org/friedemannsommer/templata.svg)](https://david-dm.org/friedemannsommer/templata)
+[![Development Dependencies](https://david-dm.org/friedemannsommer/templata/dev-status.svg)](https://david-dm.org/friedemannsommer/templata?type=dev)
 ## Example
 ```typescript
 /**
