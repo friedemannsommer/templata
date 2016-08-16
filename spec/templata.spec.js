@@ -165,6 +165,19 @@ function run() {
                 )
             }
         )
+
+        describe('Templata.Template#HTMLEncode',
+            function () {
+                it('Should encode HTML String',
+                    function () {
+                        const template = '{{! "<span class=\'name\'>John White</span>" !}}'
+
+                        expect(templata.template(template)())
+                            .to.equal('&lt;span class&#61;&#39;name&#39;&gt;John White&lt;/span&gt;')
+                    }
+                )
+            }
+        )
     })
 }
 
