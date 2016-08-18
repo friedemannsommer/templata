@@ -11,8 +11,6 @@ module.exports = {
         path: path.join(__dirname, 'dist', 'browser'),
         filename: '[name].js',
         sourceMapFilename: '[name].map',
-        chunkFilename: '[hash].chunk.js',
-        publicPath: '/dist/browser/',
         libraryTarget: 'umd',
         library: 'Templata'
     },
