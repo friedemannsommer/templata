@@ -1,10 +1,14 @@
 # Templata (Template Compiler)
-[![Build Status](https://api.travis-ci.org/friedemannsommer/templata.svg)](https://travis-ci.org/friedemannsommer/templata)
-[![Coverage Status](https://coveralls.io/repos/github/friedemannsommer/templata/badge.svg)](https://coveralls.io/github/friedemannsommer/templata)
-[![Code Climate](https://codeclimate.com/github/friedemannsommer/templata/badges/gpa.svg)](https://codeclimate.com/github/friedemannsommer/templata)
-[![Issue Count](https://codeclimate.com/github/friedemannsommer/templata/badges/issue_count.svg)](https://codeclimate.com/github/friedemannsommer/templata)
-[![Dependencies](https://david-dm.org/friedemannsommer/templata.svg)](https://david-dm.org/friedemannsommer/templata)
-[![Development Dependencies](https://david-dm.org/friedemannsommer/templata/dev-status.svg)](https://david-dm.org/friedemannsommer/templata?type=dev)
+[![build status](https://img.shields.io/travis/friedemannsommer/templata.svg?maxAge=2592000)](https://travis-ci.org/friedemannsommer/templata)
+[![coverage](https://img.shields.io/coveralls/friedemannsommer/templata.svg?maxAge=2592000)](https://coveralls.io/github/friedemannsommer/templata)
+[![code climate](https://img.shields.io/codeclimate/github/friedemannsommer/templata.svg?maxAge=2592000)](https://codeclimate.com/github/friedemannsommer/templata)
+[![issue count](https://img.shields.io/codeclimate/issues/github/friedemannsommer/templata.svg?maxAge=2592000)](https://codeclimate.com/github/friedemannsommer/templata)
+[![dependencies](https://img.shields.io/david/friedemannsommer/templata.svg?maxAge=2592000)](https://david-dm.org/friedemannsommer/templata)
+[![development dependencies](https://img.shields.io/david/dev/friedemannsommer/templata.svg?maxAge=2592000)](https://david-dm.org/friedemannsommer/templata?type=dev)
+[![npm](https://img.shields.io/npm/dt/templata.svg?maxAge=2592000)](https://www.npmjs.com/package/templata)
+[![npm version](https://img.shields.io/npm/v/templata.svg?maxAge=2592000)](https://www.npmjs.com/package/templata)
+[![GitHub version](https://img.shields.io/github/tag/friedemannsommer/templata.svg?maxAge=2592000)](https://github.com/friedemannsommer/templata)
+[![license](https://img.shields.io/npm/l/templata.svg?maxAge=2592000)](https://www.npmjs.com/package/templata)
 ## Example
 ```typescript
 /**
