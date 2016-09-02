@@ -153,8 +153,8 @@ export default class Compiler implements Templata.Interface.Compiler {
             return this
         }
 
-        let index: number = -1
         let length: number = (<Function[]>this._listener[name]).length
+        let index: number = -1
 
         while (++index < length) {
             if (this._listener[name][index] === callback) {
@@ -171,8 +171,8 @@ export default class Compiler implements Templata.Interface.Compiler {
             return void 0
         }
 
+        const length: number = (<Function[]>this._listener[name]).length
         let index: number = -1
-        let length: number = (<Function[]>this._listener[name]).length
 
         while (++index < length) {
             (<Templata.Interface.Listener>this._listener[name][index]).apply(undefined, [name, this, ...data])
@@ -228,8 +228,8 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _matchBlocks(input: string): Object[] {
+        const matches: Object[] = []
         let match: RegExpExecArray
-        let matches: Object[] = []
 
         this.matchExpressions.BLOCK_LIST.lastIndex = 0
 
@@ -247,11 +247,11 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _parseBlock(match: RegExpExecArray): string {
-        let input: string = match[RegEx.FULL_MATCH].slice(
+        const input: string = match[RegEx.FULL_MATCH].slice(
             Compiler.settings.DELIMITER.OPENING_BLOCK.length,
             match[RegEx.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length
         )
-        let properties: Templata.Object.BlockProperties = this._getBlockProperties(input)
+        const properties: Templata.Object.BlockProperties = this._getBlockProperties(input)
 
         if (this._helper[properties.OPERATOR]) {
             if (properties.FILTER.length > 0) {
@@ -265,11 +265,11 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _getBlockProperties(blockString: string): Templata.Object.BlockProperties {
-        let operator: string = this._getBlockOperator(blockString)
-        let closing: boolean = this._isClosingBlock(blockString)
-        let selfClosing: boolean = this._isSelfClosingBlock(blockString, operator, closing)
-        let parameter: string = this._getBlockParameter(blockString, operator, selfClosing)
-        let filter: string[] = this._getBlockFilter(parameter)
+        const operator: string = this._getBlockOperator(blockString)
+        const closing: boolean = this._isClosingBlock(blockString)
+        const selfClosing: boolean = this._isSelfClosingBlock(blockString, operator, closing)
+        const parameter: string = this._getBlockParameter(blockString, operator, selfClosing)
+        const filter: string[] = this._getBlockFilter(parameter)
 
         return {
             OPERATOR: operator,
@@ -281,8 +281,8 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _getBlockOperator(blockString: string): string {
-        let index: number = blockString.indexOf(Compiler.settings.DELIMITER.SPACE, 0)
-        let closing: boolean = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
+        const index: number = blockString.indexOf(Compiler.settings.DELIMITER.SPACE, 0)
+        const closing: boolean = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING
 
         return blockString.slice(
@@ -312,8 +312,8 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _getBlockParameter(blockString: string, operator: string, selfClosing: boolean): string {
-        let start: number = operator.length + Compiler.settings.DELIMITER.SPACE.length
-        let end: number = (selfClosing)
+        const start: number = operator.length + Compiler.settings.DELIMITER.SPACE.length
+        const end: number = (selfClosing)
             ? blockString.length - (operator.length + Compiler.settings.DELIMITER.SPACE.length)
             : blockString.length
 
@@ -321,8 +321,8 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _getBlockFilter(parameter: string): string[] {
-        let filter: string[] = []
-        let filterSeperator: string = Compiler.settings.DELIMITER.SPACE
+        const filter: string[] = []
+        const filterSeperator: string = Compiler.settings.DELIMITER.SPACE
             + Compiler.settings.DELIMITER.FILTER_SEPERATOR
             + Compiler.settings.DELIMITER.SPACE
         let index: number = parameter.indexOf(filterSeperator)
@@ -345,10 +345,10 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _concatTemplateParts(matches: Object[], template: string): string {
-        let previous: Object
+        const length: number = matches.length
+        const parts: string[] = []
         let index: number = -1
-        let parts: string[] = []
-        let length: number = matches.length
+        let previous: Object
 
         while (++index < length) {
             if (!previous) {
@@ -379,7 +379,7 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _removeBlockFilter(parameter: string): string {
-        let filterSeperator: string = Compiler.settings.DELIMITER.SPACE
+        const filterSeperator: string = Compiler.settings.DELIMITER.SPACE
             + Compiler.settings.DELIMITER.FILTER_SEPERATOR
             + Compiler.settings.DELIMITER.SPACE
         let index: number = parameter.indexOf(filterSeperator)
@@ -412,7 +412,7 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     private _callFilterList(filterList: string[], input: string): string {
-        let filterLength: number = filterList.length
+        const filterLength: number = filterList.length
         let index: number = -1
 
         while (++index < filterLength) {

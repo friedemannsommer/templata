@@ -107,8 +107,8 @@ var Compiler = (function () {
         if (!this._listener.hasOwnProperty(name)) {
             return this;
         }
-        var index = -1;
         var length = this._listener[name].length;
+        var index = -1;
         while (++index < length) {
             if (this._listener[name][index] === callback) {
                 this._listener[name].splice(index, 1);
@@ -125,8 +125,8 @@ var Compiler = (function () {
         if (!this._listener.hasOwnProperty(name)) {
             return void 0;
         }
-        var index = -1;
         var length = this._listener[name].length;
+        var index = -1;
         while (++index < length) {
             this._listener[name][index].apply(undefined, [name, this].concat(data));
         }
@@ -165,8 +165,8 @@ var Compiler = (function () {
         }
     };
     Compiler.prototype._matchBlocks = function (input) {
-        var match;
         var matches = [];
+        var match;
         this.matchExpressions.BLOCK_LIST.lastIndex = 0;
         while ((match = this.matchExpressions.BLOCK_LIST.exec(input)) !== null) {
             matches.push({
@@ -250,10 +250,10 @@ var Compiler = (function () {
         return filter;
     };
     Compiler.prototype._concatTemplateParts = function (matches, template) {
-        var previous;
-        var index = -1;
-        var parts = [];
         var length = matches.length;
+        var parts = [];
+        var index = -1;
+        var previous;
         while (++index < length) {
             if (!previous) {
                 parts.push(template.slice(0, matches[index]['start']));
