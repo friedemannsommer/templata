@@ -11,32 +11,20 @@
     try {
         userData = JSON.parse(templateData.value);
     } catch (e) {
-        alert('[Templata] ' + e.message);
+        console.log('[Templata] ' + e.message);
     }
 
     if (userData) {
         createTemplate(templateArea.value, userData);
     }
+
     // add listener
     templateArea.addEventListener('keyup', function (e) {
-        onUpdate('template', e);
+        createTemplate(e.target.value);
     }, { capture: false, passive: true });
     templateData.addEventListener('keyup', function (e) {
-        onUpdate('data', e);
+        parseData(e.target.value);
     }, { capture: false, passive: true });
-
-    function onUpdate(type, e) {
-        switch (type) {
-            case 'template':
-                createTemplate(e.target.value);
-                break;
-            case 'data':
-                parseData(e.target.value);
-                break;
-            default:
-                break;
-        }
-    }
 
     function parseData(inputData) {
         var errorOccurred = false;
@@ -61,11 +49,7 @@
         compiler = templateCompiler(template);
         templateCompiled.value = compiler.toString();
 
-        if (!!data) {
-            renderTemplate(data);
-        } else {
-            renderTemplate(data);
-        }
+        renderTemplate(data);
     }
 
     function renderTemplate(data) {
