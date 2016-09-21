@@ -9,6 +9,7 @@
 [![npm version](https://img.shields.io/npm/v/templata.svg?maxAge=2592000)](https://www.npmjs.com/package/templata)
 [![GitHub version](https://img.shields.io/github/tag/friedemannsommer/templata.svg?maxAge=2592000)](https://github.com/friedemannsommer/templata)
 [![license](https://img.shields.io/npm/l/templata.svg?maxAge=2592000)](https://www.npmjs.com/package/templata)
+
 ## FAQ
 > Q: How can I create a custom helper?  
 > A: You should take a look at ["src/helper"](https://github.com/friedemannsommer/templata/blob/master/src/helper) there are several example implementations.
@@ -21,6 +22,7 @@
 
 > Q: Why should I "import" functions into the template?  
 > A: You don't need to. But I recommend to just pass a reference to your function instead of passing your function source
+
 ## Compiler API
 ```typescript
 class Compiler {
@@ -89,6 +91,7 @@ interface InitializeFunction extends Function {
     (compiler: Compiler): void
 }
 ```
+
 ## Default helper (optional)
 ### Interpolation
 ```html
