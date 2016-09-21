@@ -9,77 +9,18 @@
 [![npm version](https://img.shields.io/npm/v/templata.svg?maxAge=2592000)](https://www.npmjs.com/package/templata)
 [![GitHub version](https://img.shields.io/github/tag/friedemannsommer/templata.svg?maxAge=2592000)](https://github.com/friedemannsommer/templata)
 [![license](https://img.shields.io/npm/l/templata.svg?maxAge=2592000)](https://www.npmjs.com/package/templata)
-## Example
-```typescript
-/**
- * TypeScript Browser / Client
- **/
-import template from '/path/to/src/template';
-/**
- * JavaScript Browser
- **/
-let template = Templata.default;
-/**
- * NodeJS
- **/
-const template = require('templata').template;
+## FAQ
+> Q: How can I create a custom helper?  
+> A: You should take a look at ["src/helper"](https://github.com/friedemannsommer/templata/blob/master/src/helper) there are several example implementations.
 
-// define template string
-let templateString: string = `<span class="name">{{= local.name}}</span>`;
-// pass template string to templateCompiler
-let compiledTemplate: CompiledTemplateFunction = template(templateString);
-// run the compiled template with data
-let output: string = compiledTemplate({name: 'John White'});
-// use the template
-console.log(output); // <span class="name">John White</span>
-```
-### Interpolation
-```html
-<!-- render name -->
-<span class="name">{{= local.name =}}</span>
-<!-- render HTML-Encoded adCode -->
-<input type="text" value="{{! local.adCode !}}">
-<!-- use filter -->
-<span class="name">{{= local.name | lowercase =}}</span>
-<span class="name">{{= local.name | uppercase =}}</span>
-<span class="price">{{= local.price | currency =}}</span>
-```
-### Conditional
-```html
-<!-- if(condition) -->
-{{? true ?}}
-<!-- else if(condition) -->
-{{?? false ??}}
-<!-- else -->
-{{? ?}}
-<!-- close if -->
-{{/?}}
-```
-### Iteration
-```html
-<!-- start loop -->
-{{~ local.arrayOrObject :value,key: ~}}
-<!-- use value or key in here -->
-{{= key =}}: {{= value =}}
-<!-- end loop -->
-{{/~}}
-```
-### JavaScript
-```html
-<!-- define custom variable -->
-{{- var variable = 'example content'; -}}
-<!-- do whate ever you want -->
-{{- function localFn(x, y){return x > y;} -}}
-<!-- use your custom code -->
-<!-- prints "EXAMPLE CONTENT" -->
-{{= variable | uppercase =}}
-<!-- prints "5 is bigger then 2" -->
-{{? localFn(5,2) ?}}{{= '5 is bigger then 2' =}}{{/?}}
-```
-### Comments
-```html
-{{* comment which is not visible after compilation *}}
-```
+> Q: How can I create a custom filter?  
+> A: You should take a look at ["src/filter"](https://github.com/friedemannsommer/templata/tree/master/src/filter) there are several example implementations.
+
+> Q: Why a template compiler with out any logic itself?  
+> A: I needed a simple modifiable parser which allows me to create my own logic.
+
+> Q: Why should I "import" functions into the template?  
+> A: You don't need to. But I recommend to just pass a reference to your function instead of passing your function source
 ## Compiler API
 ```typescript
 class Compiler {
@@ -148,15 +89,51 @@ interface InitializeFunction extends Function {
     (compiler: Compiler): void
 }
 ```
-## FAQ
-> Q: How can I create my own Helper?  
-> A: You should take a look at "src/helper" there are several example implementations.
-
-> Q: How can I create my own Filter?  
-> A: You should take a look at "src/filter" there are several example implementations.
-
-> Q: Why a Template Compiler with out any Logic itself?  
-> A: I needed a simple modifieable Parser which allows me to create my own Logic.
-
-> Q: Why should I "import" Functions into the Template?  
-> A: You don't need to. But I recommend to just pass a reference to your Function.
+## Default helper (optional)
+### Interpolation
+```html
+<!-- render name -->
+<span class="name">{{= local.name =}}</span>
+<!-- render HTML-Encoded adCode -->
+<input type="text" value="{{! local.adCode !}}">
+<!-- use filter -->
+<span class="name">{{= local.name | lowercase =}}</span>
+<span class="name">{{= local.name | uppercase =}}</span>
+<span class="price">{{= local.price | currency =}}</span>
+```
+### Conditional
+```html
+<!-- if(condition) -->
+{{? true ?}}
+<!-- else if(condition) -->
+{{?? false ??}}
+<!-- else -->
+{{? ?}}
+<!-- close if -->
+{{/?}}
+```
+### Iteration
+```html
+<!-- start loop -->
+{{~ local.arrayOrObject :value,key: ~}}
+<!-- use value or key in here -->
+{{= key =}}: {{= value =}}
+<!-- end loop -->
+{{/~}}
+```
+### JavaScript
+```html
+<!-- define custom variable -->
+{{- var variable = 'example content'; -}}
+<!-- do whate ever you want -->
+{{- function localFn(x, y){return x > y;} -}}
+<!-- use your custom code -->
+<!-- prints "EXAMPLE CONTENT" -->
+{{= variable | uppercase =}}
+<!-- prints "5 is bigger then 2" -->
+{{? localFn(5,2) ?}}{{= '5 is bigger then 2' =}}{{/?}}
+```
+### Comments
+```html
+{{* comment which is not visible after compilation *}}
+```
