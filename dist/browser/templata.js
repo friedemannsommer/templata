@@ -242,7 +242,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    Compiler.prototype.compile = function (template) {
 	        if (typeof template !== 'string') {
-	            throw new Error("Expected parameter \"template\" tobe typeof \"string\" but instead got \"" + typeof template + "\"");
+	            throw new Error("Expected parameter \"template\" to be typeof \"string\" but instead got \"" + typeof template + "\"");
 	        }
 	        this.dispatch('COMPILE_START');
 	        template = escape_1.default(template);
