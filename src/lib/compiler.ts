@@ -196,7 +196,7 @@ export default class Compiler implements Templata.Interface.Compiler {
 
     public compile(template: string): Templata.Interface.CompileFunction {
         if (typeof template !== 'string') {
-            throw new Error(`Expected parameter "template" tobe typeof "string" but instead got "${typeof template}"`)
+            throw new Error(`Expected parameter "template" to be typeof "string" but instead got "${typeof template}"`)
         }
 
         this.dispatch('COMPILE_START')
