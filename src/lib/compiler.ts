@@ -180,12 +180,7 @@ export default class Compiler implements Templata.Interface.Compiler {
     }
 
     public callProvider(name: string, ...args: any[]): any {
-        try {
-            return this._provider[name].apply(undefined, [name, ...args])
-        } catch (e) {
-            // bubble the error to caller
-            throw e
-        }
+        return this._provider[name].apply(undefined, [name, ...args])
     }
 
     public initialize(helper: Templata.Interface.InitializeFunction): Compiler {
@@ -216,15 +211,64 @@ export default class Compiler implements Templata.Interface.Compiler {
     private _createTemplateFunction(source: string): Templata.Interface.CompileFunction {
         this.dispatch('COMPILE_END')
 
-        try {
-            return new Function(
-                this._importNames.join(','),
-                'return ' + source
-            ).apply(undefined, this._importValues)
-        } catch (e) {
-            // bubble the error to caller
-            throw e
+        return new Function(
+            this._importNames.join(','),
+            'return ' + source
+        ).apply(undefined, this._importValues)
+    }
+
+    private _optimizeTemplate(template: string): string {
+        return this._optimizeFnSource(
+            this._addFnBody(
+                template
+                    .replace(this.replaceExpressions.EMPTY_COMMENT_TAG, '')
+                    .replace(this.replaceExpressions.BEFORE_HTML_TAG, '<')
+                    .replace(this.replaceExpressions.AFTER_HTML_TAG, '>')
+                    .replace(this.replaceExpressions.NEW_LINE, '')
+            )
+        )
+    }
+
+    private _addFnBody(template: string): string {
+        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){'
+            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});'
+            + 'var ' + Compiler.settings.VARIABLE_PRINT + '=\'\';'
+            + this.buffer.START + template + this.buffer.END
+            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';}'
+    }
+
+    private _optimizeFnSource(template: string): string {
+        return template
+            .replace(this.replaceExpressions.EMPTY_START_APPEND_BUFFER, '$1+=')
+            .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
+            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '')
+            .replace(this.replaceExpressions.EMPTY_LINES, '')
+    }
+
+    private _concatTemplateParts(matches: Object[], template: string): string {
+        const length: number = matches.length
+        const parts: string[] = []
+        let index: number = -1
+        let previous: Object
+
+        while (++index < length) {
+            if (!previous) {
+                parts.push(template.slice(0, matches[index]['start']))
+                parts.push(matches[index]['content'])
+            } else {
+                parts.push(template.slice(previous['end'], matches[index]['start']))
+                parts.push(matches[index]['content'])
+            }
+
+            previous = matches[index]
         }
+
+        if (previous !== undefined) {
+            parts.push(template.slice(previous['end']))
+            template = parts.join('')
+        }
+
+        return template
     }
 
     private _matchBlocks(input: string): Object[] {
@@ -337,45 +381,11 @@ export default class Compiler implements Templata.Interface.Compiler {
             }
         }
 
-        if (previous && previous > -1) {
+        if (previous !== undefined && previous > -1) {
             filter.push(stringTrim(parameter.slice(previous + filterSeperator.length)))
         }
 
         return filter
-    }
-
-    private _concatTemplateParts(matches: Object[], template: string): string {
-        const length: number = matches.length
-        const parts: string[] = []
-        let index: number = -1
-        let previous: Object
-
-        while (++index < length) {
-            if (!previous) {
-                parts.push(template.slice(0, matches[index]['start']))
-                parts.push(matches[index]['content'])
-            } else {
-                parts.push(template.slice(previous['end'], matches[index]['start']))
-                parts.push(matches[index]['content'])
-            }
-
-            previous = matches[index]
-        }
-
-        if (previous) {
-            parts.push(template.slice(previous['end']))
-            template = parts.join('')
-        }
-
-        return template
-    }
-
-    private _addFnBody(template: string): string {
-        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){'
-            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});'
-            + 'var ' + Compiler.settings.VARIABLE_PRINT + '=\'\';'
-            + this.buffer.START + template + this.buffer.END
-            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';}'
     }
 
     private _removeBlockFilter(parameter: string): string {
@@ -389,26 +399,6 @@ export default class Compiler implements Templata.Interface.Compiler {
         }
 
         return parameter
-    }
-
-    private _optimizeTemplate(template: string): string {
-        return this._optimizeFnSource(
-            this._addFnBody(
-                template
-                    .replace(this.replaceExpressions.EMPTY_COMMENT_TAG, '')
-                    .replace(this.replaceExpressions.BEFORE_HTML_TAG, '<')
-                    .replace(this.replaceExpressions.AFTER_HTML_TAG, '>')
-                    .replace(this.replaceExpressions.NEW_LINE, '')
-            )
-        )
-    }
-
-    private _optimizeFnSource(template: string): string {
-        return template
-            .replace(this.replaceExpressions.EMPTY_START_APPEND_BUFFER, '$1+=')
-            .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
-            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '')
-            .replace(this.replaceExpressions.EMPTY_LINES, '')
     }
 
     private _callFilterList(filterList: string[], input: string): string {
