@@ -192,12 +192,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        for (var _i = 1; _i < arguments.length; _i++) {
 	            args[_i - 1] = arguments[_i];
 	        }
-	        try {
-	            return this._provider[name].apply(undefined, [name].concat(args));
-	        }
-	        catch (e) {
-	            throw e;
-	        }
+	        return this._provider[name].apply(undefined, [name].concat(args));
 	    };
 	    Compiler.prototype.initialize = function (helper) {
 	        helper(this);
@@ -213,12 +208,50 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	    Compiler.prototype._createTemplateFunction = function (source) {
 	        this.dispatch('COMPILE_END');
-	        try {
-	            return new Function(this._importNames.join(','), 'return ' + source).apply(undefined, this._importValues);
+	        return new Function(this._importNames.join(','), 'return ' + source).apply(undefined, this._importValues);
+	    };
+	    Compiler.prototype._optimizeTemplate = function (template) {
+	        return this._optimizeFnSource(this._addFnBody(template
+	            .replace(this.replaceExpressions.EMPTY_COMMENT_TAG, '')
+	            .replace(this.replaceExpressions.BEFORE_HTML_TAG, '<')
+	            .replace(this.replaceExpressions.AFTER_HTML_TAG, '>')
+	            .replace(this.replaceExpressions.NEW_LINE, '')));
+	    };
+	    Compiler.prototype._addFnBody = function (template) {
+	        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){'
+	            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});'
+	            + 'var ' + Compiler.settings.VARIABLE_PRINT + '=\'\';'
+	            + this.buffer.START + template + this.buffer.END
+	            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';}';
+	    };
+	    Compiler.prototype._optimizeFnSource = function (template) {
+	        return template
+	            .replace(this.replaceExpressions.EMPTY_START_APPEND_BUFFER, '$1+=')
+	            .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
+	            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '')
+	            .replace(this.replaceExpressions.EMPTY_LINES, '');
+	    };
+	    Compiler.prototype._concatTemplateParts = function (matches, template) {
+	        var length = matches.length;
+	        var parts = [];
+	        var index = -1;
+	        var previous;
+	        while (++index < length) {
+	            if (!previous) {
+	                parts.push(template.slice(0, matches[index]['start']));
+	                parts.push(matches[index]['content']);
+	            }
+	            else {
+	                parts.push(template.slice(previous['end'], matches[index]['start']));
+	                parts.push(matches[index]['content']);
+	            }
+	            previous = matches[index];
 	        }
-	        catch (e) {
-	            throw e;
+	        if (previous !== undefined) {
+	            parts.push(template.slice(previous['end']));
+	            template = parts.join('');
 	        }
+	        return template;
 	    };
 	    Compiler.prototype._matchBlocks = function (input) {
 	        var matches = [];
@@ -300,39 +333,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                filter.push(string_trim_1.default(parameter.slice(previous + filterSeperator.length, index)));
 	            }
 	        }
-	        if (previous && previous > -1) {
+	        if (previous !== undefined && previous > -1) {
 	            filter.push(string_trim_1.default(parameter.slice(previous + filterSeperator.length)));
 	        }
 	        return filter;
-	    };
-	    Compiler.prototype._concatTemplateParts = function (matches, template) {
-	        var length = matches.length;
-	        var parts = [];
-	        var index = -1;
-	        var previous;
-	        while (++index < length) {
-	            if (!previous) {
-	                parts.push(template.slice(0, matches[index]['start']));
-	                parts.push(matches[index]['content']);
-	            }
-	            else {
-	                parts.push(template.slice(previous['end'], matches[index]['start']));
-	                parts.push(matches[index]['content']);
-	            }
-	            previous = matches[index];
-	        }
-	        if (previous) {
-	            parts.push(template.slice(previous['end']));
-	            template = parts.join('');
-	        }
-	        return template;
-	    };
-	    Compiler.prototype._addFnBody = function (template) {
-	        return 'function anonymous(' + Compiler.settings.VARIABLE_NAME + '){'
-	            + Compiler.settings.VARIABLE_NAME + ' || (' + Compiler.settings.VARIABLE_NAME + ' = {});'
-	            + 'var ' + Compiler.settings.VARIABLE_PRINT + '=\'\';'
-	            + this.buffer.START + template + this.buffer.END
-	            + 'return ' + Compiler.settings.VARIABLE_PRINT + ';}';
 	    };
 	    Compiler.prototype._removeBlockFilter = function (parameter) {
 	        var filterSeperator = Compiler.settings.DELIMITER.SPACE
@@ -343,20 +347,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return parameter.slice(0, index);
 	        }
 	        return parameter;
-	    };
-	    Compiler.prototype._optimizeTemplate = function (template) {
-	        return this._optimizeFnSource(this._addFnBody(template
-	            .replace(this.replaceExpressions.EMPTY_COMMENT_TAG, '')
-	            .replace(this.replaceExpressions.BEFORE_HTML_TAG, '<')
-	            .replace(this.replaceExpressions.AFTER_HTML_TAG, '>')
-	            .replace(this.replaceExpressions.NEW_LINE, '')));
-	    };
-	    Compiler.prototype._optimizeFnSource = function (template) {
-	        return template
-	            .replace(this.replaceExpressions.EMPTY_START_APPEND_BUFFER, '$1+=')
-	            .replace(this.replaceExpressions.EMPTY_APPEND_BUFFER, '')
-	            .replace(this.replaceExpressions.EMPTY_START_BUFFER, '')
-	            .replace(this.replaceExpressions.EMPTY_LINES, '');
 	    };
 	    Compiler.prototype._callFilterList = function (filterList, input) {
 	        var filterLength = filterList.length;
