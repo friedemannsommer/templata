@@ -8,7 +8,7 @@
         "outDir": "./dist/node",
         "module": "commonjs",
         "reactNamespace": "React",
-        "moduleResolution": "classic",
+        "moduleResolution": "node",
         "noEmit": false,
         "allowJs": false,
         "sourceMap": false,
