@@ -1,0 +1,15 @@
+{
+    "ignore": [
+        "./dist",
+        "./web-src",
+        "**/node_modules/**"
+    ],
+    "test": [
+        "./spec"
+    ],
+    "critics": {
+        "lint": {
+            "engine": "tslint"
+        }
+    }
+}
