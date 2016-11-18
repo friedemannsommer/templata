@@ -443,14 +443,12 @@ function run() {
 
             it('dispatch should call listener with given data',
                 (done) => {
-                    const data = [0, 1]
-
                     compiler.on('SOME_EVENT', (name, templataCompiler, ...eventData) => {
-                        expect(eventData).to.equal(data)
+                        expect(eventData).to.deep.equal([0, 1])
                         done()
                     })
 
-                    compiler.dispatch('SOME_EVENT')
+                    compiler.dispatch('SOME_EVENT', 0, 1)
                 }
             )
 
