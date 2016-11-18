@@ -2,7 +2,7 @@
     "env": {
         "jasmine": false,
         "browser": false,
-        "mocha": false,
+        "mocha": true,
         "node": true,
         "amd": false,
         "es6": true

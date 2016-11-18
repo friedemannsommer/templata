@@ -1,58 +1,60 @@
 const templata = require('../index')
-const mocha = require('mocha')
+
+require('mocha')
 const chai = require('chai')
+
 const expect = chai.expect
 
+/* eslint-disable no-underscore-dangle, no-unused-expressions */
 function run() {
-    describe('Templata.Compiler', function () {
-        describe('Templata.Compiler#settings', function () {
-            it('settings should be a Object', function () {
-                expect(templata.compiler.settings).to.be.an('object')
+    describe('Templata.Compiler', () => {
+        describe('Templata.Compiler#settings', () => {
+            it('settings should be a Object', () => {
+                expect(templata.Compiler.settings).to.be.an('object')
             })
 
             it('settings should be all Uppercase',
-                function () {
-                    const keys = Object.keys(templata.compiler.settings)
+                () => {
+                    const keys = Object.keys(templata.Compiler.settings)
 
-                    keys.forEach(function (value) {
+                    keys.forEach((value) => {
                         expect(value).to.be.equal(value.toUpperCase())
                     })
                 }
             )
 
             it('settings should have non empty default values',
-                function () {
-                    const keys = Object.keys(templata.compiler.settings)
-                    let allNonEmpty = true
+                () => {
+                    const keys = Object.keys(templata.Compiler.settings)
 
                     keys.forEach((value) => {
-                        expect(templata.compiler.settings[value]).to.be.not.empty
+                        expect(templata.Compiler.settings[value]).to.be.not.empty
                     })
                 }
             )
         })
 
-        describe('Templata.Compiler#constructor', function () {
+        describe('Templata.Compiler#constructor', () => {
             it('constructor should return valid instance',
-                function () {
-                    const compiler = new templata.compiler()
+                () => {
+                    const compiler = new templata.Compiler()
 
-                    expect(compiler).to.be.an.instanceof(templata.compiler)
+                    expect(compiler).to.be.an.instanceof(templata.Compiler)
                 }
             )
         })
 
         /* Import */
 
-        describe('Templata.Compiler#registerImport', function () {
+        describe('Templata.Compiler#registerImport', () => {
             let compiler
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('registerImport should add import',
-                function () {
+                () => {
                     compiler.registerImport('test', true)
 
                     // accessing private property (! dont do this !)
@@ -62,7 +64,7 @@ function run() {
             )
 
             it('registerImport should not throw an error when import already exists',
-                function () {
+                () => {
                     expect(compiler.registerImport.bind(compiler, 'test', true))
                         .to.not.throw(Error)
                     expect(compiler.registerImport.bind(compiler, 'test', true))
@@ -71,36 +73,36 @@ function run() {
             )
         })
 
-        describe('Templata.Compiler#hasImport', function () {
+        describe('Templata.Compiler#hasImport', () => {
             let compiler
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('hasImport should return false if import does not exist',
-                function () {
+                () => {
                     expect(compiler.hasImport('not-existing')).to.be.false
                 }
             )
 
             it('hasImport should return true if import does exist',
-                function () {
+                () => {
                     compiler.registerImport('existing', true)
                     expect(compiler.hasImport('existing')).to.be.true
                 }
             )
         })
 
-        describe('Templata.Compiler#removeImport', function () {
+        describe('Templata.Compiler#removeImport', () => {
             let compiler
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('removeImport should remove given import',
-                function () {
+                () => {
                     compiler.registerImport('test', true)
                     compiler.removeImport('test')
 
@@ -111,7 +113,7 @@ function run() {
             )
 
             it('removeImport should not throw an exception when import does not exist',
-                function () {
+                () => {
                     expect(compiler.removeImport.bind(compiler, 'test'))
                         .to.not.throw(Error)
                 }
@@ -120,30 +122,30 @@ function run() {
 
         /* Helper */
 
-        describe('Templata.Compiler#registerHelper', function () {
+        describe('Templata.Compiler#registerHelper', () => {
             let compiler
-            let helper = () => { }
+            const helper = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('registerHelper should throw an exception when operator starts with closing-sign',
-                function () {
+                () => {
                     expect(compiler.registerHelper.bind(compiler, '/op', helper))
                         .to.throw(Error)
                 }
             )
 
             it('registerHelper should not throw an exception when operator already exists',
-                function () {
+                () => {
                     expect(compiler.registerHelper.bind(compiler, 'op', helper))
                         .to.not.throw(Error)
                 }
             )
 
             it('registerHelper should add helper',
-                function () {
+                () => {
                     compiler.registerHelper('op', helper)
 
                     // accessing private property (! dont do this !)
@@ -152,38 +154,38 @@ function run() {
             )
         })
 
-        describe('Templata.Compiler#hasHelper', function () {
+        describe('Templata.Compiler#hasHelper', () => {
             let compiler
-            let helper = () => { }
+            const helper = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('hasHelper should return false if helper does not exist',
-                function () {
+                () => {
                     expect(compiler.hasHelper('op')).to.be.false
                 }
             )
 
             it('hasHelper should return true if helper does exist',
-                function () {
+                () => {
                     compiler.registerHelper('op', helper)
                     expect(compiler.hasHelper('op')).to.be.true
                 }
             )
         })
 
-        describe('Templata.Compiler#removeHelper', function () {
+        describe('Templata.Compiler#removeHelper', () => {
             let compiler
-            let helper = () => { }
+            const helper = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('removeHelper should remove given helper',
-                function () {
+                () => {
                     compiler.registerHelper('op', helper)
                     compiler.removeHelper('op')
 
@@ -192,7 +194,7 @@ function run() {
             )
 
             it('removeHelper should not throw an exception when helper does not exist',
-                function () {
+                () => {
                     expect(compiler.removeHelper.bind(compiler, 'op'))
                         .to.not.throw(Error)
                 }
@@ -201,23 +203,23 @@ function run() {
 
         /* Filter */
 
-        describe('Templata.Compiler#registerFilter', function () {
+        describe('Templata.Compiler#registerFilter', () => {
             let compiler
-            let filter = () => { }
+            const filter = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('registerFilter should not throw an exception when filter already exists',
-                function () {
+                () => {
                     expect(compiler.registerFilter.bind(compiler, 'filter', filter))
                         .to.not.throw(Error)
                 }
             )
 
             it('registerFilter should add filter',
-                function () {
+                () => {
                     compiler.registerFilter('filter', filter)
 
                     // accessing private property (! dont do this !)
@@ -226,38 +228,38 @@ function run() {
             )
         })
 
-        describe('Templata.Compiler#hasFilter', function () {
+        describe('Templata.Compiler#hasFilter', () => {
             let compiler
-            let filter = () => { }
+            const filter = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('hasFilter should return false if filter does not exist',
-                function () {
+                () => {
                     expect(compiler.hasFilter('filter')).to.be.false
                 }
             )
 
             it('hasFilter should return true if filter does exist',
-                function () {
+                () => {
                     compiler.registerFilter('filter', filter)
                     expect(compiler.hasFilter('filter')).to.be.true
                 }
             )
         })
 
-        describe('Templata.Compiler#removeFilter', function () {
+        describe('Templata.Compiler#removeFilter', () => {
             let compiler
-            let filter = () => { }
+            const filter = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('removeFilter should remove given filter',
-                function () {
+                () => {
                     compiler.registerFilter('filter', filter)
                     compiler.removeFilter('filter')
 
@@ -267,7 +269,7 @@ function run() {
             )
 
             it('removeFilter should not throw an exception when helper does not exist',
-                function () {
+                () => {
                     expect(compiler.removeFilter.bind(compiler, 'filter'))
                         .to.not.throw(Error)
                 }
@@ -276,23 +278,23 @@ function run() {
 
         /* Provider */
 
-        describe('Templata.Compiler#registerProvider', function () {
+        describe('Templata.Compiler#registerProvider', () => {
             let compiler
-            let provider = () => { }
+            const provider = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('registerProvider should not throw an exception when provider already exists',
-                function () {
+                () => {
                     expect(compiler.registerProvider.bind(compiler, 'provider', provider))
                         .to.not.throw(Error)
                 }
             )
 
             it('registerProvider should add provider',
-                function () {
+                () => {
                     compiler.registerProvider('provider', provider)
 
                     // accessing private property (! dont do this !)
@@ -301,38 +303,38 @@ function run() {
             )
         })
 
-        describe('Templata.Compiler#hasProvider', function () {
+        describe('Templata.Compiler#hasProvider', () => {
             let compiler
-            let provider = () => { }
+            const provider = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('hasProvider should return false if provider does not exist',
-                function () {
+                () => {
                     expect(compiler.hasProvider('provider')).to.be.false
                 }
             )
 
             it('hasProvider should return true if provider does exist',
-                function () {
+                () => {
                     compiler.registerProvider('provider', provider)
                     expect(compiler.hasProvider('provider')).to.be.true
                 }
             )
         })
 
-        describe('Templata.Compiler#removeProvider', function () {
+        describe('Templata.Compiler#removeProvider', () => {
             let compiler
-            let provider = () => { }
+            const provider = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('removeProvider should remove given provider',
-                function () {
+                () => {
                     compiler.registerProvider('provider', provider)
                     compiler.removeProvider('provider')
 
@@ -342,23 +344,23 @@ function run() {
             )
 
             it('removeProvider should not throw an exception when provider does not exist',
-                function () {
+                () => {
                     expect(compiler.removeProvider.bind(compiler, 'provider'))
                         .to.not.throw(Error)
                 }
             )
         })
 
-        describe('Templata.Compiler#callProvider', function () {
+        describe('Templata.Compiler#callProvider', () => {
             let compiler
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('callProvider should call given provider',
-                function (done) {
-                    let provider = () => { done() }
+                (done) => {
+                    const provider = () => { done() }
 
                     compiler.registerProvider('partial', provider)
                     compiler.callProvider('partial')
@@ -366,8 +368,8 @@ function run() {
             )
 
             it('callProvider should call given provider with given data',
-                function (done) {
-                    let provider = (name, templateString) => {
+                (done) => {
+                    const provider = (name, templateString) => {
                         expect(templateString).to.be.an('string')
                         expect(templateString).to.equal('template-string')
                         done()
@@ -381,70 +383,70 @@ function run() {
 
         /* Listener */
 
-        describe('Templata.Compiler#on', function () {
+        describe('Templata.Compiler#on', () => {
             let compiler
-            let callback = () => { }
+            const callback = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('on should add listener',
-                function () {
+                () => {
                     compiler.on('SOME_EVENT', callback)
 
                     // accessing private property (! dont do this !)
                     expect(compiler._listener).to.have.property('SOME_EVENT')
-                    expect(compiler._listener['SOME_EVENT']).to.include(callback)
+                    expect(compiler._listener.SOME_EVENT).to.include(callback)
                 }
             )
         })
 
-        describe('Templata.Compiler#off', function () {
+        describe('Templata.Compiler#off', () => {
             let compiler
-            let callback = () => { }
+            const callback = () => { }
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('off should remove listener',
-                function () {
+                () => {
                     compiler.on('SOME_EVENT', callback)
                     compiler.off('SOME_EVENT', callback)
 
                     // accessing private property (! dont do this !)
                     expect(compiler._listener).to.have.property('SOME_EVENT')
-                    expect(compiler._listener['SOME_EVENT']).to.not.include(callback)
+                    expect(compiler._listener.SOME_EVENT).to.not.include(callback)
                 }
             )
         })
 
-        describe('Templata.Compiler#dispatch', function () {
+        describe('Templata.Compiler#dispatch', () => {
             let compiler
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('dispatch should call listener',
-                function (done) {
-                    let cb = () => { done() }
+                (done) => {
+                    const cb = () => { done() }
                     compiler.on('SOME_EVENT', cb)
 
                     // accessing private property (! dont do this !)
                     expect(compiler._listener).to.have.property('SOME_EVENT')
-                    expect(compiler._listener['SOME_EVENT']).to.include(cb)
+                    expect(compiler._listener.SOME_EVENT).to.include(cb)
                     compiler.dispatch('SOME_EVENT')
                 }
             )
 
             it('dispatch should call listener with given data',
-                function (done) {
-                    let data = [0, 1]
+                (done) => {
+                    const data = [0, 1]
 
-                    compiler.on('SOME_EVENT', (name, templataCompiler, ...data) => {
-                        expect(data).to.equal(data)
+                    compiler.on('SOME_EVENT', (name, templataCompiler, ...eventData) => {
+                        expect(eventData).to.equal(data)
                         done()
                     })
 
@@ -453,9 +455,9 @@ function run() {
             )
 
             it('dispatch should call all listener',
-                function (done) {
+                (done) => {
                     let called = 0
-                    let noop = () => { ++called }
+                    const noop = () => { ++called }
 
                     compiler.on('SOME_EVENT', noop)
                     compiler.on('SOME_EVENT', noop)
@@ -474,17 +476,17 @@ function run() {
 
         /* Initialize */
 
-        describe('Templata.Compiler#initialize', function () {
+        describe('Templata.Compiler#initialize', () => {
             let compiler
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('initialize should call given function with compiler reference',
-                function (done) {
+                (done) => {
                     compiler.initialize((_compiler) => {
-                        expect(_compiler).to.be.an.instanceof(templata.compiler)
+                        expect(_compiler).to.be.an.instanceof(templata.Compiler)
                         expect(_compiler).to.equal(compiler)
                         done()
                     })
@@ -494,15 +496,15 @@ function run() {
 
         /* Compile */
 
-        describe('Templata.Compiler#compile', function () {
+        describe('Templata.Compiler#compile', () => {
             let compiler
 
-            beforeEach(function () {
-                compiler = new templata.compiler()
+            beforeEach(() => {
+                compiler = new templata.Compiler()
             })
 
             it('compile should return a function',
-                function () {
+                () => {
                     const compiledFn = compiler.compile('')
 
                     expect(compiledFn).to.be.a('function')
@@ -512,37 +514,31 @@ function run() {
             )
 
             it('compile should return a function which return the same string as given before to compile (no template blocks)',
-                function () {
+                () => {
                     expect(compiler.compile('')()).to.equal('')
                 }
             )
 
             it('compile should return a function which returns a new template string (registered helper)',
-                function () {
-                    compiler.registerHelper('+', () => {
-                        return 'replaced by helper'
-                    })
+                () => {
+                    compiler.registerHelper('+', () => 'replaced by helper')
 
                     expect(compiler.compile('{{+ +}}')()).to.equal('replaced by helper')
                 }
             )
 
             it('compile should return new template string (registered helper)',
-                function () {
-                    compiler.registerHelper('=', () => {
-                        return 'replaced by helper'
-                    })
+                () => {
+                    compiler.registerHelper('=', () => 'replaced by helper')
 
-                    compiler.registerFilter('filter', () => {
-                        return 'replaced by filter'
-                    })
+                    compiler.registerFilter('filter', () => 'replaced by filter')
 
                     expect(compiler.compile('{{= "hi" | filter =}}')()).to.equal('replaced by filter')
                 }
             )
 
             it('compile should call helper with all block parameter',
-                function (done) {
+                (done) => {
                     compiler.registerHelper('=',
                         (operator, parameter, selfClosingTag, closingTag, buffer, _compiler) => {
                             expect(operator).to.equal('=')
@@ -553,7 +549,7 @@ function run() {
                             // accessing private property (! dont do this !)
                             expect(buffer).to.equal(compiler.buffer)
                             expect(_compiler).to.equal(compiler)
-                            expect(_compiler).to.be.an.instanceof(templata.compiler)
+                            expect(_compiler).to.be.an.instanceof(templata.Compiler)
                             done()
                         }
                     )
@@ -563,10 +559,8 @@ function run() {
             )
 
             it('compile should call filter with all buffer parameter',
-                function (done) {
-                    compiler.registerHelper('=', (operator) => {
-                        return operator
-                    })
+                (done) => {
+                    compiler.registerHelper('=', operator => operator)
 
                     compiler.registerFilter('filter',
                         (name, input, buffer, _compiler) => {
@@ -577,7 +571,7 @@ function run() {
                             expect(buffer).to.equal(compiler.buffer)
                             expect(buffer).to.be.an('object')
                             expect(_compiler).to.equal(compiler)
-                            expect(_compiler).to.be.an.instanceof(templata.compiler)
+                            expect(_compiler).to.be.an.instanceof(templata.Compiler)
                             done()
                         }
                     )
