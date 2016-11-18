@@ -1,11 +1,11 @@
 {
     "ignore": [
-        "./dist",
-        "./web-src",
+        "dist/",
+        "web-src/",
         "**/node_modules/**"
     ],
     "test": [
-        "./spec"
+        "spec/"
     ],
     "critics": {
         "lint": {
