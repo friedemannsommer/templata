@@ -394,21 +394,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	    Compiler.prototype._setupBuffer = function () {
 	        this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\'';
 	    };
-	    Compiler.settings = {
-	        VARIABLE_NAME: 'local',
-	        VARIABLE_PRINT: '__print',
-	        DELIMITER: {
-	            FILTER_SEPERATOR: '|',
-	            OPENING_BLOCK: '{{',
-	            CLOSING_BLOCK: '}}',
-	            CLOSING: '/',
-	            SPACE: ' '
-	        }
-	    };
 	    return Compiler;
 	}());
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Compiler;
+	Compiler.settings = {
+	    VARIABLE_NAME: 'local',
+	    VARIABLE_PRINT: '__print',
+	    DELIMITER: {
+	        FILTER_SEPERATOR: '|',
+	        OPENING_BLOCK: '{{',
+	        CLOSING_BLOCK: '}}',
+	        CLOSING: '/',
+	        SPACE: ' '
+	    }
+	};
 
 
 /***/ },

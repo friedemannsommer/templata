@@ -1,11 +1,11 @@
 "use strict";
-var parse_parameter_1 = require('../lib/parse-parameter');
-var string_trim_1 = require('../lib/string-trim');
-var each_object_1 = require('../lib/each-object');
-var each_array_1 = require('../lib/each-array');
-var is_object_1 = require('../lib/is-object');
-var is_array_1 = require('../lib/is-array');
-var iterator_1 = require('../lib/iterator');
+var parse_parameter_1 = require("../lib/parse-parameter");
+var string_trim_1 = require("../lib/string-trim");
+var each_object_1 = require("../lib/each-object");
+var each_array_1 = require("../lib/each-array");
+var is_object_1 = require("../lib/is-object");
+var is_array_1 = require("../lib/is-array");
+var iterator_1 = require("../lib/iterator");
 var iteratorIndexer;
 function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler) {
     compiler.registerImport('__isArray', is_array_1.default);

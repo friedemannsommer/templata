@@ -1,5 +1,5 @@
 "use strict";
-var object_keys_1 = require('./object-keys');
+var object_keys_1 = require("./object-keys");
 var largeObjectLength = 25;
 function preCompileIterator(properties) {
     var index = -1;

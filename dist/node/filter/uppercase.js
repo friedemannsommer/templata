@@ -1,5 +1,5 @@
 "use strict";
-var remove_previous_buffer_1 = require('../lib/remove-previous-buffer');
+var remove_previous_buffer_1 = require("../lib/remove-previous-buffer");
 function uppercase(input) {
     return input.toLocaleUpperCase();
 }

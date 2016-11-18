@@ -1,5 +1,5 @@
 "use strict";
-var get_type_1 = require('./get-type');
+var get_type_1 = require("./get-type");
 function isArray(value) {
     return (typeof Array.isArray === 'function')
         ? Array.isArray(value)

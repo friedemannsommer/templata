@@ -1,8 +1,8 @@
 "use strict";
-var regex_escape_1 = require('./regex-escape');
-var object_keys_1 = require('./object-keys');
-var string_trim_1 = require('./string-trim');
-var escape_1 = require('./escape');
+var regex_escape_1 = require("./regex-escape");
+var object_keys_1 = require("./object-keys");
+var string_trim_1 = require("./string-trim");
+var escape_1 = require("./escape");
 var RegEx;
 (function (RegEx) {
     RegEx[RegEx["FULL_MATCH"] = 0] = "FULL_MATCH";
@@ -338,18 +338,18 @@ var Compiler = (function () {
     Compiler.prototype._setupBuffer = function () {
         this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\'';
     };
-    Compiler.settings = {
-        VARIABLE_NAME: 'local',
-        VARIABLE_PRINT: '__print',
-        DELIMITER: {
-            FILTER_SEPERATOR: '|',
-            OPENING_BLOCK: '{{',
-            CLOSING_BLOCK: '}}',
-            CLOSING: '/',
-            SPACE: ' '
-        }
-    };
     return Compiler;
 }());
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Compiler;
+Compiler.settings = {
+    VARIABLE_NAME: 'local',
+    VARIABLE_PRINT: '__print',
+    DELIMITER: {
+        FILTER_SEPERATOR: '|',
+        OPENING_BLOCK: '{{',
+        CLOSING_BLOCK: '}}',
+        CLOSING: '/',
+        SPACE: ' '
+    }
+};

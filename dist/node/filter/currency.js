@@ -1,6 +1,6 @@
 "use strict";
-var remove_previous_buffer_1 = require('../lib/remove-previous-buffer');
-var string_trim_1 = require('../lib/string-trim');
+var remove_previous_buffer_1 = require("../lib/remove-previous-buffer");
+var string_trim_1 = require("../lib/string-trim");
 function currency(input) {
     return input.replace(/(?:([0-9]+?[\.\,]+?[0-9]+?)|([0-9]+?))(?:\s|[^0-9]|$)/g, function (match, floatString) {
         if (floatString.indexOf(',') > -1) {

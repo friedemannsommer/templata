@@ -1,5 +1,5 @@
 "use strict";
-var string_trim_1 = require('./string-trim');
+var string_trim_1 = require("./string-trim");
 function parseParameter(input, blockSeperator, seperator) {
     if (blockSeperator === void 0) { blockSeperator = ':'; }
     if (seperator === void 0) { seperator = ','; }
