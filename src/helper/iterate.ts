@@ -1,16 +1,23 @@
 /// <reference path="../typings/index.d.ts" />
 
+import eachArray from '../lib/each-array'
+import eachObject from '../lib/each-object'
+import isArray from '../lib/is-array'
+import isObject from '../lib/is-object'
+import iterator from '../lib/iterator'
 import parseParameter from '../lib/parse-parameter'
 import stringTrim from '../lib/string-trim'
-import eachObject from '../lib/each-object'
-import eachArray from '../lib/each-array'
-import isObject from '../lib/is-object'
-import isArray from '../lib/is-array'
-import iterator from '../lib/iterator'
 
 let iteratorIndexer: () => number
 
-function iterate(operator: string, parameter: string, selfClosing: boolean, closingTag: boolean, buffer: Templata.Object.Buffer, compiler: Templata.Interface.Compiler): string {
+function iterate(
+    operator: string,
+    parameter: string,
+    selfClosing: boolean,
+    closingTag: boolean,
+    buffer: Templata.IBuffer,
+    compiler: Templata.ICompiler
+): string {
     compiler.registerImport('__isArray', isArray)
     compiler.registerImport('__isObject', isObject)
     compiler.registerImport('__eachArray', eachArray)
@@ -40,7 +47,7 @@ function iterate(operator: string, parameter: string, selfClosing: boolean, clos
     return parameter
 }
 
-function initialize(compiler: Templata.Interface.Compiler) {
+function initialize(compiler: Templata.ICompiler) {
     compiler.on('COMPILE_START', () => {
         iteratorIndexer = iterator(0)
     })

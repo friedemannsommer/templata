@@ -3,35 +3,35 @@
 import TemplateCompiler from './lib/compiler'
 
 // helper
-import {iterate as helperIterate, initialize as initializeIterate} from './helper/iterate'
-import helperJavascript from './helper/pure-javascript'
-import helperHTMLEscape from './helper/encode-value'
-import helperCondition from './helper/condition'
 import helperComment from './helper/comment'
+import helperCondition from './helper/condition'
+import helperHTMLEscape from './helper/encode-value'
+import { initialize as initializeIterate, iterate as helperIterate } from './helper/iterate'
 import helperPrint from './helper/print'
+import helperJavascript from './helper/pure-javascript'
 
 // filter
+import filterCurrency from './filter/currency'
 import filterLowercase from './filter/lowercase'
 import filterUppercase from './filter/uppercase'
-import filterCurrency from './filter/currency'
 
 const defaultHelper: Object = {
-    '??': helperCondition,
-    '-': helperJavascript,
     '!': helperHTMLEscape,
-    '?': helperCondition,
-    '~': helperIterate,
     '*': helperComment,
-    '=': helperPrint
+    '-': helperJavascript,
+    '=': helperPrint,
+    '?': helperCondition,
+    '??': helperCondition,
+    '~': helperIterate
 }
 
 const defaultFilter: Object = {
-    'lowercase': filterLowercase,
-    'uppercase': filterUppercase,
-    'currency': filterCurrency
+    currency: filterCurrency,
+    lowercase: filterLowercase,
+    uppercase: filterUppercase
 }
 
-function template(template: string, imports: Object = {}): Templata.Interface.CompileFunction {
+function template(template: string, imports: Object = {}): Templata.ICompileFunction {
     return new TemplateCompiler(imports, defaultHelper, defaultFilter).initialize(initializeIterate).compile(template)
 }
 

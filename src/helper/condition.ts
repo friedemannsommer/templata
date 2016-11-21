@@ -3,7 +3,14 @@
 import stringTrim from '../lib/string-trim'
 import unescape from '../lib/unescape'
 
-export default function (operator: string, parameter: string, selfClosing: boolean, closingTag: boolean, buffer: Templata.Object.Buffer, compiler: Templata.Interface.Compiler): string {
+export default function(
+    operator: string,
+    parameter: string,
+    selfClosing: boolean,
+    closingTag: boolean,
+    buffer: Templata.IBuffer,
+    compiler: Templata.ICompiler
+): string {
     if (closingTag) {
         return buffer.END + '}' + buffer.START
     }
@@ -25,7 +32,7 @@ export default function (operator: string, parameter: string, selfClosing: boole
                 // else
                 return buffer.END + '}else{' + buffer.START
             }
+        default:
+            return parameter
     }
-
-    return parameter
 }

@@ -1,7 +1,7 @@
 "use strict";
 function iterate(array, fn) {
     var index = -1;
-    var length = array.length >>> 0;
+    var length = array.length;
     while (++index < length) {
         if (fn(array[index], index, array) === false) {
             break;

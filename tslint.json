@@ -1,4 +1,7 @@
 {
+    "extends": [
+        "tslint:recommended"
+    ],
     "rulesDirectory": [
         "src/typings"
     ],
@@ -10,21 +13,15 @@
             "log",
             "error"
         ],
+        "max-line-length": [
+            true,
+            140
+        ],
         "no-debugger": true,
-        "no-duplicate-key": true,
-        "no-duplicate-variable": true,
         "no-empty": true,
         "no-eval": true,
-        "no-invalid-this": true,
-        "no-unreachable": true,
         "radix": true,
         "no-var-keyword": true,
-        "no-unused-variable": [
-            true,
-            {
-                "ignore-pattern": "^_"
-            }
-        ],
         "no-unused-expression": true,
         "eofline": true,
         "indent": [
@@ -51,7 +48,18 @@
             true,
             "never"
         ],
+        "whitespace": [
+            true,
+            [
+                "check-branch",
+                "check-decl",
+                "check-operator",
+                "check-separator",
+                "check-type"
+            ]
+        ],
         "no-reference": false,
+        "variable-name": false,
         "no-var-requires": true
     }
 }

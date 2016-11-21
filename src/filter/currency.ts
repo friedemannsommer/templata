@@ -13,7 +13,12 @@ function currency(input: string): string {
     })
 }
 
-function filterCurrency(name: string, input: string, buffer: Templata.Object.Buffer, compiler: Templata.Interface.Compiler): string {
+function filterCurrency(
+    name: string,
+    input: string,
+    buffer: Templata.IBuffer,
+    compiler: Templata.ICompiler
+): string {
     compiler.registerImport('__f_currency', currency)
 
     return buffer.APPEND + '__f_currency(' + stringTrim(removePreviousBuffer(input, buffer)) + ')' + buffer.POST_APPEND

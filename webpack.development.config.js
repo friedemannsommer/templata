@@ -1,4 +1,5 @@
 const path = require('path')
+// eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('webpack')
 
 module.exports = {
@@ -31,13 +32,6 @@ module.exports = {
         extensions: ['', '.js', '.ts']
     },
     module: {
-        preLoaders: [
-            {
-                test: /\.ts$/,
-                exclude: /node_modules$/,
-                loader: 'tslint'
-            }
-        ],
         loaders: [
             {
                 test: /\.ts$/,

@@ -1,8 +1,8 @@
 "use strict";
-var regex_escape_1 = require("./regex-escape");
-var object_keys_1 = require("./object-keys");
-var string_trim_1 = require("./string-trim");
 var escape_1 = require("./escape");
+var object_keys_1 = require("./object-keys");
+var regex_escape_1 = require("./regex-escape");
+var string_trim_1 = require("./string-trim");
 var RegEx;
 (function (RegEx) {
     RegEx[RegEx["FULL_MATCH"] = 0] = "FULL_MATCH";
@@ -14,23 +14,23 @@ var Compiler = (function () {
         if (filter === void 0) { filter = {}; }
         if (provider === void 0) { provider = {}; }
         this.replaceExpressions = {
-            NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g,
             AFTER_HTML_TAG: />\s+/g,
             BEFORE_HTML_TAG: /\s+</g,
+            EMPTY_APPEND_BUFFER: /\s*\+\s*([\'\"]{1})\1/g,
             EMPTY_COMMENT_TAG: /<!--[\s\S]*?-->/g,
             EMPTY_LINES: /^(?:\s*?)$/gm,
-            EMPTY_APPEND_BUFFER: /\s*\+\s*([\'\"]{1})\1/g,
             EMPTY_START_APPEND_BUFFER: null,
-            EMPTY_START_BUFFER: null
+            EMPTY_START_BUFFER: null,
+            NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g
         };
         this.matchExpressions = {
             BLOCK_LIST: null
         };
         this.buffer = {
             APPEND: '\'+(',
+            END: '\';\n',
             POST_APPEND: ')+\'',
-            START: null,
-            END: '\';\n'
+            START: null
         };
         this._setupImports(imports);
         this._provider = provider;
@@ -182,17 +182,17 @@ var Compiler = (function () {
         var previous;
         while (++index < length) {
             if (!previous) {
-                parts.push(template.slice(0, matches[index]['start']));
-                parts.push(matches[index]['content']);
+                parts.push(template.slice(0, matches[index].start));
+                parts.push(matches[index].content);
             }
             else {
-                parts.push(template.slice(previous['end'], matches[index]['start']));
-                parts.push(matches[index]['content']);
+                parts.push(template.slice(previous.end, matches[index].start));
+                parts.push(matches[index].content);
             }
             previous = matches[index];
         }
         if (previous !== undefined) {
-            parts.push(template.slice(previous['end']));
+            parts.push(template.slice(previous.end));
             template = parts.join('');
         }
         return template;
@@ -201,12 +201,14 @@ var Compiler = (function () {
         var matches = [];
         var match;
         this.matchExpressions.BLOCK_LIST.lastIndex = 0;
-        while ((match = this.matchExpressions.BLOCK_LIST.exec(input)) !== null) {
+        match = this.matchExpressions.BLOCK_LIST.exec(input);
+        while (match !== null) {
             matches.push({
-                start: match.index,
                 content: this._parseBlock(match),
-                end: match.index + match[RegEx.FULL_MATCH].length
+                end: match.index + match[RegEx.FULL_MATCH].length,
+                start: match.index
             });
+            match = this.matchExpressions.BLOCK_LIST.exec(input);
         }
         return matches;
     };
@@ -230,10 +232,10 @@ var Compiler = (function () {
         var parameter = this._getBlockParameter(blockString, operator, selfClosing);
         var filter = this._getBlockFilter(parameter);
         return {
-            OPERATOR: operator,
-            FILTER: filter,
-            PARAMETER: this._removeBlockFilter(parameter),
             CLOSING: closing,
+            FILTER: filter,
+            OPERATOR: operator,
+            PARAMETER: this._removeBlockFilter(parameter),
             SELF_CLOSING: selfClosing
         };
     };
@@ -343,13 +345,13 @@ var Compiler = (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Compiler;
 Compiler.settings = {
-    VARIABLE_NAME: 'local',
-    VARIABLE_PRINT: '__print',
     DELIMITER: {
+        CLOSING: '/',
+        CLOSING_BLOCK: '}}',
         FILTER_SEPERATOR: '|',
         OPENING_BLOCK: '{{',
-        CLOSING_BLOCK: '}}',
-        CLOSING: '/',
         SPACE: ' '
-    }
+    },
+    VARIABLE_NAME: 'local',
+    VARIABLE_PRINT: '__print'
 };

@@ -56,28 +56,28 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 	var compiler_1 = __webpack_require__(1);
-	var iterate_1 = __webpack_require__(6);
-	var pure_javascript_1 = __webpack_require__(15);
-	var encode_value_1 = __webpack_require__(16);
-	var condition_1 = __webpack_require__(18);
-	var comment_1 = __webpack_require__(20);
-	var print_1 = __webpack_require__(21);
-	var lowercase_1 = __webpack_require__(22);
-	var uppercase_1 = __webpack_require__(24);
-	var currency_1 = __webpack_require__(25);
+	var comment_1 = __webpack_require__(6);
+	var condition_1 = __webpack_require__(7);
+	var encode_value_1 = __webpack_require__(9);
+	var iterate_1 = __webpack_require__(11);
+	var print_1 = __webpack_require__(20);
+	var pure_javascript_1 = __webpack_require__(21);
+	var currency_1 = __webpack_require__(22);
+	var lowercase_1 = __webpack_require__(24);
+	var uppercase_1 = __webpack_require__(25);
 	var defaultHelper = {
-	    '??': condition_1.default,
-	    '-': pure_javascript_1.default,
 	    '!': encode_value_1.default,
-	    '?': condition_1.default,
-	    '~': iterate_1.iterate,
 	    '*': comment_1.default,
-	    '=': print_1.default
+	    '-': pure_javascript_1.default,
+	    '=': print_1.default,
+	    '?': condition_1.default,
+	    '??': condition_1.default,
+	    '~': iterate_1.iterate
 	};
 	var defaultFilter = {
-	    'lowercase': lowercase_1.default,
-	    'uppercase': uppercase_1.default,
-	    'currency': currency_1.default
+	    currency: currency_1.default,
+	    lowercase: lowercase_1.default,
+	    uppercase: uppercase_1.default
 	};
 	function template(template, imports) {
 	    if (imports === void 0) { imports = {}; }
@@ -92,10 +92,10 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var regex_escape_1 = __webpack_require__(2);
+	var escape_1 = __webpack_require__(2);
 	var object_keys_1 = __webpack_require__(3);
-	var string_trim_1 = __webpack_require__(4);
-	var escape_1 = __webpack_require__(5);
+	var regex_escape_1 = __webpack_require__(4);
+	var string_trim_1 = __webpack_require__(5);
 	var RegEx;
 	(function (RegEx) {
 	    RegEx[RegEx["FULL_MATCH"] = 0] = "FULL_MATCH";
@@ -107,23 +107,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	        if (filter === void 0) { filter = {}; }
 	        if (provider === void 0) { provider = {}; }
 	        this.replaceExpressions = {
-	            NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g,
 	            AFTER_HTML_TAG: />\s+/g,
 	            BEFORE_HTML_TAG: /\s+</g,
+	            EMPTY_APPEND_BUFFER: /\s*\+\s*([\'\"]{1})\1/g,
 	            EMPTY_COMMENT_TAG: /<!--[\s\S]*?-->/g,
 	            EMPTY_LINES: /^(?:\s*?)$/gm,
-	            EMPTY_APPEND_BUFFER: /\s*\+\s*([\'\"]{1})\1/g,
 	            EMPTY_START_APPEND_BUFFER: null,
-	            EMPTY_START_BUFFER: null
+	            EMPTY_START_BUFFER: null,
+	            NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g
 	        };
 	        this.matchExpressions = {
 	            BLOCK_LIST: null
 	        };
 	        this.buffer = {
 	            APPEND: '\'+(',
+	            END: '\';\n',
 	            POST_APPEND: ')+\'',
-	            START: null,
-	            END: '\';\n'
+	            START: null
 	        };
 	        this._setupImports(imports);
 	        this._provider = provider;
@@ -275,17 +275,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var previous;
 	        while (++index < length) {
 	            if (!previous) {
-	                parts.push(template.slice(0, matches[index]['start']));
-	                parts.push(matches[index]['content']);
+	                parts.push(template.slice(0, matches[index].start));
+	                parts.push(matches[index].content);
 	            }
 	            else {
-	                parts.push(template.slice(previous['end'], matches[index]['start']));
-	                parts.push(matches[index]['content']);
+	                parts.push(template.slice(previous.end, matches[index].start));
+	                parts.push(matches[index].content);
 	            }
 	            previous = matches[index];
 	        }
 	        if (previous !== undefined) {
-	            parts.push(template.slice(previous['end']));
+	            parts.push(template.slice(previous.end));
 	            template = parts.join('');
 	        }
 	        return template;
@@ -294,12 +294,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var matches = [];
 	        var match;
 	        this.matchExpressions.BLOCK_LIST.lastIndex = 0;
-	        while ((match = this.matchExpressions.BLOCK_LIST.exec(input)) !== null) {
+	        match = this.matchExpressions.BLOCK_LIST.exec(input);
+	        while (match !== null) {
 	            matches.push({
-	                start: match.index,
 	                content: this._parseBlock(match),
-	                end: match.index + match[RegEx.FULL_MATCH].length
+	                end: match.index + match[RegEx.FULL_MATCH].length,
+	                start: match.index
 	            });
+	            match = this.matchExpressions.BLOCK_LIST.exec(input);
 	        }
 	        return matches;
 	    };
@@ -323,10 +325,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        var parameter = this._getBlockParameter(blockString, operator, selfClosing);
 	        var filter = this._getBlockFilter(parameter);
 	        return {
-	            OPERATOR: operator,
-	            FILTER: filter,
-	            PARAMETER: this._removeBlockFilter(parameter),
 	            CLOSING: closing,
+	            FILTER: filter,
+	            OPERATOR: operator,
+	            PARAMETER: this._removeBlockFilter(parameter),
 	            SELF_CLOSING: selfClosing
 	        };
 	    };
@@ -436,20 +438,59 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = Compiler;
 	Compiler.settings = {
-	    VARIABLE_NAME: 'local',
-	    VARIABLE_PRINT: '__print',
 	    DELIMITER: {
+	        CLOSING: '/',
+	        CLOSING_BLOCK: '}}',
 	        FILTER_SEPERATOR: '|',
 	        OPENING_BLOCK: '{{',
-	        CLOSING_BLOCK: '}}',
-	        CLOSING: '/',
 	        SPACE: ' '
-	    }
+	    },
+	    VARIABLE_NAME: 'local',
+	    VARIABLE_PRINT: '__print'
 	};
 
 
 /***/ },
 /* 2 */
+/***/ function(module, exports) {
+
+	"use strict";
+	function escape(input) {
+	    return input.replace(/'|\\/g, '\\$&');
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = escape;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	"use strict";
+	function objectKeys(object) {
+	    var output = [];
+	    var forbiddenKeys = [
+	        'toString',
+	        'toLocalString',
+	        'valueOf',
+	        'hasOwnProperty',
+	        'isPrototypeOf',
+	        'propertyIsEnumerable',
+	        'constructor'
+	    ];
+	    for (var key in object) {
+	        if (object.hasOwnProperty(key) && forbiddenKeys.indexOf(key) < 0) {
+	            output.push(key);
+	        }
+	    }
+	    return output;
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = objectKeys;
+
+
+/***/ },
+/* 4 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -485,34 +526,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
-/***/ function(module, exports) {
-
-	"use strict";
-	function objectKeys(object) {
-	    var output = [];
-	    var forbiddenKeys = [
-	        'toString',
-	        'toLocalString',
-	        'valueOf',
-	        'hasOwnProperty',
-	        'isPrototypeOf',
-	        'propertyIsEnumerable',
-	        'constructor'
-	    ];
-	    for (var key in object) {
-	        if (object.hasOwnProperty(key) && forbiddenKeys.indexOf(key) < 0) {
-	            output.push(key);
-	        }
-	    }
-	    return output;
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = objectKeys;
-
-
-/***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -524,63 +538,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	"use strict";
-	function escape(input) {
-	    return input.replace(/'|\\/g, '\\$&');
+	function comment(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+	    return '';
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = escape;
-
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var parse_parameter_1 = __webpack_require__(7);
-	var string_trim_1 = __webpack_require__(4);
-	var each_object_1 = __webpack_require__(8);
-	var each_array_1 = __webpack_require__(9);
-	var is_object_1 = __webpack_require__(10);
-	var is_array_1 = __webpack_require__(11);
-	var iterator_1 = __webpack_require__(14);
-	var iteratorIndexer;
-	function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler) {
-	    compiler.registerImport('__isArray', is_array_1.default);
-	    compiler.registerImport('__isObject', is_object_1.default);
-	    compiler.registerImport('__eachArray', each_array_1.default);
-	    compiler.registerImport('__eachObject', each_object_1.default);
-	    if (closingTag) {
-	        return buffer.END + '}' + buffer.START;
-	    }
-	    if (parameter && parameter !== '') {
-	        var _a = parse_parameter_1.default(parameter, ':', ','), valueVar = _a[0], indexVar = _a[1];
-	        var iterable = string_trim_1.default(parameter.slice(0, parameter.indexOf(':')));
-	        var iteratorIndex = iteratorIndexer();
-	        valueVar = ((valueVar) ? valueVar : 'value_' + iteratorIndex);
-	        indexVar = ((indexVar) ? indexVar : 'key_' + iteratorIndex);
-	        return buffer.END
-	            + 'if(__isArray(' + iterable + ')){__eachArray('
-	            + iterable + ',iterate_' + iteratorIndex + ');}'
-	            + 'else if(__isObject(' + iterable + ')){__eachObject('
-	            + iterable + ',iterate_' + iteratorIndex + ');}'
-	            + 'function iterate_' + iteratorIndex + ' (' + valueVar + ',' + indexVar + '){'
-	            + buffer.START;
-	    }
-	    return parameter;
-	}
-	exports.iterate = iterate;
-	function initialize(compiler) {
-	    compiler.on('COMPILE_START', function () {
-	        iteratorIndexer = iterator_1.default(0);
-	    });
-	}
-	exports.initialize = initialize;
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = iterate;
+	exports.default = comment;
 
 
 /***/ },
@@ -588,168 +554,54 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var string_trim_1 = __webpack_require__(4);
-	function parseParameter(input, blockSeperator, seperator) {
-	    if (blockSeperator === void 0) { blockSeperator = ':'; }
-	    if (seperator === void 0) { seperator = ','; }
-	    var start = input.indexOf(blockSeperator);
-	    var end = input.indexOf(blockSeperator, start + 1);
-	    var parameter = input.slice(start + 1, end).split(seperator);
-	    var index = -1;
-	    var length = parameter.length;
-	    while (++index < length) {
-	        parameter[index] = string_trim_1.default(parameter[index]);
+	var string_trim_1 = __webpack_require__(5);
+	var unescape_1 = __webpack_require__(8);
+	function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+	    if (closingTag) {
+	        return buffer.END + '}' + buffer.START;
 	    }
-	    return parameter;
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = parseParameter;
-
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var object_keys_1 = __webpack_require__(3);
-	var largeObjectLength = 25;
-	function preCompileIterator(properties) {
-	    var index = -1;
-	    var length = properties.length >>> 0;
-	    var fnString = '(function(object, callback){\n';
-	    while (++index < length) {
-	        fnString += 'callback(object["' + properties[index] + '"], "' + properties[index] + '", object);';
+	    switch (operator) {
+	        case '?':
+	            if (parameter && parameter !== '') {
+	                return buffer.END + 'if(' + string_trim_1.default(unescape_1.default(parameter)) + '){' + buffer.START;
+	            }
+	            else {
+	                return buffer.END + '}else{' + buffer.START;
+	            }
+	        case '??':
+	            if (parameter && parameter !== '') {
+	                return buffer.END + '}else if(' + string_trim_1.default(unescape_1.default(parameter)) + '){' + buffer.START;
+	            }
+	            else {
+	                return buffer.END + '}else{' + buffer.START;
+	            }
+	        default:
+	            return parameter;
 	    }
-	    fnString += '\n});';
-	    return eval(fnString);
-	}
-	function iterate(object, callback, keys) {
-	    if (keys === void 0) { keys = object_keys_1.default(object); }
-	    if (keys.length >= largeObjectLength) {
-	        preCompileIterator(keys)(object, callback);
-	    }
-	    else {
-	        var index = -1;
-	        var length_1 = keys.length >>> 0;
-	        while (++index < length_1) {
-	            callback(object[keys[index]], keys[index], object);
-	        }
-	    }
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = iterate;
-
-
-/***/ },
-/* 9 */
-/***/ function(module, exports) {
-
-	"use strict";
-	function iterate(array, fn) {
-	    var index = -1;
-	    var length = array.length >>> 0;
-	    while (++index < length) {
-	        if (fn(array[index], index, array) === false) {
-	            break;
-	        }
-	    }
-	    return array;
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = iterate;
-
-
-/***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	"use strict";
-	function isObject(value) {
-	    return typeof value === 'function' || typeof value === 'object' && !!value;
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = isObject;
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var get_type_1 = __webpack_require__(12);
-	function isArray(value) {
-	    return (typeof Array.isArray === 'function')
-	        ? Array.isArray(value)
-	        : get_type_1.default(value) === 'array';
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = isArray;
-
-
-/***/ },
-/* 12 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var substr_1 = __webpack_require__(13);
-	function default_1(object) {
-	    var output = substr_1.default(Object.prototype.toString.call(object), 0, 8);
-	    return substr_1.default(output, output.length - 1, 1).toLowerCase();
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = default_1;
 
 
 /***/ },
-/* 13 */
+/* 8 */
 /***/ function(module, exports) {
 
 	"use strict";
-	function substr(value, index, length) {
-	    if (length === void 0) { length = 1; }
-	    if (index < 0 || index > value.length) {
-	        throw new RangeError();
-	    }
-	    return (index > 0) ? value.slice(0, index) + value.slice(index + length) : value.slice(index + length);
+	function unescape(input) {
+	    return input.replace(/\\('|\\)/g, '$1').replace(/[\r\t\n]/g, ' ');
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = substr;
+	exports.default = unescape;
 
 
 /***/ },
-/* 14 */
-/***/ function(module, exports) {
-
-	"use strict";
-	function iterator(initial) {
-	    return function () {
-	        return initial++;
-	    };
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = iterator;
-
-
-/***/ },
-/* 15 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var string_trim_1 = __webpack_require__(4);
-	function javascript(operator, parameter, selfClosing, closingTag, buffer, compiler) {
-	    return buffer.END + string_trim_1.default(parameter) + buffer.START;
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = javascript;
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var string_trim_1 = __webpack_require__(4);
-	var html_escape_1 = __webpack_require__(17);
+	var html_escape_1 = __webpack_require__(10);
+	var string_trim_1 = __webpack_require__(5);
 	function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
 	    compiler.registerImport('__htmlEscape', html_escape_1.default);
 	    return buffer.APPEND + '__htmlEscape(' + string_trim_1.default(parameter) + ')' + buffer.POST_APPEND;
@@ -759,7 +611,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 10 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -857,69 +709,207 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 18 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var string_trim_1 = __webpack_require__(4);
-	var unescape_1 = __webpack_require__(19);
-	function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+	var each_array_1 = __webpack_require__(12);
+	var each_object_1 = __webpack_require__(13);
+	var is_array_1 = __webpack_require__(14);
+	var is_object_1 = __webpack_require__(17);
+	var iterator_1 = __webpack_require__(18);
+	var parse_parameter_1 = __webpack_require__(19);
+	var string_trim_1 = __webpack_require__(5);
+	var iteratorIndexer;
+	function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+	    compiler.registerImport('__isArray', is_array_1.default);
+	    compiler.registerImport('__isObject', is_object_1.default);
+	    compiler.registerImport('__eachArray', each_array_1.default);
+	    compiler.registerImport('__eachObject', each_object_1.default);
 	    if (closingTag) {
 	        return buffer.END + '}' + buffer.START;
 	    }
-	    switch (operator) {
-	        case '?':
-	            if (parameter && parameter !== '') {
-	                return buffer.END + 'if(' + string_trim_1.default(unescape_1.default(parameter)) + '){' + buffer.START;
-	            }
-	            else {
-	                return buffer.END + '}else{' + buffer.START;
-	            }
-	        case '??':
-	            if (parameter && parameter !== '') {
-	                return buffer.END + '}else if(' + string_trim_1.default(unescape_1.default(parameter)) + '){' + buffer.START;
-	            }
-	            else {
-	                return buffer.END + '}else{' + buffer.START;
-	            }
+	    if (parameter && parameter !== '') {
+	        var _a = parse_parameter_1.default(parameter, ':', ','), valueVar = _a[0], indexVar = _a[1];
+	        var iterable = string_trim_1.default(parameter.slice(0, parameter.indexOf(':')));
+	        var iteratorIndex = iteratorIndexer();
+	        valueVar = ((valueVar) ? valueVar : 'value_' + iteratorIndex);
+	        indexVar = ((indexVar) ? indexVar : 'key_' + iteratorIndex);
+	        return buffer.END
+	            + 'if(__isArray(' + iterable + ')){__eachArray('
+	            + iterable + ',iterate_' + iteratorIndex + ');}'
+	            + 'else if(__isObject(' + iterable + ')){__eachObject('
+	            + iterable + ',iterate_' + iteratorIndex + ');}'
+	            + 'function iterate_' + iteratorIndex + ' (' + valueVar + ',' + indexVar + '){'
+	            + buffer.START;
 	    }
 	    return parameter;
+	}
+	exports.iterate = iterate;
+	function initialize(compiler) {
+	    compiler.on('COMPILE_START', function () {
+	        iteratorIndexer = iterator_1.default(0);
+	    });
+	}
+	exports.initialize = initialize;
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = iterate;
+
+
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	"use strict";
+	function iterate(array, fn) {
+	    var index = -1;
+	    var length = array.length;
+	    while (++index < length) {
+	        if (fn(array[index], index, array) === false) {
+	            break;
+	        }
+	    }
+	    return array;
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = iterate;
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var object_keys_1 = __webpack_require__(3);
+	var largeObjectLength = 25;
+	function preCompileIterator(properties) {
+	    var index = -1;
+	    var length = properties.length;
+	    var fnString = '(function(object, callback){\n';
+	    while (++index < length) {
+	        fnString += 'callback(object["' + properties[index] + '"], "' + properties[index] + '", object);';
+	    }
+	    fnString += '\n});';
+	    return eval(fnString);
+	}
+	function iterate(object, callback, keys) {
+	    if (keys === void 0) { keys = object_keys_1.default(object); }
+	    if (keys.length >= largeObjectLength) {
+	        preCompileIterator(keys)(object, callback);
+	    }
+	    else {
+	        var index = -1;
+	        var length_1 = keys.length;
+	        while (++index < length_1) {
+	            callback(object[keys[index]], keys[index], object);
+	        }
+	    }
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = iterate;
+
+
+/***/ },
+/* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var get_type_1 = __webpack_require__(15);
+	function isArray(value) {
+	    return (typeof Array.isArray === 'function')
+	        ? Array.isArray(value)
+	        : get_type_1.default(value) === 'array';
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = isArray;
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var substr_1 = __webpack_require__(16);
+	function default_1(object) {
+	    var output = substr_1.default(Object.prototype.toString.call(object), 0, 8);
+	    return substr_1.default(output, output.length - 1, 1).toLowerCase();
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = default_1;
 
 
 /***/ },
-/* 19 */
+/* 16 */
 /***/ function(module, exports) {
 
 	"use strict";
-	function unescape(string) {
-	    return string.replace(/\\('|\\)/g, '$1').replace(/[\r\t\n]/g, ' ');
+	function substr(value, index, length) {
+	    if (length === void 0) { length = 1; }
+	    if (index < 0 || index > value.length) {
+	        throw new RangeError();
+	    }
+	    return (index > 0) ? value.slice(0, index) + value.slice(index + length) : value.slice(index + length);
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = unescape;
+	exports.default = substr;
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	"use strict";
+	function isObject(value) {
+	    return typeof value === 'function' || typeof value === 'object' && !!value;
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = isObject;
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	"use strict";
+	function iterator(initial) {
+	    return function () {
+	        return initial++;
+	    };
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = iterator;
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var string_trim_1 = __webpack_require__(5);
+	function parseParameter(input, blockSeperator, seperator) {
+	    if (blockSeperator === void 0) { blockSeperator = ':'; }
+	    if (seperator === void 0) { seperator = ','; }
+	    var start = input.indexOf(blockSeperator);
+	    var end = input.indexOf(blockSeperator, start + 1);
+	    var parameter = input.slice(start + 1, end).split(seperator);
+	    var index = -1;
+	    var length = parameter.length;
+	    while (++index < length) {
+	        parameter[index] = string_trim_1.default(parameter[index]);
+	    }
+	    return parameter;
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = parseParameter;
 
 
 /***/ },
 /* 20 */
-/***/ function(module, exports) {
-
-	"use strict";
-	function comment(operator, parameter, selfClosing, closingTag, buffer, compiler) {
-	    return '';
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = comment;
-
-
-/***/ },
-/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var string_trim_1 = __webpack_require__(4);
-	var unescape_1 = __webpack_require__(19);
+	var string_trim_1 = __webpack_require__(5);
+	var unescape_1 = __webpack_require__(8);
 	function print(operator, parameter, selfClosing, closingTag, buffer, compiler) {
 	    return buffer.APPEND + string_trim_1.default(unescape_1.default(parameter)) + buffer.POST_APPEND;
 	}
@@ -928,20 +918,41 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var string_trim_1 = __webpack_require__(5);
+	function javascript(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+	    return buffer.END + string_trim_1.default(parameter) + buffer.START;
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = javascript;
+
+
+/***/ },
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	var remove_previous_buffer_1 = __webpack_require__(23);
-	function lowercase(input) {
-	    return input.toLocaleLowerCase();
+	var string_trim_1 = __webpack_require__(5);
+	function currency(input) {
+	    return input.replace(/(?:([0-9]+?[\.\,]+?[0-9]+?)|([0-9]+?))(?:\s|[^0-9]|$)/g, function (match, floatString) {
+	        if (floatString.indexOf(',') > -1) {
+	            return parseFloat(floatString.replace(',', '.')).toFixed(2);
+	        }
+	        else {
+	            return parseFloat(floatString).toFixed(2);
+	        }
+	    });
 	}
-	function filterLowercase(name, input, buffer, compiler) {
-	    compiler.registerImport('__f_lc', lowercase);
-	    return buffer.APPEND + '__f_lc(' + remove_previous_buffer_1.default(input, buffer) + ')' + buffer.POST_APPEND;
+	function filterCurrency(name, input, buffer, compiler) {
+	    compiler.registerImport('__f_currency', currency);
+	    return buffer.APPEND + '__f_currency(' + string_trim_1.default(remove_previous_buffer_1.default(input, buffer)) + ')' + buffer.POST_APPEND;
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = filterLowercase;
+	exports.default = filterCurrency;
 
 
 /***/ },
@@ -968,6 +979,23 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 	var remove_previous_buffer_1 = __webpack_require__(23);
+	function lowercase(input) {
+	    return input.toLocaleLowerCase();
+	}
+	function filterLowercase(name, input, buffer, compiler) {
+	    compiler.registerImport('__f_lc', lowercase);
+	    return buffer.APPEND + '__f_lc(' + remove_previous_buffer_1.default(input, buffer) + ')' + buffer.POST_APPEND;
+	}
+	Object.defineProperty(exports, "__esModule", { value: true });
+	exports.default = filterLowercase;
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var remove_previous_buffer_1 = __webpack_require__(23);
 	function uppercase(input) {
 	    return input.toLocaleUpperCase();
 	}
@@ -977,31 +1005,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 	Object.defineProperty(exports, "__esModule", { value: true });
 	exports.default = filterUppercase;
-
-
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	var remove_previous_buffer_1 = __webpack_require__(23);
-	var string_trim_1 = __webpack_require__(4);
-	function currency(input) {
-	    return input.replace(/(?:([0-9]+?[\.\,]+?[0-9]+?)|([0-9]+?))(?:\s|[^0-9]|$)/g, function (match, floatString) {
-	        if (floatString.indexOf(',') > -1) {
-	            return parseFloat(floatString.replace(',', '.')).toFixed(2);
-	        }
-	        else {
-	            return parseFloat(floatString).toFixed(2);
-	        }
-	    });
-	}
-	function filterCurrency(name, input, buffer, compiler) {
-	    compiler.registerImport('__f_currency', currency);
-	    return buffer.APPEND + '__f_currency(' + string_trim_1.default(remove_previous_buffer_1.default(input, buffer)) + ')' + buffer.POST_APPEND;
-	}
-	Object.defineProperty(exports, "__esModule", { value: true });
-	exports.default = filterCurrency;
 
 
 /***/ }

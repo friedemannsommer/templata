@@ -1,47 +1,47 @@
 /// <reference path="../typings/index.d.ts" />
 
-import regexEscape from './regex-escape'
-import objectKeys from './object-keys'
-import stringTrim from './string-trim'
 import escape from './escape'
+import objectKeys from './object-keys'
+import regexEscape from './regex-escape'
+import stringTrim from './string-trim'
 
 enum RegEx {
     FULL_MATCH = 0
 }
 
-export default class Compiler implements Templata.Interface.Compiler {
-    public static settings: Templata.Object.CompilerSettings = {
-        VARIABLE_NAME: 'local',
-        VARIABLE_PRINT: '__print',
+export default class Compiler implements Templata.ICompiler {
+    public static settings: Templata.ICompilerSettings = {
         DELIMITER: {
+            CLOSING: '/',
+            CLOSING_BLOCK: '}}',
             FILTER_SEPERATOR: '|',
             OPENING_BLOCK: '{{',
-            CLOSING_BLOCK: '}}',
-            CLOSING: '/',
             SPACE: ' '
-        }
+        },
+        VARIABLE_NAME: 'local',
+        VARIABLE_PRINT: '__print'
     }
 
-    protected replaceExpressions: Templata.Object.RegularExpressions = {
-        NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g,
+    protected replaceExpressions: Templata.IRegularExpressions = {
         AFTER_HTML_TAG: />\s+/g,
         BEFORE_HTML_TAG: /\s+</g,
+        EMPTY_APPEND_BUFFER: /\s*\+\s*([\'\"]{1})\1/g,
         EMPTY_COMMENT_TAG: /<!--[\s\S]*?-->/g,
         EMPTY_LINES: /^(?:\s*?)$/gm,
-        EMPTY_APPEND_BUFFER: /\s*\+\s*([\'\"]{1})\1/g,
         EMPTY_START_APPEND_BUFFER: null,
-        EMPTY_START_BUFFER: null
+        EMPTY_START_BUFFER: null,
+        NEW_LINE: /\r|\n|\t|\/\*[\s\S]*?\*\//g
     }
 
-    protected matchExpressions: Templata.Object.MatchExpressions = {
+    protected matchExpressions: Templata.IMatchExpressions = {
         BLOCK_LIST: null
     }
 
-    protected buffer: Templata.Object.Buffer = {
+    protected buffer: Templata.IBuffer = {
         APPEND: '\'+(',
+        END: '\';\n',
         POST_APPEND: ')+\'',
-        START: null,
-        END: '\';\n'
+        START: null
     }
 
     private _importNames: string[]
@@ -86,7 +86,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this
     }
 
-    public registerHelper(operator: string, callback: Templata.Interface.Helper): Compiler {
+    public registerHelper(operator: string, callback: Templata.IHelper): Compiler {
         if (operator.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING) {
             throw Error(`Helper cannot start with "${Compiler.settings.DELIMITER.CLOSING}"!`)
         }
@@ -106,7 +106,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this
     }
 
-    public registerFilter(name: string, callback: Templata.Interface.Filter): Compiler {
+    public registerFilter(name: string, callback: Templata.IFilter): Compiler {
         this._filter[name] = callback
 
         return this
@@ -122,7 +122,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this
     }
 
-    public registerProvider(name: string, callback: Templata.Interface.Provider): Compiler {
+    public registerProvider(name: string, callback: Templata.IProvider): Compiler {
         this._provider[name] = callback
 
         return this
@@ -138,7 +138,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this
     }
 
-    public on(name: string, callback: Templata.Interface.Listener): Compiler {
+    public on(name: string, callback: Templata.IListener): Compiler {
         if (this._listener.hasOwnProperty(name)) {
             this._listener[name].push(callback)
         } else {
@@ -148,7 +148,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this
     }
 
-    public off(name: string, callback: Templata.Interface.Listener): Compiler {
+    public off(name: string, callback: Templata.IListener): Compiler {
         if (!this._listener.hasOwnProperty(name)) {
             return this
         }
@@ -175,7 +175,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         let index: number = -1
 
         while (++index < length) {
-            (<Templata.Interface.Listener>this._listener[name][index]).apply(undefined, [name, this, ...data])
+            (<Templata.IListener>this._listener[name][index]).apply(undefined, [name, this, ...data])
         }
     }
 
@@ -183,13 +183,13 @@ export default class Compiler implements Templata.Interface.Compiler {
         return this._provider[name].apply(undefined, [name, ...args])
     }
 
-    public initialize(helper: Templata.Interface.InitializeFunction): Compiler {
+    public initialize(helper: Templata.IInitializeFunction): Compiler {
         helper(this)
 
         return this
     }
 
-    public compile(template: string): Templata.Interface.CompileFunction {
+    public compile(template: string): Templata.ICompileFunction {
         if (typeof template !== 'string') {
             throw new Error(`Expected parameter "template" to be typeof "string" but instead got "${typeof template}"`)
         }
@@ -208,7 +208,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         )
     }
 
-    private _createTemplateFunction(source: string): Templata.Interface.CompileFunction {
+    private _createTemplateFunction(source: string): Templata.ICompileFunction {
         this.dispatch('COMPILE_END')
 
         return new Function(
@@ -245,46 +245,49 @@ export default class Compiler implements Templata.Interface.Compiler {
             .replace(this.replaceExpressions.EMPTY_LINES, '')
     }
 
-    private _concatTemplateParts(matches: Object[], template: string): string {
+    private _concatTemplateParts(matches: Templata.IMatchObject[], template: string): string {
         const length: number = matches.length
         const parts: string[] = []
         let index: number = -1
-        let previous: Object
+        let previous: Templata.IMatchObject
 
         while (++index < length) {
             if (!previous) {
-                parts.push(template.slice(0, matches[index]['start']))
-                parts.push(matches[index]['content'])
+                parts.push(template.slice(0, matches[index].start))
+                parts.push(matches[index].content)
             } else {
-                parts.push(template.slice(previous['end'], matches[index]['start']))
-                parts.push(matches[index]['content'])
+                parts.push(template.slice(previous.end, matches[index].start))
+                parts.push(matches[index].content)
             }
 
             previous = matches[index]
         }
 
         if (previous !== undefined) {
-            parts.push(template.slice(previous['end']))
+            parts.push(template.slice(previous.end))
             template = parts.join('')
         }
 
         return template
     }
 
-    private _matchBlocks(input: string): Object[] {
-        const matches: Object[] = []
+    private _matchBlocks(input: string): Templata.IMatchObject[] {
+        const matches: Templata.IMatchObject[] = []
         let match: RegExpExecArray
 
         this.matchExpressions.BLOCK_LIST.lastIndex = 0
+        match = this.matchExpressions.BLOCK_LIST.exec(input)
 
-        while ((match = this.matchExpressions.BLOCK_LIST.exec(input)) !== null) {
+        while (match !== null) {
             matches.push(
                 {
-                    start: match.index,
                     content: this._parseBlock(match),
-                    end: match.index + match[RegEx.FULL_MATCH].length
+                    end: match.index + match[RegEx.FULL_MATCH].length,
+                    start: match.index
                 }
             )
+
+            match = this.matchExpressions.BLOCK_LIST.exec(input)
         }
 
         return matches
@@ -295,7 +298,7 @@ export default class Compiler implements Templata.Interface.Compiler {
             Compiler.settings.DELIMITER.OPENING_BLOCK.length,
             match[RegEx.FULL_MATCH].length - Compiler.settings.DELIMITER.CLOSING_BLOCK.length
         )
-        const properties: Templata.Object.BlockProperties = this._getBlockProperties(input)
+        const properties: Templata.IBlockProperties = this._getBlockProperties(input)
 
         if (this._helper[properties.OPERATOR]) {
             if (properties.FILTER.length > 0) {
@@ -308,7 +311,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return input
     }
 
-    private _getBlockProperties(blockString: string): Templata.Object.BlockProperties {
+    private _getBlockProperties(blockString: string): Templata.IBlockProperties {
         const operator: string = this._getBlockOperator(blockString)
         const closing: boolean = this._isClosingBlock(blockString)
         const selfClosing: boolean = this._isSelfClosingBlock(blockString, operator, closing)
@@ -316,10 +319,10 @@ export default class Compiler implements Templata.Interface.Compiler {
         const filter: string[] = this._getBlockFilter(parameter)
 
         return {
-            OPERATOR: operator,
-            FILTER: filter,
-            PARAMETER: this._removeBlockFilter(parameter),
             CLOSING: closing,
+            FILTER: filter,
+            OPERATOR: operator,
+            PARAMETER: this._removeBlockFilter(parameter),
             SELF_CLOSING: selfClosing
         }
     }
@@ -412,7 +415,7 @@ export default class Compiler implements Templata.Interface.Compiler {
         return input
     }
 
-    private _callHelper(properties: Templata.Object.BlockProperties): string {
+    private _callHelper(properties: Templata.IBlockProperties): string {
         try {
             return this._helper[properties.OPERATOR](
                 properties.OPERATOR,

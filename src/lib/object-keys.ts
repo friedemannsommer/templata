@@ -1,6 +1,6 @@
-function objectKeys(object: Object): Array<string> {
-    let output: Array<string> = []
-    let forbiddenKeys: Array<string> = [
+function objectKeys(object: Object): string[] {
+    let output: string[] = []
+    let forbiddenKeys: string[] = [
             'toString',
             'toLocalString',
             'valueOf',

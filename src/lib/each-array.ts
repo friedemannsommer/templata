@@ -1,6 +1,6 @@
-function iterate(array: Array<any>, fn: (value: any, index: number, array: Array<any>) => boolean): Array<any> {
+function iterate(array: any[], fn: (value: any, index: number, array: any[]) => boolean): any[] {
     let index: number = -1
-    let length: number = array.length >>> 0
+    let length: number = array.length
 
     while (++index < length) {
         if (fn(array[index], index, array) === false) {

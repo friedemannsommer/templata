@@ -6,7 +6,12 @@ function uppercase(input: string): string {
     return input.toLocaleUpperCase()
 }
 
-function filterUppercase(name: string, input: string, buffer: Templata.Object.Buffer, compiler: Templata.Interface.Compiler): string {
+function filterUppercase(
+    name: string,
+    input: string,
+    buffer: Templata.IBuffer,
+    compiler: Templata.ICompiler
+): string {
     compiler.registerImport('__f_uc', uppercase)
 
     return buffer.APPEND + '__f_uc(' + removePreviousBuffer(input, buffer) + ')' + buffer.POST_APPEND

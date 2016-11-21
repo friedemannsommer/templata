@@ -20,8 +20,9 @@ function default_1(operator, parameter, selfClosing, closingTag, buffer, compile
             else {
                 return buffer.END + '}else{' + buffer.START;
             }
+        default:
+            return parameter;
     }
-    return parameter;
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = default_1;
