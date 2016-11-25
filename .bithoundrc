@@ -1,12 +1,12 @@
 {
     "ignore": [
+        "*.js",
         "dist/**",
+        "spec/**",
         "web-src/**",
         "**/node_modules/**"
     ],
-    "test": [
-        "spec/**"
-    ],
+    "test": [],
     "critics": {
         "lint": {
             "engine": "tslint"
