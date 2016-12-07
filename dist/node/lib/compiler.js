@@ -28,7 +28,7 @@ var Compiler = (function () {
         };
         this.buffer = {
             APPEND: '\'+(',
-            END: '\';\n',
+            END: '\';',
             POST_APPEND: ')+\'',
             START: null
         };
@@ -177,25 +177,24 @@ var Compiler = (function () {
     };
     Compiler.prototype._concatTemplateParts = function (matches, template) {
         var length = matches.length;
-        var parts = [];
+        var previous = null;
+        var result = '';
         var index = -1;
-        var previous;
         while (++index < length) {
-            if (!previous) {
-                parts.push(template.slice(0, matches[index].start));
-                parts.push(matches[index].content);
+            if (previous !== null) {
+                result += template.slice(previous.end, matches[index].start)
+                    + matches[index].content;
             }
             else {
-                parts.push(template.slice(previous.end, matches[index].start));
-                parts.push(matches[index].content);
+                result += template.slice(0, matches[index].start)
+                    + matches[index].content;
             }
             previous = matches[index];
         }
-        if (previous !== undefined) {
-            parts.push(template.slice(previous.end));
-            template = parts.join('');
+        if (previous !== null) {
+            result += template.slice(previous.end);
         }
-        return template;
+        return result;
     };
     Compiler.prototype._matchBlocks = function (input) {
         var matches = [];
@@ -243,18 +242,23 @@ var Compiler = (function () {
         var index = blockString.indexOf(Compiler.settings.DELIMITER.SPACE, 0);
         var closing = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING;
-        return blockString.slice((closing)
-            ? Compiler.settings.DELIMITER.CLOSING.length
-            : 0, (index > 0)
-            ? index
-            : blockString.length);
+        var operatorOffset = 0;
+        var operatorEnd = blockString.length;
+        if (closing) {
+            operatorOffset = Compiler.settings.DELIMITER.CLOSING.length;
+        }
+        if (index > 0) {
+            operatorEnd = index;
+        }
+        return blockString.slice(operatorOffset, operatorEnd);
     };
     Compiler.prototype._isClosingBlock = function (blockString) {
         return blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length) === Compiler.settings.DELIMITER.CLOSING;
     };
     Compiler.prototype._isSelfClosingBlock = function (blockString, operator, closing) {
         if (!closing) {
-            return (blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length)) === Compiler.settings.DELIMITER.SPACE + operator;
+            var closingOperator = blockString.slice((operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length);
+            return closingOperator === (Compiler.settings.DELIMITER.SPACE + operator);
         }
         return false;
     };
