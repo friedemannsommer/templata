@@ -39,7 +39,7 @@ export default class Compiler implements Templata.ICompiler {
 
     protected buffer: Templata.IBuffer = {
         APPEND: '\'+(',
-        END: '\';\n',
+        END: '\';',
         POST_APPEND: ')+\'',
         START: null
     }
@@ -247,28 +247,27 @@ export default class Compiler implements Templata.ICompiler {
 
     private _concatTemplateParts(matches: Templata.IMatchObject[], template: string): string {
         const length: number = matches.length
-        const parts: string[] = []
+        let previous: Templata.IMatchObject = null
+        let result: string = ''
         let index: number = -1
-        let previous: Templata.IMatchObject
 
         while (++index < length) {
-            if (!previous) {
-                parts.push(template.slice(0, matches[index].start))
-                parts.push(matches[index].content)
+            if (previous !== null) {
+                result += template.slice(previous.end, matches[index].start)
+                    + matches[index].content
             } else {
-                parts.push(template.slice(previous.end, matches[index].start))
-                parts.push(matches[index].content)
+                result += template.slice(0, matches[index].start)
+                    + matches[index].content
             }
 
             previous = matches[index]
         }
 
-        if (previous !== undefined) {
-            parts.push(template.slice(previous.end))
-            template = parts.join('')
+        if (previous !== null) {
+            result += template.slice(previous.end)
         }
 
-        return template
+        return result
     }
 
     private _matchBlocks(input: string): Templata.IMatchObject[] {
@@ -331,15 +330,18 @@ export default class Compiler implements Templata.ICompiler {
         const index: number = blockString.indexOf(Compiler.settings.DELIMITER.SPACE, 0)
         const closing: boolean = blockString.slice(0, Compiler.settings.DELIMITER.CLOSING.length)
             === Compiler.settings.DELIMITER.CLOSING
+        let operatorOffset: number = 0
+        let operatorEnd: number = blockString.length
 
-        return blockString.slice(
-            (closing)
-                ? Compiler.settings.DELIMITER.CLOSING.length
-                : 0,
-            (index > 0)
-                ? index
-                : blockString.length
-        )
+        if (closing) {
+            operatorOffset = Compiler.settings.DELIMITER.CLOSING.length
+        }
+
+        if (index > 0) {
+            operatorEnd = index
+        }
+
+        return blockString.slice(operatorOffset, operatorEnd)
     }
 
     private _isClosingBlock(blockString: string): boolean {
@@ -348,11 +350,11 @@ export default class Compiler implements Templata.ICompiler {
 
     private _isSelfClosingBlock(blockString: string, operator: string, closing: boolean): boolean {
         if (!closing) {
-            return (
-                blockString.slice(
-                    (operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length
-                )
-            ) === Compiler.settings.DELIMITER.SPACE + operator
+            const closingOperator: string = blockString.slice(
+                (operator.length * -1) - Compiler.settings.DELIMITER.SPACE.length
+            )
+
+            return closingOperator === (Compiler.settings.DELIMITER.SPACE + operator)
         }
 
         return false
