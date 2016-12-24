@@ -69,7 +69,7 @@ function run() {
 
         describe('Templata.Template#Conditional',
             () => {
-                it('Conditional "if" should return given value',
+                it('Conditional if should return given value',
                     () => {
                         const template = '{{? true ?}}if{{/?}}'
 
@@ -77,7 +77,7 @@ function run() {
                     }
                 )
 
-                it('Conditional "if"-"else" should return given value',
+                it('Conditional if-else should return given value',
                     () => {
                         const template = '{{? false ?}}if{{? ?}}else{{/?}}'
 
@@ -85,11 +85,19 @@ function run() {
                     }
                 )
 
-                it('Conditional "elseif" should return given value',
+                it('Conditional elseif should return given value',
                     () => {
                         const template = '{{? false ?}}if{{?? true ??}}elseif{{? ?}}else{{/?}}'
 
                         expect(templata.template(template)()).to.equal('elseif')
+                    }
+                )
+
+                it('Conditional if-else (alternative) should print "else"',
+                    () => {
+                        const template = '{{? false ?}}if{{?? ??}}else{{/?}}'
+
+                        expect(templata.template(template)()).to.equal('else');
                     }
                 )
             }

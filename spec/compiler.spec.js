@@ -501,6 +501,12 @@ function run() {
                 compiler = new templata.Compiler()
             })
 
+            it('compile should throw a error when non string passed as first argument',
+                () => {
+                    expect(compiler.compile).to.throw(Error)
+                }
+            )
+
             it('compile should return a function',
                 () => {
                     const compiledFn = compiler.compile('')
