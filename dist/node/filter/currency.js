@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var remove_previous_buffer_1 = require("../lib/remove-previous-buffer");
 var string_trim_1 = require("../lib/string-trim");
 function currency(input) {
@@ -15,5 +16,4 @@ function filterCurrency(name, input, buffer, compiler) {
     compiler.registerImport('__f_currency', currency);
     return buffer.APPEND + '__f_currency(' + string_trim_1.default(remove_previous_buffer_1.default(input, buffer)) + ')' + buffer.POST_APPEND;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = filterCurrency;

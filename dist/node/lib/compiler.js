@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var escape_1 = require("./escape");
 var object_keys_1 = require("./object-keys");
 var regex_escape_1 = require("./regex-escape");
@@ -346,8 +347,6 @@ var Compiler = (function () {
     };
     return Compiler;
 }());
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Compiler;
 Compiler.settings = {
     DELIMITER: {
         CLOSING: '/',
@@ -359,3 +358,4 @@ Compiler.settings = {
     VARIABLE_NAME: 'local',
     VARIABLE_PRINT: '__print'
 };
+exports.default = Compiler;

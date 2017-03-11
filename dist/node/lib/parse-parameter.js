@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var string_trim_1 = require("./string-trim");
 function parseParameter(input, blockSeperator, seperator) {
     if (blockSeperator === void 0) { blockSeperator = ':'; }
@@ -13,5 +14,4 @@ function parseParameter(input, blockSeperator, seperator) {
     }
     return parameter;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = parseParameter;

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function htmlEscape(input) {
     return input.replace(/\u0026/g, '&amp;')
         .replace(/\u0023/g, '&#35;')
@@ -88,5 +89,4 @@ function htmlEscape(input) {
         .replace(/\u00F8/g, '&#248;')
         .replace(/\u00D8/g, '&#216;');
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = htmlEscape;

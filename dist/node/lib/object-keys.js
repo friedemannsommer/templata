@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function objectKeys(object) {
     var output = [];
     var forbiddenKeys = [
@@ -17,5 +18,4 @@ function objectKeys(object) {
     }
     return output;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = objectKeys;

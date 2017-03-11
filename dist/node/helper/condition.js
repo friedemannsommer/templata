@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var string_trim_1 = require("../lib/string-trim");
 var unescape_1 = require("../lib/unescape");
 function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
@@ -24,5 +25,4 @@ function default_1(operator, parameter, selfClosing, closingTag, buffer, compile
             return parameter;
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = default_1;

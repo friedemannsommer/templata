@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var object_keys_1 = require("./object-keys");
 var largeObjectLength = 25;
 function preCompileIterator(properties) {
@@ -24,5 +25,4 @@ function iterate(object, callback, keys) {
         }
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = iterate;

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function removePreviousBuffer(input, buffer) {
     if (input.slice(0, buffer.APPEND.length) === buffer.APPEND) {
         return input.replace(buffer.APPEND, '').replace(buffer.POST_APPEND, '');
@@ -8,5 +9,4 @@ function removePreviousBuffer(input, buffer) {
     }
     return input;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = removePreviousBuffer;

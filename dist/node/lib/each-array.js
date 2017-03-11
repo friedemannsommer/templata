@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 function iterate(array, fn) {
     var index = -1;
     var length = array.length;
@@ -9,5 +10,4 @@ function iterate(array, fn) {
     }
     return array;
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = iterate;

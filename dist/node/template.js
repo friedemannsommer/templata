@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var compiler_1 = require("./lib/compiler");
 var comment_1 = require("./helper/comment");
 var condition_1 = require("./helper/condition");
@@ -27,5 +28,4 @@ function template(template, imports) {
     if (imports === void 0) { imports = {}; }
     return new compiler_1.default(imports, defaultHelper, defaultFilter).initialize(iterate_1.initialize).compile(template);
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = template;
