@@ -1,12 +1,12 @@
 /// <reference path="../typings/index.d.ts" />
 
 function comment(
-    operator: string,
-    parameter: string,
-    selfClosing: boolean,
-    closingTag: boolean,
-    buffer: Templata.IBuffer,
-    compiler: Templata.ICompiler
+    _operator: string,
+    _parameter: string,
+    _selfClosing: boolean,
+    _closingTag: boolean,
+    _buffer: Templata.IBuffer,
+    _compiler: Templata.ICompiler
 ): string {
     return ''
 }

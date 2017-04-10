@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function comment(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function comment(_operator, _parameter, _selfClosing, _closingTag, _buffer, _compiler) {
     return '';
 }
 exports.default = comment;

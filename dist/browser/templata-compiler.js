@@ -498,11 +498,10 @@ var Compiler = (function () {
         }
     };
     Compiler.prototype._setupImports = function (imports) {
-        var length = 0;
-        var index = -1;
         this._importNames = object_keys_1.default(imports);
         this._importValues = Array(this._importNames.length);
-        length = this._importNames.length;
+        var length = this._importNames.length;
+        var index = -1;
         while (++index < length) {
             this._importValues[index] = imports[this._importNames[index]];
         }

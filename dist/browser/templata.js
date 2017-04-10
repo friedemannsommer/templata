@@ -168,7 +168,7 @@ function currency(input) {
         }
     });
 }
-function filterCurrency(name, input, buffer, compiler) {
+function filterCurrency(_name, input, buffer, compiler) {
     compiler.registerImport('__f_currency', currency);
     return buffer.APPEND + '__f_currency(' + string_trim_1.default(remove_previous_buffer_1.default(input, buffer)) + ')' + buffer.POST_APPEND;
 }
@@ -186,7 +186,7 @@ var remove_previous_buffer_1 = __webpack_require__(1);
 function lowercase(input) {
     return input.toLocaleLowerCase();
 }
-function filterLowercase(name, input, buffer, compiler) {
+function filterLowercase(_name, input, buffer, compiler) {
     compiler.registerImport('__f_lc', lowercase);
     return buffer.APPEND + '__f_lc(' + remove_previous_buffer_1.default(input, buffer) + ')' + buffer.POST_APPEND;
 }
@@ -204,7 +204,7 @@ var remove_previous_buffer_1 = __webpack_require__(1);
 function uppercase(input) {
     return input.toLocaleUpperCase();
 }
-function filterUppercase(name, input, buffer, compiler) {
+function filterUppercase(_name, input, buffer, compiler) {
     compiler.registerImport('__f_uc', uppercase);
     return buffer.APPEND + '__f_uc(' + remove_previous_buffer_1.default(input, buffer) + ')' + buffer.POST_APPEND;
 }
@@ -218,7 +218,7 @@ exports.default = filterUppercase;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-function comment(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function comment(_operator, _parameter, _selfClosing, _closingTag, _buffer, _compiler) {
     return '';
 }
 exports.default = comment;
@@ -233,7 +233,7 @@ exports.default = comment;
 Object.defineProperty(exports, "__esModule", { value: true });
 var string_trim_1 = __webpack_require__(0);
 var unescape_1 = __webpack_require__(3);
-function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function default_1(operator, parameter, _selfClosing, closingTag, buffer, _compiler) {
     if (closingTag) {
         return buffer.END + '}' + buffer.START;
     }
@@ -268,7 +268,7 @@ exports.default = default_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 var html_escape_1 = __webpack_require__(18);
 var string_trim_1 = __webpack_require__(0);
-function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function default_1(_operator, parameter, _selfClosing, _closingTag, buffer, compiler) {
     compiler.registerImport('__htmlEscape', html_escape_1.default);
     return buffer.APPEND + '__htmlEscape(' + string_trim_1.default(parameter) + ')' + buffer.POST_APPEND;
 }
@@ -290,7 +290,7 @@ var iterator_1 = __webpack_require__(21);
 var parse_parameter_1 = __webpack_require__(22);
 var string_trim_1 = __webpack_require__(0);
 var iteratorIndexer;
-function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function iterate(_operator, parameter, _selfClosing, closingTag, buffer, compiler) {
     compiler.registerImport('__isArray', is_array_1.default);
     compiler.registerImport('__isObject', is_object_1.default);
     compiler.registerImport('__eachArray', each_array_1.default);
@@ -299,9 +299,9 @@ function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler)
         return buffer.END + '}' + buffer.START;
     }
     if (parameter && parameter !== '') {
-        var _a = parse_parameter_1.default(parameter, ':', ','), valueVar = _a[0], indexVar = _a[1];
         var iterable = string_trim_1.default(parameter.slice(0, parameter.indexOf(':')));
         var iteratorIndex = iteratorIndexer();
+        var _a = parse_parameter_1.default(parameter, ':', ','), valueVar = _a[0], indexVar = _a[1];
         valueVar = ((valueVar) ? valueVar : 'value_' + iteratorIndex);
         indexVar = ((indexVar) ? indexVar : 'key_' + iteratorIndex);
         return buffer.END
@@ -333,7 +333,7 @@ exports.default = iterate;
 Object.defineProperty(exports, "__esModule", { value: true });
 var string_trim_1 = __webpack_require__(0);
 var unescape_1 = __webpack_require__(3);
-function print(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function print(_operator, parameter, _selfClosing, _closingTag, buffer, _compiler) {
     return buffer.APPEND + string_trim_1.default(unescape_1.default(parameter)) + buffer.POST_APPEND;
 }
 exports.default = print;
@@ -347,7 +347,7 @@ exports.default = print;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var string_trim_1 = __webpack_require__(0);
-function javascript(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function javascript(_operator, parameter, _selfClosing, _closingTag, buffer, _compiler) {
     return buffer.END + string_trim_1.default(parameter) + buffer.START;
 }
 exports.default = javascript;
@@ -684,11 +684,10 @@ var Compiler = (function () {
         }
     };
     Compiler.prototype._setupImports = function (imports) {
-        var length = 0;
-        var index = -1;
         this._importNames = object_keys_1.default(imports);
         this._importValues = Array(this._importNames.length);
-        length = this._importNames.length;
+        var length = this._importNames.length;
+        var index = -1;
         while (++index < length) {
             this._importValues[index] = imports[this._importNames[index]];
         }
@@ -729,8 +728,8 @@ exports.default = Compiler;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 function iterate(array, fn) {
-    var index = -1;
     var length = array.length;
+    var index = -1;
     while (++index < length) {
         if (fn(array[index], index, array) === false) {
             break;
@@ -749,28 +748,12 @@ exports.default = iterate;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var object_keys_1 = __webpack_require__(2);
-var largeObjectLength = 25;
-function preCompileIterator(properties) {
-    var index = -1;
-    var length = properties.length;
-    var fnString = '(function(object, callback){\n';
-    while (++index < length) {
-        fnString += 'callback(object["' + properties[index] + '"], "' + properties[index] + '", object);';
-    }
-    fnString += '\n});';
-    return eval(fnString);
-}
 function iterate(object, callback, keys) {
     if (keys === void 0) { keys = object_keys_1.default(object); }
-    if (keys.length >= largeObjectLength) {
-        preCompileIterator(keys)(object, callback);
-    }
-    else {
-        var index = -1;
-        var length_1 = keys.length;
-        while (++index < length_1) {
-            callback(object[keys[index]], keys[index], object);
-        }
+    var length = keys.length;
+    var index = -1;
+    while (++index < length) {
+        callback(object[keys[index]], keys[index], object);
     }
 }
 exports.default = iterate;
@@ -961,8 +944,8 @@ function parseParameter(input, blockSeperator, seperator) {
     var start = input.indexOf(blockSeperator);
     var end = input.indexOf(blockSeperator, start + 1);
     var parameter = input.slice(start + 1, end).split(seperator);
-    var index = -1;
     var length = parameter.length;
+    var index = -1;
     while (++index < length) {
         parameter[index] = string_trim_1.default(parameter[index]);
     }

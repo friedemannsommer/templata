@@ -12,7 +12,7 @@ function currency(input) {
         }
     });
 }
-function filterCurrency(name, input, buffer, compiler) {
+function filterCurrency(_name, input, buffer, compiler) {
     compiler.registerImport('__f_currency', currency);
     return buffer.APPEND + '__f_currency(' + string_trim_1.default(remove_previous_buffer_1.default(input, buffer)) + ')' + buffer.POST_APPEND;
 }

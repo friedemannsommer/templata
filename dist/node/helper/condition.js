@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var string_trim_1 = require("../lib/string-trim");
 var unescape_1 = require("../lib/unescape");
-function default_1(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function default_1(operator, parameter, _selfClosing, closingTag, buffer, _compiler) {
     if (closingTag) {
         return buffer.END + '}' + buffer.START;
     }

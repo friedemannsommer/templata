@@ -6,10 +6,10 @@ import unescape from '../lib/unescape'
 export default function(
     operator: string,
     parameter: string,
-    selfClosing: boolean,
+    _selfClosing: boolean,
     closingTag: boolean,
     buffer: Templata.IBuffer,
-    compiler: Templata.ICompiler
+    _compiler: Templata.ICompiler
 ): string {
     if (closingTag) {
         return buffer.END + '}' + buffer.START

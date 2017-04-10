@@ -3,11 +3,11 @@
 import HTMLEscape from '../lib/html-escape'
 import stringTrim from '../lib/string-trim'
 
-export default function (
-    operator: string,
+export default function(
+    _operator: string,
     parameter: string,
-    selfClosing: boolean,
-    closingTag: boolean,
+    _selfClosing: boolean,
+    _closingTag: boolean,
     buffer: Templata.IBuffer,
     compiler: Templata.ICompiler
 ): string {

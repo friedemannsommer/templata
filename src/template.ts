@@ -15,7 +15,7 @@ import filterCurrency from './filter/currency'
 import filterLowercase from './filter/lowercase'
 import filterUppercase from './filter/uppercase'
 
-const defaultHelper: Object = {
+const defaultHelper: Templata.IGenricIndexObject<Templata.IHelper> = {
     '!': helperHTMLEscape,
     '*': helperComment,
     '-': helperJavascript,
@@ -25,13 +25,13 @@ const defaultHelper: Object = {
     '~': helperIterate
 }
 
-const defaultFilter: Object = {
+const defaultFilter: Templata.IGenricIndexObject<Templata.IFilter> = {
     currency: filterCurrency,
     lowercase: filterLowercase,
     uppercase: filterUppercase
 }
 
-function template(template: string, imports: Object = {}): Templata.ICompileFunction {
+function template(template: string, imports: Templata.IGenricIndexObject<() => any> = {}): Templata.ICompileFunction {
     return new TemplateCompiler(imports, defaultHelper, defaultFilter).initialize(initializeIterate).compile(template)
 }
 

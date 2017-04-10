@@ -7,8 +7,8 @@ function parseParameter(input, blockSeperator, seperator) {
     var start = input.indexOf(blockSeperator);
     var end = input.indexOf(blockSeperator, start + 1);
     var parameter = input.slice(start + 1, end).split(seperator);
-    var index = -1;
     var length = parameter.length;
+    var index = -1;
     while (++index < length) {
         parameter[index] = string_trim_1.default(parameter[index]);
     }

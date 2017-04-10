@@ -2,7 +2,7 @@
 declare module Templata {
     export class ICompiler {
         public static settings: Templata.ICompilerSettings
-        public constructor(imports?: Object, helper?: Object, filter?: Object, provider?: Object)
+        public constructor(imports?: object, helper?: object, filter?: object, provider?: object)
         public registerImport(name: string, imports: any): ICompiler
         public hasImport(name: string): boolean
         public removeImport(name: string): ICompiler
@@ -20,54 +20,46 @@ declare module Templata {
         public off(name: string, callback: IListener): ICompiler
         public dispatch(name: string, ...data: any[]): void
         public initialize(fn: IInitializeFunction): ICompiler
-        public compile(template: string): (data: Object) => string
+        public compile(template: string): (data: object) => string
     }
 
-    export interface IFilter extends Function {
-        (
-            name: string,
-            input: string,
-            buffer: Templata.IBuffer,
-            compiler: ICompiler
-        ): string
+    export type IFilter = (
+        name: string,
+        input: string,
+        buffer: Templata.IBuffer,
+        compiler: ICompiler
+    ) => string
+
+    export type IHelper = (
+        operator: string,
+        parameter: string,
+        selfClosing: boolean,
+        closingTag: boolean,
+        buffer: Templata.IBuffer,
+        compiler: ICompiler
+    ) => string
+
+    export type IProvider = (
+        name: string,
+        ...args: any[]
+    ) => void
+
+    export type IListener = (
+        name: string,
+        compiler: ICompiler,
+        ...data: any[]
+    ) => void
+
+    export type ICompileFunction = (data: object) => string
+
+    export type IInitializeFunction = (compiler: ICompiler) => void
+
+    export interface IGenricIndexObject<T> {
+        [name: string]: T
     }
 
-    export interface IHelper extends Function {
-        (
-            operator: string,
-            parameter: string,
-            selfClosing: boolean,
-            closingTag: boolean,
-            buffer: Templata.IBuffer,
-            compiler: ICompiler
-        ): string
-    }
-
-    export interface IProvider extends Function {
-        (
-            name: string,
-            ...args: any[]
-        ): void
-    }
-
-    export interface IListener extends Function {
-        (
-            name: string,
-            compiler: ICompiler,
-            ...data: any[]
-        ): void
-    }
-
-    export interface ICompileFunction extends Function {
-        (
-            data: Object
-        ): string
-    }
-
-    export interface IInitializeFunction extends Function {
-        (
-            compiler: ICompiler
-        ): void
+    export interface IGenricIndexObjectArray<T> {
+        [name: string]: T[]
     }
 
     export interface IBlockProperties extends Object {

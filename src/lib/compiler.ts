@@ -46,12 +46,17 @@ export default class Compiler implements Templata.ICompiler {
 
     private _importNames: string[]
     private _importValues: any[]
-    private _listener: Object
-    private _provider: Object
-    private _helper: Object
-    private _filter: Object
+    private _listener: Templata.IGenricIndexObjectArray<Templata.IListener>
+    private _provider: Templata.IGenricIndexObject<Templata.IProvider>
+    private _helper: Templata.IGenricIndexObject<Templata.IHelper>
+    private _filter: Templata.IGenricIndexObject<Templata.IFilter>
 
-    constructor(imports: Object = {}, helper: Object = {}, filter: Object = {}, provider: Object = {}) {
+    constructor(
+        imports: Templata.IGenricIndexObject<() => any> = {},
+        helper: Templata.IGenricIndexObject<Templata.IHelper> = {},
+        filter: Templata.IGenricIndexObject<Templata.IFilter> = {},
+        provider: Templata.IGenricIndexObject<Templata.IProvider> = {}
+    ) {
         this._setupImports(imports)
         this._provider = provider
         this._helper = helper
@@ -76,7 +81,7 @@ export default class Compiler implements Templata.ICompiler {
     }
 
     public removeImport(name: string): Compiler {
-        let index: number = this._importNames.indexOf(name)
+        const index: number = this._importNames.indexOf(name)
 
         if (index > -1) {
             this._importNames.splice(index, 1)
@@ -153,12 +158,12 @@ export default class Compiler implements Templata.ICompiler {
             return this
         }
 
-        let length: number = (<Function[]>this._listener[name]).length
+        let length: number = (this._listener[name] as Templata.IListener[]).length
         let index: number = -1
 
         while (++index < length) {
             if (this._listener[name][index] === callback) {
-                (<Function[]>this._listener[name]).splice(index, 1)
+                (this._listener[name] as Templata.IListener[]).splice(index, 1)
                 length = this._listener[name].length
             }
         }
@@ -171,11 +176,11 @@ export default class Compiler implements Templata.ICompiler {
             return void 0
         }
 
-        const length: number = (<Function[]>this._listener[name]).length
+        const length: number = (this._listener[name] as Templata.IListener[]).length
         let index: number = -1
 
         while (++index < length) {
-            (<Templata.IListener>this._listener[name][index]).apply(undefined, [name, this, ...data])
+            (this._listener[name][index] as Templata.IListener).apply(undefined, [name, this, ...data])
         }
     }
 
@@ -397,7 +402,7 @@ export default class Compiler implements Templata.ICompiler {
         const filterSeperator: string = Compiler.settings.DELIMITER.SPACE
             + Compiler.settings.DELIMITER.FILTER_SEPERATOR
             + Compiler.settings.DELIMITER.SPACE
-        let index: number = parameter.indexOf(filterSeperator)
+        const index: number = parameter.indexOf(filterSeperator)
 
         if (index > 0) {
             return parameter.slice(0, index)
@@ -445,14 +450,12 @@ export default class Compiler implements Templata.ICompiler {
         }
     }
 
-    private _setupImports(imports: Object): void {
-        let length: number = 0
-        let index: number = -1
-
+    private _setupImports(imports: Templata.IGenricIndexObject<() => any>): void {
         this._importNames = objectKeys(imports)
         this._importValues = Array(this._importNames.length)
 
-        length = this._importNames.length
+        const length: number = this._importNames.length
+        let index: number = -1
 
         while (++index < length) {
             this._importValues[index] = imports[this._importNames[index]]

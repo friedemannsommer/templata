@@ -11,9 +11,9 @@ import stringTrim from '../lib/string-trim'
 let iteratorIndexer: () => number
 
 function iterate(
-    operator: string,
+    _operator: string,
     parameter: string,
-    selfClosing: boolean,
+    _selfClosing: boolean,
     closingTag: boolean,
     buffer: Templata.IBuffer,
     compiler: Templata.ICompiler
@@ -28,9 +28,10 @@ function iterate(
     }
 
     if (parameter && parameter !== '') {
+        const iterable: string = stringTrim(parameter.slice(0, parameter.indexOf(':')))
+        const iteratorIndex: number = iteratorIndexer()
+
         let [valueVar, indexVar] = parseParameter(parameter, ':', ',')
-        let iterable: string = stringTrim(parameter.slice(0, parameter.indexOf(':')))
-        let iteratorIndex: number = iteratorIndexer()
 
         valueVar = ((valueVar) ? valueVar : 'value_' + iteratorIndex)
         indexVar = ((indexVar) ? indexVar : 'key_' + iteratorIndex)

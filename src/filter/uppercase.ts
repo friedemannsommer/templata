@@ -7,7 +7,7 @@ function uppercase(input: string): string {
 }
 
 function filterUppercase(
-    name: string,
+    _name: string,
     input: string,
     buffer: Templata.IBuffer,
     compiler: Templata.ICompiler

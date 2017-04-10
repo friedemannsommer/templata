@@ -3,12 +3,12 @@
 import stringTrim from '../lib/string-trim'
 
 function javascript(
-    operator: string,
+    _operator: string,
     parameter: string,
-    selfClosing: boolean,
-    closingTag: boolean,
+    _selfClosing: boolean,
+    _closingTag: boolean,
     buffer: Templata.IBuffer,
-    compiler: Templata.ICompiler
+    _compiler: Templata.ICompiler
 ): string {
     return buffer.END + stringTrim(parameter) + buffer.START
 }

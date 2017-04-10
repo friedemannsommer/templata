@@ -8,7 +8,7 @@ var iterator_1 = require("../lib/iterator");
 var parse_parameter_1 = require("../lib/parse-parameter");
 var string_trim_1 = require("../lib/string-trim");
 var iteratorIndexer;
-function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler) {
+function iterate(_operator, parameter, _selfClosing, closingTag, buffer, compiler) {
     compiler.registerImport('__isArray', is_array_1.default);
     compiler.registerImport('__isObject', is_object_1.default);
     compiler.registerImport('__eachArray', each_array_1.default);
@@ -17,9 +17,9 @@ function iterate(operator, parameter, selfClosing, closingTag, buffer, compiler)
         return buffer.END + '}' + buffer.START;
     }
     if (parameter && parameter !== '') {
-        var _a = parse_parameter_1.default(parameter, ':', ','), valueVar = _a[0], indexVar = _a[1];
         var iterable = string_trim_1.default(parameter.slice(0, parameter.indexOf(':')));
         var iteratorIndex = iteratorIndexer();
+        var _a = parse_parameter_1.default(parameter, ':', ','), valueVar = _a[0], indexVar = _a[1];
         valueVar = ((valueVar) ? valueVar : 'value_' + iteratorIndex);
         indexVar = ((indexVar) ? indexVar : 'key_' + iteratorIndex);
         return buffer.END

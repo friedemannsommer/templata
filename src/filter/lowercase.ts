@@ -7,7 +7,7 @@ function lowercase(input: string): string {
 }
 
 function filterLowercase(
-    name: string,
+    _name: string,
     input: string,
     buffer: Templata.IBuffer,
     compiler: Templata.ICompiler

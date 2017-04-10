@@ -14,7 +14,7 @@ function currency(input: string): string {
 }
 
 function filterCurrency(
-    name: string,
+    _name: string,
     input: string,
     buffer: Templata.IBuffer,
     compiler: Templata.ICompiler
