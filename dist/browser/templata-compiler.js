@@ -424,19 +424,19 @@ var Compiler = (function () {
     Compiler.prototype._setupBuffer = function () {
         this.buffer.START = Compiler.settings.VARIABLE_PRINT + '+=\'';
     };
+    Compiler.settings = {
+        DELIMITER: {
+            CLOSING: '/',
+            CLOSING_BLOCK: '}}',
+            FILTER_SEPERATOR: '|',
+            OPENING_BLOCK: '{{',
+            SPACE: ' '
+        },
+        VARIABLE_NAME: 'local',
+        VARIABLE_PRINT: '__print'
+    };
     return Compiler;
 }());
-Compiler.settings = {
-    DELIMITER: {
-        CLOSING: '/',
-        CLOSING_BLOCK: '}}',
-        FILTER_SEPERATOR: '|',
-        OPENING_BLOCK: '{{',
-        SPACE: ' '
-    },
-    VARIABLE_NAME: 'local',
-    VARIABLE_PRINT: '__print'
-};
 exports.default = Compiler;
 
 
