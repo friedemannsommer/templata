@@ -43,9 +43,6 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
 /******/
-/******/ 	// identity function for calling harmony imports with the correct context
-/******/ 	__webpack_require__.i = function(value) { return value; };
-/******/
 /******/ 	// define getter function for harmony exports
 /******/ 	__webpack_require__.d = function(exports, name, getter) {
 /******/ 		if(!__webpack_require__.o(exports, name)) {
@@ -73,7 +70,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -83,101 +80,10 @@ return /******/ (function(modules) { // webpackBootstrap
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-function escape(input) {
-    return input.replace(/'|\\/g, '\\$&');
-}
-exports.default = escape;
-
-
-/***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function objectKeys(object) {
-    var output = [];
-    var forbiddenKeys = [
-        'toString',
-        'toLocalString',
-        'valueOf',
-        'hasOwnProperty',
-        'isPrototypeOf',
-        'propertyIsEnumerable',
-        'constructor'
-    ];
-    for (var key in object) {
-        if (object.hasOwnProperty(key) && forbiddenKeys.indexOf(key) < 0) {
-            output.push(key);
-        }
-    }
-    return output;
-}
-exports.default = objectKeys;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var regexSpecialChars = [
-    '-',
-    '[',
-    ']',
-    '/',
-    '{',
-    '}',
-    '(',
-    ')',
-    '*',
-    '+',
-    '?',
-    '.',
-    '\\',
-    '^',
-    '$',
-    '|',
-    '~',
-    '`',
-    '!',
-    '@',
-    '#'
-];
-var specialCharMatch = new RegExp("[" + regexSpecialChars.join('\\') + "]", 'g');
-function regexEscape(input) {
-    return input.replace(specialCharMatch, '\\$&');
-}
-exports.default = regexEscape;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-function stringTrim(input) {
-    return input.replace(/^\s+|\s+$/g, '');
-}
-exports.default = stringTrim;
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var escape_1 = __webpack_require__(0);
-var object_keys_1 = __webpack_require__(1);
-var regex_escape_1 = __webpack_require__(2);
-var string_trim_1 = __webpack_require__(3);
+var escape_1 = __webpack_require__(1);
+var object_keys_1 = __webpack_require__(2);
+var regex_escape_1 = __webpack_require__(3);
+var string_trim_1 = __webpack_require__(4);
 var RegEx;
 (function (RegEx) {
     RegEx[RegEx["FULL_MATCH"] = 0] = "FULL_MATCH";
@@ -532,6 +438,97 @@ Compiler.settings = {
     VARIABLE_PRINT: '__print'
 };
 exports.default = Compiler;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function escape(input) {
+    return input.replace(/'|\\/g, '\\$&');
+}
+exports.default = escape;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function objectKeys(object) {
+    var output = [];
+    var forbiddenKeys = [
+        'toString',
+        'toLocalString',
+        'valueOf',
+        'hasOwnProperty',
+        'isPrototypeOf',
+        'propertyIsEnumerable',
+        'constructor'
+    ];
+    for (var key in object) {
+        if (object.hasOwnProperty(key) && forbiddenKeys.indexOf(key) < 0) {
+            output.push(key);
+        }
+    }
+    return output;
+}
+exports.default = objectKeys;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var regexSpecialChars = [
+    '-',
+    '[',
+    ']',
+    '/',
+    '{',
+    '}',
+    '(',
+    ')',
+    '*',
+    '+',
+    '?',
+    '.',
+    '\\',
+    '^',
+    '$',
+    '|',
+    '~',
+    '`',
+    '!',
+    '@',
+    '#'
+];
+var specialCharMatch = new RegExp("[" + regexSpecialChars.join('\\') + "]", 'g');
+function regexEscape(input) {
+    return input.replace(specialCharMatch, '\\$&');
+}
+exports.default = regexEscape;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+function stringTrim(input) {
+    return input.replace(/^\s+|\s+$/g, '');
+}
+exports.default = stringTrim;
 
 
 /***/ })

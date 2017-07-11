@@ -24,8 +24,8 @@ var defaultFilter = {
     lowercase: lowercase_1.default,
     uppercase: uppercase_1.default
 };
-function template(template, imports) {
+function template(templateString, imports) {
     if (imports === void 0) { imports = {}; }
-    return new compiler_1.default(imports, defaultHelper, defaultFilter).initialize(iterate_1.initialize).compile(template);
+    return new compiler_1.default(imports, defaultHelper, defaultFilter).initialize(iterate_1.initialize).compile(templateString);
 }
 exports.default = template;

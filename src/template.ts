@@ -31,8 +31,11 @@ const defaultFilter: Templata.IGenricIndexObject<Templata.IFilter> = {
     uppercase: filterUppercase
 }
 
-function template(template: string, imports: Templata.IGenricIndexObject<() => any> = {}): Templata.ICompileFunction {
-    return new TemplateCompiler(imports, defaultHelper, defaultFilter).initialize(initializeIterate).compile(template)
+function template(
+    templateString: string,
+    imports: Templata.IGenricIndexObject<() => any> = {}
+): Templata.ICompileFunction {
+    return new TemplateCompiler(imports, defaultHelper, defaultFilter).initialize(initializeIterate).compile(templateString)
 }
 
 export default template
