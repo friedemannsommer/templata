@@ -52,8 +52,8 @@
     "js"
   ],
   "devDependencies": {
+    "eslint": "4.4.0",
     "chai": "4.1.1",
-    "eslint": "4.3.0",
     "eslint-plugin-import": "2.7.0",
     "istanbul": "0.4.5",
     "mocha": "3.5.0",
