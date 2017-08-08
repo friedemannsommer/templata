@@ -62,7 +62,7 @@
     "tslint": "5.6.0",
     "typescript": "2.4.2",
     "webpack": "3.5.0",
-    "webpack-dev-server": "2.7.0"
+    "webpack-dev-server": "2.7.1"
   },
   "dependencies": {},
   "preferGlobal": false
