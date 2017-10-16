@@ -58,7 +58,7 @@
     "istanbul": "0.4.5",
     "mocha": "3.5.1",
     "source-map-loader": "0.2.1",
-    "ts-loader": "2.3.4",
+    "ts-loader": "3.0.2",
     "tslint": "5.7.0",
     "typescript": "2.5.2",
     "webpack": "3.5.6",
