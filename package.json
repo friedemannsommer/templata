@@ -57,7 +57,7 @@
     "eslint-plugin-import": "2.7.0",
     "istanbul": "0.4.5",
     "mocha": "4.0.0",
-    "source-map-loader": "0.2.1",
+    "source-map-loader": "0.2.2",
     "ts-loader": "2.3.4",
     "tslint": "5.7.0",
     "typescript": "2.5.2",
