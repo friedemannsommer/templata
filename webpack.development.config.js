@@ -1,9 +1,12 @@
 const path = require('path')
 // eslint-disable-next-line import/no-extraneous-dependencies
 const webpack = require('webpack')
+// eslint-disable-next-line import/no-extraneous-dependencies
+const merge = require('webpack-merge')
 const baseConfig = require('./webpack.base.config')
 
-module.exports = Object.assign(baseConfig, {
+module.exports = merge.smart({
+    mode: 'development',
     entry: {
         templata: [
             'webpack-dev-server/client?http://localhost:8080',
@@ -22,4 +25,4 @@ module.exports = Object.assign(baseConfig, {
     plugins: [
         new webpack.HotModuleReplacementPlugin()
     ]
-})
+}, baseConfig)
