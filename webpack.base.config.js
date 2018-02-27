@@ -1,13 +1,14 @@
 const path = require('path')
 
 module.exports = {
+    mode: 'production',
     target: 'web',
     devtool: 'source-map',
-    entry: {},
     output: {
         path: path.join(__dirname, 'dist', 'browser'),
         filename: '[name].js',
         sourceMapFilename: '[name].map',
+        libraryExport: 'default',
         libraryTarget: 'umd',
         library: 'Templata'
     },

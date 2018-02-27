@@ -61,4 +61,4 @@
 
         templateResult.value = compiler(data);
     }
-})(window.Templata.default);
+})(window.Templata);
