@@ -216,6 +216,7 @@ export default class Compiler implements Templata.ICompiler {
     private _createTemplateFunction(source: string): Templata.ICompileFunction {
         this.dispatch('COMPILE_END')
 
+        // tslint:disable-next-line:function-constructor
         return new Function(
             this._importNames.join(','),
             'return ' + source
