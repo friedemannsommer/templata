@@ -1,7 +1,5 @@
-const compilerSpec = require('./compiler.spec')
-const templataSpec = require('./templata.spec')
-
+/* eslint-disable global-require */
 describe('Templata', () => {
-    compilerSpec()
-    templataSpec()
+    require('./compiler.spec')
+    require('./templata.spec')
 })
