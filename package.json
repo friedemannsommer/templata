@@ -67,5 +67,17 @@
     "webpack-merge": "4.2.1"
   },
   "dependencies": {},
-  "preferGlobal": false
+  "preferGlobal": false,
+  "nyc": {
+    "check-coverage": true,
+    "all": true,
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "include": [
+      "dist/**/*.js"
+    ],
+    "report-dir": "./coverage"
+  }
 }

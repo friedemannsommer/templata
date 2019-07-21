@@ -23,6 +23,7 @@ engines:
     config:
       languages:
         - javascript
+        - typescript
 ratings:
   paths:
     - src/**
