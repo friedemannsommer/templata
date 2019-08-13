@@ -22,10 +22,7 @@ jobs:
     - name: collect coverage
       env:
         CODECLIMATE_REPO_TOKEN: ${{ secrets.CODECLIMATE_REPO_TOKEN }}
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         npm install codeclimate-test-reporter
-        npm install coveralls
         npm run coverage
         cat coverage/lcov.info | node_modules/codeclimate-test-reporter/bin/codeclimate.js
-        cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js
