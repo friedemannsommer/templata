@@ -19,10 +19,11 @@ jobs:
         npm ci
         npm run build
         npm run test
-    - name: collect coverage
-      env:
-        CODECLIMATE_REPO_TOKEN: ${{ secrets.CODECLIMATE_REPO_TOKEN }}
+    - name: generate coverage
       run: |
-        npm install codeclimate-test-reporter
         npm run coverage
-        cat coverage/lcov.info | node_modules/codeclimate-test-reporter/bin/codeclimate.js
+    - name: collect coverage
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.github_token }}
+        path-to-lcov: ./coverage/lcov.info
