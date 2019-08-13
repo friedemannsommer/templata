@@ -1,0 +1,28 @@
+name: Node CI
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node_version: [8, 10, 11, 12]
+    steps:
+    - uses: actions/checkout@master
+    - name: Use Node.js ${{ matrix.node_version }}
+      uses: actions/setup-node@v1
+      with:
+        version: ${{ matrix.node_version }}
+    - name: npm install, build, and test
+      run: |
+        npm ci
+        npm run build
+        npm run test
+    - name: collect coverage
+      run: |
+        npm install codeclimate-test-reporter
+        npm install coveralls
+        npm run coverage
+        cat coverage/lcov.info | node_modules/codeclimate-test-reporter/bin/codeclimate.js
+        cat coverage/lcov.info | node_modules/coveralls/bin/coveralls.js
