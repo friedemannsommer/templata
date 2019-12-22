@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node_version: [8, 10, 11, 12]
+        node_version: [8, 10, 12, 13]
     steps:
     - uses: actions/checkout@master
     - name: Use Node.js ${{ matrix.node_version }}
@@ -19,17 +19,21 @@ jobs:
         npm ci
         npm run build
         npm run test
-    - name: generate coverage
-      run: |
-        npm run coverage
     - name: collect coverage (codeclimate)
+      if: matrix.node_version == 13 && success()
       env:
-        CODECLIMATE_REPO_TOKEN: ${{ secrets.CODECLIMATE_REPO_TOKEN }}
+        CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_REPORTER_ID }}
+        GIT_COMMIT_SHA: ${{ github.sha }}
+        GIT_BRANCH_REF: ${{ github.ref }}
       run: |
-        npm install codeclimate-test-reporter
+        curl -o ./cc-reporter -s -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+        export GIT_BRANCH=${GIT_BRANCH_REF##refs/heads/}
+        chmod +x ./cc-reporter
+        ./cc-reporter before-build
         npm run coverage
-        cat coverage/lcov.info | node_modules/codeclimate-test-reporter/bin/codeclimate.js
+        ./cc-reporter after-build --exit-code 0
     - name: collect coverage (coveralls)
+      if: matrix.node_version == 13 && success()
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
