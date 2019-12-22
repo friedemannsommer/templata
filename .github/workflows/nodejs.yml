@@ -24,9 +24,9 @@ jobs:
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_REPORTER_ID }}
         GIT_COMMIT_SHA: ${{ github.sha }}
-        GIT_BRANCH: ${{ github.head_ref }}
+        GIT_BRANCH: ${{ github.ref }}
       run: |
-        curl -o ./cc-reporter https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+        curl -o ./cc-reporter -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
         chmod +x ./cc-reporter
         ./cc-reporter before-build
         npm run coverage
