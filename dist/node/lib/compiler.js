@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var escape_1 = require("./escape");
 var object_keys_1 = require("./object-keys");
@@ -129,7 +136,7 @@ var Compiler = (function () {
         var length = this._listener[name].length;
         var index = -1;
         while (++index < length) {
-            this._listener[name][index].apply(undefined, [name, this].concat(data));
+            this._listener[name][index].apply(undefined, __spreadArrays([name, this], data));
         }
     };
     Compiler.prototype.callProvider = function (name) {
@@ -137,7 +144,7 @@ var Compiler = (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        return this._provider[name].apply(undefined, [name].concat(args));
+        return this._provider[name].apply(undefined, __spreadArrays([name], args));
     };
     Compiler.prototype.initialize = function (helper) {
         helper(this);
