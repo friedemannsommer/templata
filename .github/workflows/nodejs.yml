@@ -20,7 +20,7 @@ jobs:
         npm run build
         npm run test
     - name: collect coverage (codeclimate)
-      if: matrix.node_version == 13 && success()
+      if: matrix.node_version == 14 && success()
       env:
         CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_REPORTER_ID }}
         GIT_COMMIT_SHA: ${{ github.sha }}
@@ -33,7 +33,7 @@ jobs:
         npm run coverage
         ./cc-reporter after-build --exit-code 0
     - name: collect coverage (coveralls)
-      if: matrix.node_version == 13 && success()
+      if: matrix.node_version == 14 && success()
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
