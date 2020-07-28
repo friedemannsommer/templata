@@ -3,8 +3,8 @@ const path = require('path')
 const merge = require('webpack-merge')
 const baseConfig = require('./webpack.base.config')
 
-module.exports = merge.smart({
+module.exports = merge.merge(baseConfig, {
     entry: {
-        'templata-compiler': path.join(__dirname, 'src', 'lib', 'compiler.ts')
+        'templata-compiler': path.resolve(__dirname, './src/lib/compiler.ts')
     }
-}, baseConfig)
+})

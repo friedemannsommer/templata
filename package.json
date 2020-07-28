@@ -3,14 +3,9 @@
   "version": "2.0.0",
   "author": {
     "name": "Friedemann Sommer",
-    "email": "friedemannsommer@yahoo.de"
+    "email": "social@friedemannsommer.com"
   },
-  "maintainers": [
-    {
-      "name": "Friedemann Sommer",
-      "email": "friedemannsommer@yahoo.de"
-    }
-  ],
+  "maintainers": [],
   "description": "Customizable Template Compiler written in TypeScript",
   "main": "index.js",
   "scripts": {
@@ -64,7 +59,7 @@
     "webpack": "4.44.0",
     "webpack-cli": "3.3.12",
     "webpack-dev-server": "3.11.0",
-    "webpack-merge": "4.2.2"
+    "webpack-merge": "5.0.9"
   },
   "dependencies": {},
   "preferGlobal": false,

@@ -5,13 +5,13 @@ const webpack = require('webpack')
 const merge = require('webpack-merge')
 const baseConfig = require('./webpack.base.config')
 
-module.exports = merge.smart({
+module.exports = merge.merge(baseConfig, {
     mode: 'development',
     entry: {
         templata: [
             'webpack-dev-server/client?http://localhost:8080',
             'webpack/hot/only-dev-server',
-            path.join(__dirname, 'src', 'template.ts')
+            path.resolve(__dirname, './src/template.ts')
         ]
     },
     output: {
@@ -25,4 +25,4 @@ module.exports = merge.smart({
     plugins: [
         new webpack.HotModuleReplacementPlugin()
     ]
-}, baseConfig)
+})

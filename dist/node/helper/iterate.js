@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.initialize = exports.iterate = void 0;
 var each_array_1 = require("../lib/each-array");
 var each_object_1 = require("../lib/each-object");
 var is_array_1 = require("../lib/is-array");

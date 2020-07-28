@@ -3,8 +3,8 @@ const path = require('path')
 const merge = require('webpack-merge')
 const baseConfig = require('./webpack.base.config')
 
-module.exports = merge.smart({
+module.exports = merge.merge(baseConfig, {
     entry: {
-        templata: path.join(__dirname, 'src', 'template.ts')
+        templata: path.resolve(__dirname, './src/template.ts')
     }
-}, baseConfig)
+})
